@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./styles/index.css";
+
 import App from "./App";
 
 import store from "./redux/store"
@@ -9,6 +9,8 @@ import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 
+import "./styles/tailwind.css";
+import "./styles/index.css";
 
 const originalSetItem = localStorage.setItem;
 // triggers itemsChaned event whenever the item in localstorage is chanegd.

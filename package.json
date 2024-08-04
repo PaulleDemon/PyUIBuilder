@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ant-design/icons": "^5.4.0",
+    "@dnd-kit/core": "^6.1.0",
     "@reduxjs/toolkit": "^2.2.7",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "antd": "^5.20.0",
     "autoprefixer": "^10.4.20",
     "postcss-cli": "^11.0.0",
     "react": "^18.3.1",
@@ -20,7 +23,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "GENERATE_SOURCEMAP=false env-cmd -e production react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
