@@ -1,10 +1,16 @@
-import Sidebar from './sidebar/sidebar';
+import { useState } from 'react'
 
-import { LayoutFilled, ProductFilled, CloudUploadOutlined } from "@ant-design/icons";
-import WidgetsContainer from './sidebar/widgetsContainer';
+import { LayoutFilled, ProductFilled, CloudUploadOutlined } from "@ant-design/icons"
 
+import Sidebar from './sidebar/sidebar'
+import WidgetsContainer from './sidebar/widgetsContainer'
+import UploadsContainer from './sidebar/uploadsContainer'
+import Canvas from './canvas/main'
 
 function App() {
+
+    const [uploadedAssets, setUploadedAssets] = useState([]) //  a global storage for assets, since redux can't store files(serialize files)
+
 
 	const tabs = [
 		{
@@ -20,7 +26,8 @@ function App() {
 		{
 			name: "Uploads",
 			icon: <CloudUploadOutlined />,
-			content: <></>
+			content: <UploadsContainer assets={uploadedAssets} 
+						onAssetUploadChange={(assets) => setUploadedAssets(assets)}/>
 		}
 	]
 
@@ -28,7 +35,7 @@ function App() {
 		<div className="tw-w-full tw-h-[100vh] tw-flex tw-bg-primaryBg">
 
 			<Sidebar tabs={tabs}/>
-
+			<Canvas />
 		</div>
 	);
 }

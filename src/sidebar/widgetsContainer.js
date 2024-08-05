@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react"
 
 import { CloseCircleFilled, SearchOutlined } from "@ant-design/icons"
 
-import DraggableWidgetCard from "../components/utils/widgetCard"
+import {DraggableWidgetCard} from "../components/cards"
 
 import ButtonWidget from "../assets/widgets/button.png"
 
