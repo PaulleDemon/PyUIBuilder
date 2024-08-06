@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import * as fabric from 'fabric'
 
-
+/**
+ * NOTE: Not in use
+ */
 function FabricJSCanvas({ canvasOptions, className = '', onCanvasContextUpdate }) {
 
     const canvasRef = useRef(null)
@@ -22,8 +24,9 @@ function FabricJSCanvas({ canvasOptions, className = '', onCanvasContextUpdate }
             canvasRef.current.parentNode.style.width = "100%"
             canvasRef.current.parentNode.style.height = "100%"
             
-            console.log("Parent: ", canvasRef.current.parentNode)
-
+            console.log("Parent: ", canvasRef.current.parentNode.parentNode)
+            
+            canvasRef.current.parentNode.parentNode.addEventListener("resize", updateCanvasDimensions)
             window.addEventListener("resize", updateCanvasDimensions)
 
             // make the fabric.Canvas instance available to your app
@@ -33,6 +36,7 @@ function FabricJSCanvas({ canvasOptions, className = '', onCanvasContextUpdate }
 
         return () => {
             window.removeEventListener("resize", updateCanvasDimensions)
+            canvasRef.current.parentNode.parentNode.removeEventListener("resize", updateCanvasDimensions)
         
             if (onCanvasContextUpdate)
                 onCanvasContextUpdate(null)
@@ -45,17 +49,19 @@ function FabricJSCanvas({ canvasOptions, className = '', onCanvasContextUpdate }
     const updateCanvasDimensions = useCallback(() => {
         if (!canvasRef.current || !fabricCanvasRef.current)
             return
-
+        // console.log("Updating canvas")
         const parent = canvasRef.current.parentNode.parentNode
 
         fabricCanvasRef.current.setDimensions({ width: parent.clientWidth, height: parent.clientHeight })
+        fabricCanvasRef.current.calcOffset()
+
         fabricCanvasRef.current.renderAll()
 
     }, [fabricCanvasRef, canvasRef])
 
   
 
-    return <canvas className={className} ref={canvasRef} id='we'/>
+    return <canvas className={className} ref={canvasRef}/>
 }
 
 

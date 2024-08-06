@@ -1,30 +1,64 @@
-import { useCallback, useRef, useState } from "react"
-import FabricJSCanvas from "./fabricCanvas"
+import { useCallback, useRef, useEffect, useMemo } from "react"
+import * as fabric from 'fabric'
+
 
 
 function Canvas(){
 
-    const fabricCanvasRef = useRef()
+    const canvasRef = useRef(null)
 
-    const updateCanvasDimensions = useCallback((event) => {
-        console.log("Updating: ", fabricCanvasRef)
-        if (!fabricCanvasRef.current)
+    const canvas = useMemo(() => {
+        const options = {}
+
+        if (canvasRef.current)
+            return new fabric.Canvas(canvasRef.current, options)
+        else
+            return null
+
+    }, [canvasRef.current])
+
+    useEffect(() => {
+
+        return () => {
+            canvas?.dispose() // if already exist, dispose before re-initializing
+        }
+
+    }, [])
+
+  
+
+    useEffect(() => {
+        if (canvasRef.current && canvas) {
+            window.addEventListener("resize", updateCanvasDimensions)
+            updateCanvasDimensions()
+        }
+
+        return () => {
+            window.removeEventListener("resize", updateCanvasDimensions)
+        }
+    }, [canvasRef, canvas])
+
+
+    const updateCanvasDimensions = useCallback(() => {
+        if (!canvasRef.current || !canvas)
             return
+        // console.log("Updating canvas")
+        const parent = canvasRef.current.parentNode.parentNode // this is the canvas outer container
 
-        const parent = event.target
-        
-        fabricCanvasRef.current.setDimensions({ width: parent.clientWidth, height: parent.clientHeight })
-        fabricCanvasRef.current.renderAll()
+        canvas.setDimensions({ width: parent.clientWidth, height: parent.clientHeight })
+        canvas.calcOffset()
 
-    }, [fabricCanvasRef])
+        canvas.renderAll()
+
+    }, [canvas, canvasRef])
+
 
 
     return (
-        <div className="tw-flex tw-w-full tw-h-full tw-max-h-[100vh] tw-overflow-auto"
-                
-                        >
-            <FabricJSCanvas className="tw-bg-red-200" 
-                            onCanvasContextUpdate={(canvas) => fabricCanvasRef.current = canvas}/>
+        <div className="tw-relative tw-flex tw-w-full tw-h-full tw-max-h-[100vh] tw-overflow-auto"
+                        onResize={updateCanvasDimensions}>
+            <canvas className="tw-bg-red-200 tw-w-full tw-h-full" ref={canvasRef}/>
+            
         </div>
     )
 }
