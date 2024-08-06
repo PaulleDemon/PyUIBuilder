@@ -20,7 +20,7 @@ function Canvas(){
     useEffect(() => {
 
         return () => {
-            canvas?.dispose() // if already exist, dispose before re-initializing
+            canvas?.dispose() // canvas.dispose is async, https://github.com/fabricjs/fabric.js/issues/8299
         }
 
     }, [])
