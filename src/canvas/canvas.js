@@ -5,6 +5,7 @@ import { Button, Tooltip } from "antd"
 
 import Widget from "./widgets/base"
 import Cursor from "./constants/cursor"
+import { UID } from "../utils/uid"
 
 
 class Canvas extends React.Component {
@@ -15,10 +16,7 @@ class Canvas extends React.Component {
         this.canvasRef = React.createRef()  
         this.canvasContainerRef = React.createRef()
 
-        /**
-         * @type {Widget[]}
-         */
-        this.widgets = []
+        this.widgetRefs = {}
 
         this.modes = {
             DEFAULT: '',
@@ -40,6 +38,7 @@ class Canvas extends React.Component {
         }
 
         this.resetTransforms = this.resetTransforms.bind(this)
+        this.renderWidget = this.renderWidget.bind(this)
 
         // this.updateCanvasDimensions = this.updateCanvasDimensions.bind(this) 
     }
@@ -49,7 +48,16 @@ class Canvas extends React.Component {
 
         // this.widgets.push(new Widget())
 
-        this.setState({widgets: [new Widget()]})
+        // let widgetRef = React.createRef()
+
+        // this.widgetRefs[widgetRef.current.__id] = widgetRef
+
+        // // Update the state to include the new widget's ID
+        // this.setState((prevState) => ({
+        //     widgetIds: [...prevState.widgetIds, widgetRef.current.__id]
+        // }))
+
+        this.addWidget(Widget)
 
     }
 
@@ -234,6 +242,31 @@ class Canvas extends React.Component {
         }, this.applyTransform)
     }
 
+    /**
+     * 
+     * @param {Widget} widgetComponentType - don't pass <Widget /> instead pass Widget
+     */
+    addWidget(widgetComponentType){
+        const widgetRef = React.createRef()
+
+        const id = `${widgetComponentType.widgetType}_${UID()}`
+
+        // Store the ref in the instance variable
+        this.widgetRefs[id] = widgetRef
+        console.log("widget ref: ", this.widgetRefs)
+        // Update the state to include the new widget's type and ID
+        this.setState((prevState) => ({
+          widgets: [...prevState.widgets, { id, type: widgetComponentType }]
+        }))
+    }
+
+    renderWidget(widget){
+        const { id, type: ComponentType } = widget
+        console.log("widet: ", this.widgetRefs, id)
+    
+        return <ComponentType key={id} id={id} ref={this.widgetRefs[id]} />
+    }
+
     render() {
         return (
             <div className="tw-relative tw-flex tw-w-full tw-h-full tw-max-h-[100vh]">
@@ -254,9 +287,7 @@ class Canvas extends React.Component {
                             ref={this.canvasRef}>
                         <div className="tw-relative tw-w-full tw-h-full">
                             {
-                                this.state.widgets.map((wid, index) => {
-                                    return <React.Fragment key={index}>{React.cloneElement(wid, {ref:wid.elementRef})}</React.Fragment>
-                                })
+                                this.state.widgets.map(this.renderWidget)
                             }
                         </div>
                     </div>

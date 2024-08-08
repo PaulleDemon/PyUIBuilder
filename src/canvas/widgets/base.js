@@ -6,23 +6,21 @@ import Layouts from "../constants/layouts"
 import Cursor from "../constants/cursor"
 
 
-function UID(){
-    return Date.now().toString(36) + Math.random().toString(36).substr(2)
-}
 
 /**
  * Base class to be extended
  */
 class Widget extends React.Component{
 
-    constructor(props, _type="widget"){
+    static widgetType = "widget"
 
+    constructor(props){
         super(props)
-        
-        // const _type="widget"
-        this.type = _type
+
+        const {id} = props
+        console.log("Id: ", id)
         // this id has to be unique inside the canvas, it will be set automatically and should never be changed
-        this.__id = `${_type}_${UID()}`
+        this.__id = id
         this._zIndex = 0
 
         this._selected = false
@@ -68,6 +66,13 @@ class Widget extends React.Component{
             width: 100
         } 
 
+        this.state = {
+            attrs: { // attributes
+                // replace this with this.props
+            },
+            zIndex: 0
+        }
+
     }
 
 
@@ -79,11 +84,12 @@ class Widget extends React.Component{
     }
 
     componentDidMount(){
-        this.elementRef?.addEventListener("click", this.mousePress)
+        console.log("mounted: ")
+        this.elementRef.current?.addEventListener("click", this.mousePress)
     }
 
     componentWillUnmount(){
-        this.elementRef?.removeEventListener("click", this.mousePress)
+        this.elementRef.current?.removeEventListener("click", this.mousePress)
     }
 
     mousePress(event){
@@ -155,10 +161,10 @@ class Widget extends React.Component{
 
         return (
             
-            <div data-id={this.__id} className="tw-relative tw-w-fit tw-h-fit" style={style}
+            <div data-id={this.__id} ref={this.elementRef} className="tw-relative tw-w-fit tw-h-fit" style={style}
                 >
 
-                {this.render()}
+                {this.renderContent()}
                 <div className="tw-absolute tw-bg-transparent tw-scale-[1.1] tw-opacity-35 
                                 tw-w-full tw-h-full tw-top-0 tw-border-2 tw-border-solid tw-border-black">
                     
