@@ -4,6 +4,10 @@ import { FullscreenOutlined } from "@ant-design/icons"
 import { Button, Tooltip } from "antd"
 
 
+/**
+ * @deprecated - Fabric.js cannot be used as its limited to drawing, elements cannot be added to canvas
+ */
+
 class Canvas extends React.Component {
 
     constructor(props) {

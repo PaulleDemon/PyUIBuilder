@@ -5,7 +5,7 @@ import { LayoutFilled, ProductFilled, CloudUploadOutlined } from "@ant-design/ic
 import Sidebar from './sidebar/sidebar'
 import WidgetsContainer from './sidebar/widgetsContainer'
 import UploadsContainer from './sidebar/uploadsContainer'
-import Canvas from './canvas/mainClass'
+import Canvas from './canvas/canvas'
 
 function App() {
 

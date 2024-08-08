@@ -1,7 +1,12 @@
 import { useCallback, useRef, useEffect, useMemo } from "react"
 import * as fabric from 'fabric'
 
-
+/**
+ * 
+ * This is a functional based component of the canvas which was discarded because it makes code
+ * ugly and hard to interface with fabric.js, Fabric 6 has breaking changes such as dispose, is async
+ * which interferes wih useEffect 
+ */
 
 function Canvas(){
 
