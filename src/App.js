@@ -6,6 +6,7 @@ import Sidebar from './sidebar/sidebar'
 import WidgetsContainer from './sidebar/widgetsContainer'
 import UploadsContainer from './sidebar/uploadsContainer'
 import Canvas from './canvas/canvas'
+import Header from './components/header'
 
 function App() {
 
@@ -32,10 +33,12 @@ function App() {
 	]
 
 	return (
-		<div className="tw-w-full tw-h-[100vh] tw-flex tw-bg-primaryBg">
-
-			<Sidebar tabs={tabs}/>
-			<Canvas />
+		<div className="tw-w-full tw-h-[100vh] tw-flex tw-flex-col tw-bg-primaryBg">
+			<Header className="tw-h-[6vh]"/>
+			<div className="tw-w-full tw-h-[94vh] tw-flex">
+				<Sidebar tabs={tabs}/>
+				<Canvas />
+			</div>
 		</div>
 	);
 }

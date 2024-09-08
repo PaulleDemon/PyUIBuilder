@@ -46,7 +46,8 @@ function Sidebar({tabs}){
         <div className={`tw-relative tw-duration-[0.3s] tw-transition-all
                         tw-max-w-[400px] tw-flex tw-h-full tw-z-10
                         ${sidebarOpen ? "tw-bg-white tw-min-w-[400px] tw-w-[400px] tw-shadow-lg": "tw-bg-primaryBg tw-min-w-[80px] tw-w-[80px]"}
-                        `} ref={sideBarRef} 
+                        `} 
+                        ref={sideBarRef} 
                         onMouseLeave={hideOnMouseLeave}
                 >
             
