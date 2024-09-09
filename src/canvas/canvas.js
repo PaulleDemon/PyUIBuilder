@@ -19,8 +19,9 @@ class Canvas extends React.Component {
         this.widgetRefs = {}
 
         this.modes = {
-            DEFAULT: '',
-            PAN: 'pan',
+            DEFAULT: 0,
+            PAN: 1,
+            MOVE_WIDGET: 2 // when the mode is move widget
         }
         this.currentMode = this.modes.DEFAULT
         
@@ -31,14 +32,27 @@ class Canvas extends React.Component {
         }
 
         this.state = {
-            widgets: [],
+            widgets: [], //  don't store the widget directly here, instead store it in widgetRef, else the changes in the widget will re-render the whole canvas
             zoom: 1,
             isPanning: false,
             currentTranslate: { x: 0, y: 0 },
         }
 
+        this.selectedWidgets = []
+
         this.resetTransforms = this.resetTransforms.bind(this)
         this.renderWidget = this.renderWidget.bind(this)
+        
+        this.mouseDownEvent = this.mouseDownEvent.bind(this)
+        this.mouseMoveEvent = this.mouseMoveEvent.bind(this)
+        this.mouseUpEvent = this.mouseUpEvent.bind(this)
+        
+        this.getWidgets = this.getWidgets.bind(this)
+        this.getActiveObjects = this.getActiveObjects.bind(this)
+        this.getWidgetFromTarget = this.getWidgetFromTarget.bind(this)
+
+        this.clearSelections = this.clearSelections.bind(this)
+        this.clearCanvas = this.clearCanvas.bind(this)
 
         // this.updateCanvasDimensions = this.updateCanvasDimensions.bind(this) 
     }
@@ -46,40 +60,14 @@ class Canvas extends React.Component {
     componentDidMount() {
         this.initEvents()
 
-        // this.widgets.push(new Widget())
-
-        // let widgetRef = React.createRef()
-
-        // this.widgetRefs[widgetRef.current.__id] = widgetRef
-
-        // // Update the state to include the new widget's ID
-        // this.setState((prevState) => ({
-        //     widgetIds: [...prevState.widgetIds, widgetRef.current.__id]
-        // }))
-
         this.addWidget(Widget)
 
     }
 
     componentWillUnmount() {
-      
-    }
-
-    mouseDownEvent(event){
-
-        this.mousePressed = true
-
-        this.mousePos.x = event.e.clientX
-        this.mousePos.y = event.e.clientY
-
-    }
-
-    mouseMoveEvent(event){
-
-    }
-
-    mouseUpEvent(event){
-        this.mousePressed = false
+        
+        // NOTE: this will clear the canvas
+        this.clearCanvas()
     }
 
     /**
@@ -92,61 +80,23 @@ class Canvas extends React.Component {
     }
 
     /**
-     * returns list of active objects on the canvas
+     * returns list of active objects / selected objects on the canvas
      * @returns Widget[]
      */
     getActiveObjects(){
-
-        return this.getWidgets().filter((widget) => {
-            return widget.isSelected
+        return Object.values(this.widgetRefs).filter((widgetRef) => {
+            return widgetRef.current?.isSelected()
         })
-
     }
 
     initEvents(){
 
-        this.canvasContainerRef.current.addEventListener("mousedown", (event) => {
-            this.mousePressed = true
-            this.mousePos = { x: event.clientX, y: event.clientY }
-
-            if (this.state.widgets.length > 0){
-
-                this.currentMode = this.modes.PAN
-                this.setCursor(Cursor.GRAB)
-
-            }
-
-        })
-
-        this.canvasContainerRef.current.addEventListener("mouseup", () => {
-            this.mousePressed = false
-            this.currentMode = this.modes.DEFAULT
-            this.setCursor(Cursor.DEFAULT)
-        })
-
-        this.canvasContainerRef.current.addEventListener("mousemove", (event) => {
-            // console.log("event: ", event)
-            if (this.mousePressed && this.currentMode === this.modes.PAN) {
-                 const deltaX = event.clientX - this.mousePos.x
-                const deltaY = event.clientY - this.mousePos.y
-
-                this.setState(prevState => ({
-                    currentTranslate: {
-                        x: prevState.currentTranslate.x + deltaX,
-                        y: prevState.currentTranslate.y + deltaY,
-                    }
-                }), this.applyTransform)
-
-                this.mousePos = { x: event.clientX, y: event.clientY }
-
-                this.setCursor(Cursor.GRAB)
-            }
+        this.canvasContainerRef.current.addEventListener("mousedown", this.mouseDownEvent)
+        this.canvasContainerRef.current.addEventListener("mouseup", this.mouseUpEvent)
+        this.canvasContainerRef.current.addEventListener("mousemove", this.mouseMoveEvent)
 
 
-
-        })
-
-        this.canvasContainerRef.current.addEventListener("selection:created", () => {
+        this.canvasRef.current.addEventListener("selection:created", () => {
             console.log("selected")
             this.currentMode = this.modes.DEFAULT
         })
@@ -160,6 +110,89 @@ class Canvas extends React.Component {
     applyTransform(){
         const { currentTranslate, zoom } = this.state
         this.canvasRef.current.style.transform = `translate(${currentTranslate.x}px, ${currentTranslate.y}px) scale(${zoom})`
+    }
+
+    /**
+     * returns the widget that contains the target
+     * @param {HTMLElement} target 
+     * @returns {Widget}
+     */
+    getWidgetFromTarget(target){
+
+        for (let [key, ref] of Object.entries(this.widgetRefs)){
+            if (ref.current.getElement().contains(target)){
+                return ref.current
+            }
+        }
+
+    }
+
+
+    mouseDownEvent(event){
+        this.mousePressed = true
+        this.mousePos = { x: event.clientX, y: event.clientY }
+
+        let selectedWidget = this.getWidgetFromTarget(event.target)
+        if (selectedWidget){
+            // if the widget is selected don't pan, instead move the widget
+
+            if (!selectedWidget._disableSelection){
+                selectedWidget.select()
+                this.selectedWidgets.push(selectedWidget)
+                this.currentMode = this.modes.MOVE_WIDGET
+            }
+
+            this.currentMode = this.modes.PAN
+
+            
+
+        }else if (this.state?.widgets?.length > 0){
+
+            this.clearSelections()
+            this.currentMode = this.modes.PAN
+            this.setCursor(Cursor.GRAB)
+
+        }
+
+    }
+
+    mouseMoveEvent(event){
+        // console.log("mode: ", this.currentMode, this.getActiveObjects())
+        if (this.mousePressed && [this.modes.PAN, this.modes.MOVE_WIDGET].includes(this.currentMode)) {
+            const deltaX = event.clientX - this.mousePos.x
+            const deltaY = event.clientY - this.mousePos.y
+            
+
+            if (this.selectedWidgets.length === 0){
+                this.setState(prevState => ({
+                    currentTranslate: {
+                        x: prevState.currentTranslate.x + deltaX,
+                        y: prevState.currentTranslate.y + deltaY,
+                    }
+                }), this.applyTransform)
+            }else{
+                // update the widgets position
+                this.selectedWidgets.forEach(widget => {
+                    const {x, y} = widget.getPos()
+
+                    const newPosX = x + (deltaX/this.state.zoom) // account for the zoom, since the widget is relative to canvas
+                    const newPosY = y + (deltaY/this.state.zoom) // account for the zoom, since the widget is relative to canvas
+
+                    widget.setPos(newPosX, newPosY)
+                })
+            }
+
+
+           this.mousePos = { x: event.clientX, y: event.clientY }
+
+           this.setCursor(Cursor.GRAB)
+       }
+    }
+
+    mouseUpEvent(event){
+        this.mousePressed = false
+        this.currentMode = this.modes.DEFAULT
+        this.setCursor(Cursor.DEFAULT)
     }
 
     wheelZoom(event){
@@ -242,9 +275,16 @@ class Canvas extends React.Component {
         }, this.applyTransform)
     }
 
+    clearSelections(){
+        this.getActiveObjects().forEach(widget => {
+            widget.current?.deSelect()
+        })
+        this.selectedWidgets = []
+    }
+
     /**
      * 
-     * @param {Widget} widgetComponentType - don't pass <Widget /> instead pass Widget
+     * @param {Widget} widgetComponentType - don't pass <Widget /> instead pass Widget object
      */
     addWidget(widgetComponentType){
         const widgetRef = React.createRef()
@@ -253,18 +293,45 @@ class Canvas extends React.Component {
 
         // Store the ref in the instance variable
         this.widgetRefs[id] = widgetRef
-        console.log("widget ref: ", this.widgetRefs)
+        // console.log("widget ref: ", this.widgetRefs)
         // Update the state to include the new widget's type and ID
         this.setState((prevState) => ({
-          widgets: [...prevState.widgets, { id, type: widgetComponentType }]
+            widgets: [...prevState.widgets, { id, type: widgetComponentType }]
         }))
+    }
+
+    /**
+     * removes all the widgets from the canvas
+     */
+    clearCanvas(){
+
+        for (let [key, value] of Object.entries(this.widgetRefs)){
+            console.log("removed: ", key, value)
+            value.current?.remove()
+        }
+
+        this.widgetRefs = {}
+        this.setState(() => ({
+            widgets: []
+        }))
+    }
+
+    removeWidget(widgetId){
+
+        this.widgetRefs[widgetId]?.current.remove()
+        delete this.widgetRefs[widgetId]
+
+        // TODO: remove from widgets
+        // this.setState(() => ({
+        //     widgets: []
+        // }))
     }
 
     renderWidget(widget){
         const { id, type: ComponentType } = widget
-        console.log("widet: ", this.widgetRefs, id)
+        // console.log("widet: ", this.widgetRefs, id)
     
-        return <ComponentType key={id} id={id} ref={this.widgetRefs[id]} />
+        return <ComponentType key={id} id={id} ref={this.widgetRefs[id]} canvasRef={this.canvasRef} />
     }
 
     render() {

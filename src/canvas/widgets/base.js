@@ -4,6 +4,8 @@ import { NotImplementedError } from "../../utils/errors"
 import Tools from "../constants/tools"
 import Layouts from "../constants/layouts"
 import Cursor from "../constants/cursor"
+import { toSnakeCase } from "../utils/utils"
+import EditableDiv from "../../components/editableDiv"
 
 
 
@@ -17,13 +19,15 @@ class Widget extends React.Component{
     constructor(props){
         super(props)
 
-        const {id} = props
+        const {id, widgetName, canvasRef} = props
         console.log("Id: ", id)
         // this id has to be unique inside the canvas, it will be set automatically and should never be changed
         this.__id = id
         this._zIndex = 0
 
-        this._selected = false
+        this.canvas = canvasRef?.current || null
+
+        // this._selected = false
         this._disableResize = false
         this._disableSelection = false
 
@@ -33,7 +37,7 @@ class Widget extends React.Component{
         
         this.elementRef = React.createRef()
 
-        this.props = {
+        this.attrs = {
             styling: {
                 backgroundColor: {
                     tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
@@ -70,10 +74,21 @@ class Widget extends React.Component{
             attrs: { // attributes
                 // replace this with this.props
             },
-            zIndex: 0
+            zIndex: 0,
+            pos: {x: 0, y: 0},
+            selected: false,
+            widgetName: widgetName  || 'unnamed widget' // this will later be converted to variable name
         }
 
-    }
+        this.mousePress = this.mousePress.bind(this)
+        this.getElement = this.getElement.bind(this)
+
+        this.isSelected = this.isSelected.bind(this)
+
+        this.getPos = this.getPos.bind(this)
+        this.setPos = this.setPos.bind(this)
+
+    }   
 
 
     setComponentAdded(added=true){
@@ -92,10 +107,22 @@ class Widget extends React.Component{
         this.elementRef.current?.removeEventListener("click", this.mousePress)
     }
 
-    mousePress(event){
+    // TODO: add context menu items such as delete, add etc
+    contextMenu(){
 
+    }
+
+    getVariableName(){
+        return toSnakeCase(this.state.widgetName)
+    }
+
+    mousePress(event){
+        // event.preventDefault()
         if (!this._disableSelection){
-            this._selected = true
+            this.setState((prev) => ({
+                ...prev,
+                selected: false
+            }))
 
             const widgetSelected = new CustomEvent("selection:created", {
                 detail: {
@@ -103,22 +130,44 @@ class Widget extends React.Component{
                     id: this.__id,
                     element: this
                 },
+                // bubbles: true // Allow the event to bubble up the DOM tree
             })
-            console.log("dispatched")
-            document.dispatchEvent(widgetSelected)
+            // document.dispatchEvent(widgetSelected)
+            // console.log("dispatched", this.canvas)
+            this.canvas.dispatchEvent(widgetSelected)
         }
     }
 
     select(){
-        this._selected = true
+        this.setState((prev) => ({
+            ...prev,
+            selected: true
+        }))
     }
 
     deSelect(){
-        this._selected = false
+        this.setState((prev) => ({
+            ...prev,
+            selected: false
+        }))
+    }
+
+    isSelected(){
+        return this.state.selected
+    }
+
+    setPos(x, y){
+        this.setState({
+            pos: {x: x, y: y}
+        })
+    }
+
+    getPos(){
+        return this.state.pos
     }
 
     getProps(){
-        return this.props
+        return this.attrs
     }
 
     getWidgetFunctions(){
@@ -127,6 +176,10 @@ class Widget extends React.Component{
 
     getId(){
         return this.__id
+    }
+
+    getElement(){
+        return this.elementRef.current
     }
 
     renderContent(){
@@ -146,8 +199,8 @@ class Widget extends React.Component{
         
         let style = {
             cursor: this.cursor,
-            top: "40px",  
-            left: "40px",  
+            top: `${this.state.pos.y}px`,  
+            left: `${this.state.pos.x}px`,  
             width: this.boundingRect.width,
             height: this.boundingRect.height
         }
@@ -159,18 +212,40 @@ class Widget extends React.Component{
             height: this.boundingRect.height + 5
         }
 
+        const onWidgetNameChange = (value) => {
+
+            this.setState((prev) => ({
+                ...prev,
+                widgetName: value.length > 0 ? value : prev.widgetName
+            }))
+        }
+
         return (
             
-            <div data-id={this.__id} ref={this.elementRef} className="tw-relative tw-w-fit tw-h-fit" style={style}
+            <div data-id={this.__id} ref={this.elementRef} className="tw-relative tw-w-fit tw-h-fit" 
+                    style={style}
                 >
 
                 {this.renderContent()}
-                <div className="tw-absolute tw-bg-transparent tw-scale-[1.1] tw-opacity-35 
-                                tw-w-full tw-h-full tw-top-0 tw-border-2 tw-border-solid tw-border-black">
+                <div className={`tw-absolute tw-bg-transparent tw-scale-[1.1] tw-opacity-100 
+                                tw-w-full tw-h-full tw-top-0  
+                                ${this.state.selected ? 'tw-border-2 tw-border-solid tw-border-blue-500' : 'tw-border-none'}`}>
                     
-                    <div className="">
+                    <div className="tw-relative tw-w-full tw-h-full">
 
+                        {/* <div contentEditable="true" onClick={(e) => e.preventDefault()} className="tw-text-sm tw-w-fit tw-min-w-[100px] tw-absolute tw--top-2">
+                            {this._widgetName}
+                        </div> */}
+                        { this.state.selected &&
+                            <EditableDiv value={this.state.widgetName} onChange={onWidgetNameChange}
+                                        maxLength={40}
+                                        className="tw-text-sm tw-w-fit tw-max-w-[160px] tw-text-clip tw-min-w-[150px] 
+                                                    tw-overflow-hidden tw-absolute tw--top-4"
+                                />
+                        }
                     </div>
+
+                
 
                 </div>
             </div>
