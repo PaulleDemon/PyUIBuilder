@@ -119,37 +119,32 @@ class Widget extends React.Component{
     mousePress(event){
         // event.preventDefault()
         if (!this._disableSelection){
-            this.setState((prev) => ({
-                ...prev,
-                selected: false
-            }))
 
-            const widgetSelected = new CustomEvent("selection:created", {
-                detail: {
-                    event,
-                    id: this.__id,
-                    element: this
-                },
-                // bubbles: true // Allow the event to bubble up the DOM tree
-            })
-            // document.dispatchEvent(widgetSelected)
-            // console.log("dispatched", this.canvas)
-            this.canvas.dispatchEvent(widgetSelected)
+            // const widgetSelected = new CustomEvent("selection:created", {
+            //     detail: {
+            //         event,
+            //         id: this.__id,
+            //         element: this
+            //     },
+            //     // bubbles: true // Allow the event to bubble up the DOM tree
+            // })
+            // this.canvas.dispatchEvent(widgetSelected)
         }
     }
 
     select(){
-        this.setState((prev) => ({
-            ...prev,
+        this.setState({
             selected: true
-        }))
+        })
+        console.log("selected")
     }
 
     deSelect(){
-        this.setState((prev) => ({
-            ...prev,
+        this.setState({
             selected: false
-        }))
+        })
+        console.log("DeSelected")
+
     }
 
     isSelected(){
@@ -240,7 +235,7 @@ class Widget extends React.Component{
                             <EditableDiv value={this.state.widgetName} onChange={onWidgetNameChange}
                                         maxLength={40}
                                         className="tw-text-sm tw-w-fit tw-max-w-[160px] tw-text-clip tw-min-w-[150px] 
-                                                    tw-overflow-hidden tw-absolute tw--top-4"
+                                                    tw-overflow-hidden tw-absolute tw--top-4 tw-h-6"
                                 />
                         }
                     </div>

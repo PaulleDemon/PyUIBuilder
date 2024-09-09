@@ -13,9 +13,19 @@ function EditableDiv({value, onChange, maxLength=Infinity, className='', inputCl
     }, [value])
 
     const handleInput = (event) => {
-        console.log("value: ", event.target.value)
+
+        console.log("Event key: ", event.key)
         onChange(event.target.value)
 
+        // if (event.key === "")
+    }
+
+    const handleEnterKey = (event) => {
+        console.log("Event key: ", event.key)
+
+        if (event.key === "Enter"){
+            setIsEditable(false)
+        }
     }
 
     const handleDoubleClick = () => {
@@ -38,6 +48,7 @@ function EditableDiv({value, onChange, maxLength=Infinity, className='', inputCl
                     onInput={handleInput}
                     maxLength={maxLength}
                     ref={inputRef}
+                    onKeyDown={handleEnterKey}
                     className={`${!isEditable && "tw-hidden"} 
                                     tw-outline-none tw-bg-transparent 
                                     tw-border-none tw-p-1

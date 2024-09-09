@@ -96,10 +96,10 @@ class Canvas extends React.Component {
         this.canvasContainerRef.current.addEventListener("mousemove", this.mouseMoveEvent)
 
 
-        this.canvasRef.current.addEventListener("selection:created", () => {
-            console.log("selected")
-            this.currentMode = this.modes.DEFAULT
-        })
+        // this.canvasRef.current.addEventListener("selection:created", () => {
+        //     console.log("selected")
+        //     this.currentMode = this.modes.DEFAULT
+        // })
 
         this.canvasContainerRef.current.addEventListener('wheel', (event) => {
             this.wheelZoom(event)
