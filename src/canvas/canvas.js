@@ -8,6 +8,13 @@ import Cursor from "./constants/cursor"
 import { UID } from "../utils/uid"
 
 
+const CanvasModes = {
+    DEFAULT: 0,
+    PAN: 1,
+    MOVE_WIDGET: 2 // when the mode is move widget
+}
+
+
 class Canvas extends React.Component {
 
     constructor(props) {
@@ -16,15 +23,13 @@ class Canvas extends React.Component {
         this.canvasRef = React.createRef()  
         this.canvasContainerRef = React.createRef()
 
-        this.widgetRefs = {}
+        this.widgetRefs = {} // stores the actual refs to the widgets inside the canvas
 
-        this.modes = {
-            DEFAULT: 0,
-            PAN: 1,
-            MOVE_WIDGET: 2 // when the mode is move widget
-        }
-        this.currentMode = this.modes.DEFAULT
-        
+    
+        this.currentMode = CanvasModes.DEFAULT
+
+        this.minCanvasSize = {width: 500, height: 500}
+
         this.mousePressed = false
         this.mousePos = {
             x: 0,
@@ -36,6 +41,7 @@ class Canvas extends React.Component {
             zoom: 1,
             isPanning: false,
             currentTranslate: { x: 0, y: 0 },
+            canvasSize:  { width: 500, height: 500 },
         }
 
         this.selectedWidgets = []
@@ -50,6 +56,14 @@ class Canvas extends React.Component {
         this.getWidgets = this.getWidgets.bind(this)
         this.getActiveObjects = this.getActiveObjects.bind(this)
         this.getWidgetFromTarget = this.getWidgetFromTarget.bind(this)
+
+        this.getCanvasObjectsBoundingBox = this.getCanvasObjectsBoundingBox.bind(this)
+        this.fitCanvasToBoundingBox = this.fitCanvasToBoundingBox.bind(this)
+
+        this.updateWidgetPosition = this.updateWidgetPosition.bind(this)
+
+        this.checkAndExpandCanvas = this.checkAndExpandCanvas.bind(this)
+        this.expandCanvas = this.expandCanvas.bind(this)
 
         this.clearSelections = this.clearSelections.bind(this)
         this.clearCanvas = this.clearCanvas.bind(this)
@@ -98,7 +112,7 @@ class Canvas extends React.Component {
 
         // this.canvasRef.current.addEventListener("selection:created", () => {
         //     console.log("selected")
-        //     this.currentMode = this.modes.DEFAULT
+        //     this.currentMode = Modes.DEFAULT
         // })
 
         this.canvasContainerRef.current.addEventListener('wheel', (event) => {
@@ -139,17 +153,17 @@ class Canvas extends React.Component {
             if (!selectedWidget._disableSelection){
                 selectedWidget.select()
                 this.selectedWidgets.push(selectedWidget)
-                this.currentMode = this.modes.MOVE_WIDGET
+                this.currentMode = CanvasModes.MOVE_WIDGET
             }
 
-            this.currentMode = this.modes.PAN
+            this.currentMode = CanvasModes.PAN
 
             
 
         }else if (this.state?.widgets?.length > 0){
-
+            // get the canvas ready to pan, if there are widgets on the canvas
             this.clearSelections()
-            this.currentMode = this.modes.PAN
+            this.currentMode = CanvasModes.PAN
             this.setCursor(Cursor.GRAB)
 
         }
@@ -158,18 +172,20 @@ class Canvas extends React.Component {
 
     mouseMoveEvent(event){
         // console.log("mode: ", this.currentMode, this.getActiveObjects())
-        if (this.mousePressed && [this.modes.PAN, this.modes.MOVE_WIDGET].includes(this.currentMode)) {
+        if (this.mousePressed && [CanvasModes.PAN, CanvasModes.MOVE_WIDGET].includes(this.currentMode)) {
             const deltaX = event.clientX - this.mousePos.x
             const deltaY = event.clientY - this.mousePos.y
             
 
             if (this.selectedWidgets.length === 0){
+                // if there aren't any selected widgets, then pan the canvas
                 this.setState(prevState => ({
                     currentTranslate: {
                         x: prevState.currentTranslate.x + deltaX,
                         y: prevState.currentTranslate.y + deltaY,
                     }
                 }), this.applyTransform)
+
             }else{
                 // update the widgets position
                 this.selectedWidgets.forEach(widget => {
@@ -179,7 +195,10 @@ class Canvas extends React.Component {
                     const newPosY = y + (deltaY/this.state.zoom) // account for the zoom, since the widget is relative to canvas
 
                     widget.setPos(newPosX, newPosY)
+                    this.checkAndExpandCanvas(newPosX, newPosY,  widget.getSize().width,  widget.getSize().height)
                 })
+                // this.fitCanvasToBoundingBox(10)
+                
             }
 
 
@@ -191,8 +210,10 @@ class Canvas extends React.Component {
 
     mouseUpEvent(event){
         this.mousePressed = false
-        this.currentMode = this.modes.DEFAULT
+        this.currentMode = CanvasModes.DEFAULT
         this.setCursor(Cursor.DEFAULT)
+
+
     }
 
     wheelZoom(event){
@@ -201,12 +222,141 @@ class Canvas extends React.Component {
         this.setZoom(zoom, {x: event.offsetX, y: event.offsetY})
     }
 
+    checkAndExpandCanvas(widgetX, widgetY, widgetWidth, widgetHeight) {
+        const canvasWidth = this.canvasRef.current.offsetWidth
+        const canvasHeight = this.canvasRef.current.offsetHeight
+        
+        const canvasRect = this.canvasRef.current.getBoundingClientRect()
+
+        // Get the zoom level
+        const zoom = this.state.zoom
+    
+        // Calculate effective canvas boundaries considering zoom
+        const effectiveCanvasRight = canvasWidth
+        const effectiveCanvasBottom = canvasHeight
+    
+        // Calculate widget boundaries
+        const widgetRight = widgetX + widgetWidth
+        const widgetBottom = widgetY + widgetHeight
+    
+        // Determine if expansion is needed
+        const expandRight = widgetRight > effectiveCanvasRight
+        const expandDown = widgetBottom > effectiveCanvasBottom
+        const expandLeft = widgetX < canvasRect.left * this.state.zoom
+        const expandUp = widgetY < canvasRect.top
+    
+        if (expandRight || expandLeft || expandDown || expandUp) {
+            this.expandCanvas(expandRight, expandLeft, expandDown, expandUp, widgetX, widgetY, widgetWidth, widgetHeight)
+        }
+    }
+    
+    // Expand the canvas method
+    /**
+     * 
+     * @param {boolean} expandRight 
+     * @param {boolean} expandLeft 
+     * @param {boolean} expandDown 
+     * @param {boolean} expandUp 
+     * @param {number} widgetX 
+     * @param {number} widgetY 
+     * @param {number} widgetRight 
+     * @param {number} widgetBottom 
+     */
+    expandCanvas(expandRight, expandLeft, expandDown, expandUp, widgetX, widgetY, widgetWidth, widgetHeight) {
+        const currentWidth = this.canvasRef.current.offsetWidth
+        const currentHeight = this.canvasRef.current.offsetHeight
+
+        console.log("current: ", expandRight, expandDown, expandLeft, expandUp)
+
+        let newWidth = currentWidth
+        let newHeight = currentHeight
+        let newTranslateX = this.state.currentTranslate.x
+        let newTranslateY = this.state.currentTranslate.y
+
+        if (expandRight) {
+            // const requiredWidth = widgetRight - newTranslateX // Add padding
+            // newWidth = Math.max(requiredWidth, currentWidth)
+            newWidth = currentWidth + 50
+        }
+
+        if (expandLeft) {
+            // const leftOffset = widgetX + newTranslateX // Position of the widget relative to the left edge
+            // const requiredLeftExpansion = -leftOffset + 50 // Add padding
+            newWidth = currentWidth + widgetWidth
+            newTranslateX -= widgetWidth // Adjust translation to move the canvas to the left
+        }
+
+        if (expandDown) {
+            newHeight = currentHeight + 50
+
+            // const requiredHeight = widgetBottom - newTranslateY // Add padding
+            // newHeight = Math.max(requiredHeight, currentHeight)
+        }
+
+        if (expandUp) {
+            newHeight = currentHeight + widgetHeight
+            newTranslateY -= widgetHeight
+            // const topOffset = widgetY + newTranslateY // Position of the widget relative to the top edge
+            // const requiredTopExpansion = -topOffset + 50 // Add padding
+            // newHeight = currentHeight + requiredTopExpansion
+            // newTranslateY -= requiredTopExpansion // Adjust translation to move the canvas upwards
+        }
+
+        // Apply new dimensions and translation
+        this.canvasRef.current.style.width = `${newWidth}px`
+        this.canvasRef.current.style.height = `${newHeight}px`
+
+        console.log("translate: ", this.canvasRef.current.offsetWidth, )
+        // Now, to keep the widget in the same relative position:
+        const updatedWidgetX = widgetX - newTranslateX / this.state.zoom;
+        const updatedWidgetY = widgetY - newTranslateY / this.state.zoom;
+
+        this.setState({
+            currentTranslate: {
+                x: newTranslateX,
+                y: newTranslateY
+            }
+        }, () =>  {
+            this.applyTransform()
+            this.updateWidgetPosition(updatedWidgetX, updatedWidgetY, widgetWidth, widgetHeight)
+        })
+
+    }
+
+    // TODO: FIX this, to ensure that the widget position remains the same
+    // Function to update the widget's position based on new updated canvas coordinates, use it after expandCanvas
+    updateWidgetPosition(widgetX, widgetY, widgetWidth, widgetHeight) {
+        const widgetElement = this.selectedWidgets[0].current; // Assuming the widget is referenced via `widgetRef`
+
+        console.log("widget element: ", this.selectedWidgets[0].current)
+        widgetElement.style.left = `${widgetX}px`;
+        widgetElement.style.top = `${widgetY}px`;
+        widgetElement.style.width = `${widgetWidth}px`;
+        widgetElement.style.height = `${widgetHeight}px`;
+    }
+
+
     /**
      * fits the canvas size to fit the widgets bounding box
      */
-    fitCanvasToBoundingBox(){
-        // this.canvasRef.current.style.width = this.canvasContainerRef.current.clientWidth
-        // this.canvasRef.current.style.height = this.canvasContainerRef.current.clientHeight
+    fitCanvasToBoundingBox(padding=0){
+        const { top, left, right, bottom } = this.getCanvasObjectsBoundingBox()
+
+        const width = right - left
+        const height = bottom - top
+
+        const newWidth = Math.max(width + padding, this.minCanvasSize.width)
+        const newHeight = Math.max(height + padding, this.minCanvasSize.height)
+
+        const canvasStyle = this.canvasRef.current.style
+
+        // Adjust the canvas dimensions
+        canvasStyle.width = `${newWidth}px`
+        canvasStyle.height = `${newHeight}px`
+
+        // Adjust the canvas position if needed
+        canvasStyle.left = `${left - padding}px`
+        canvasStyle.top = `${top - padding}px`
     }
 
     setCursor(cursor){
@@ -233,40 +383,6 @@ class Canvas extends React.Component {
         }, this.applyTransform)
 
     }
-
-    getCanvasObjectsBoundingBox(padding = 0) {
-        const objects = this.fabricCanvas.getObjects()
-        if (objects.length === 0) {
-            return { left: 0, top: 0, width: this.fabricCanvas.width, height: this.fabricCanvas.height }
-        }
-    
-        const boundingBox = objects.reduce((acc, obj) => {
-            const objBoundingBox = obj.getBoundingRect(true)
-            acc.left = Math.min(acc.left, objBoundingBox.left)
-            acc.top = Math.min(acc.top, objBoundingBox.top)
-            acc.right = Math.max(acc.right, objBoundingBox.left + objBoundingBox.width)
-            acc.bottom = Math.max(acc.bottom, objBoundingBox.top + objBoundingBox.height)
-            return acc
-        }, {
-            left: Infinity,
-            top: Infinity,
-            right: -Infinity,
-            bottom: -Infinity
-        })
-    
-        // Adding padding
-        boundingBox.left -= padding
-        boundingBox.top -= padding
-        boundingBox.right += padding
-        boundingBox.bottom += padding
-        
-        return {
-            left: boundingBox.left,
-            top: boundingBox.top,
-            width: boundingBox.right - boundingBox.left,
-            height: boundingBox.bottom - boundingBox.top
-        }
-    }
     
     resetTransforms() {
         this.setState({
@@ -280,6 +396,30 @@ class Canvas extends React.Component {
             widget.current?.deSelect()
         })
         this.selectedWidgets = []
+    }
+
+    /**
+     * returns tha combined bounding rect of all the widgets on the canvas
+     * 
+     */
+    getCanvasObjectsBoundingBox(){
+
+        // Initialize coordinates to opposite extremes
+        let top = Number.POSITIVE_INFINITY
+        let left = Number.POSITIVE_INFINITY
+        let right = Number.NEGATIVE_INFINITY
+        let bottom = Number.NEGATIVE_INFINITY
+
+        for (let widget of Object.values(this.widgetRefs)) {
+            const rect = widget.current.getBoundingRect()
+            // Update the top, left, right, and bottom coordinates
+            if (rect.top < top) top = rect.top
+            if (rect.left < left) left = rect.left
+            if (rect.right > right) right = rect.right
+            if (rect.bottom > bottom) bottom = rect.bottom
+        }
+          
+        return { top, left, right, bottom }
     }
 
     /**
@@ -321,10 +461,9 @@ class Canvas extends React.Component {
         this.widgetRefs[widgetId]?.current.remove()
         delete this.widgetRefs[widgetId]
 
-        // TODO: remove from widgets
-        // this.setState(() => ({
-        //     widgets: []
-        // }))
+        this.setState((prevState) => ({
+            widgets: prevState.widgets.filter(widget => widget.id !== widgetId)
+        }))
     }
 
     renderWidget(widget){
@@ -346,7 +485,7 @@ class Canvas extends React.Component {
                     </Tooltip>
                 </div>
 
-                <div className="tw-w-full tw-relative tw-h-full tw-bg-red-300 tw-overflow-hidden" 
+                <div className="tw-w-full tw-relative tw-h-full tw-overflow-hidden" 
                         ref={this.canvasContainerRef}
                         style={{transition: " transform 0.3s ease-in-out"}}
                         >
