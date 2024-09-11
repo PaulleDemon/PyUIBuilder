@@ -1,8 +1,11 @@
 import React from "react"
-import * as fabric from 'fabric'
+
+import {DndContext} from '@dnd-kit/core'
+
 import { FullscreenOutlined, ReloadOutlined } from "@ant-design/icons"
 import { Button, Tooltip } from "antd"
 
+import Droppable from "../components/utils/droppable"
 import Widget from "./widgets/base"
 import Cursor from "./constants/cursor"
 import { UID } from "../utils/uid"
@@ -60,10 +63,6 @@ class Canvas extends React.Component {
         this.getCanvasObjectsBoundingBox = this.getCanvasObjectsBoundingBox.bind(this)
         this.fitCanvasToBoundingBox = this.fitCanvasToBoundingBox.bind(this)
 
-        this.updateWidgetPosition = this.updateWidgetPosition.bind(this)
-
-        this.checkAndExpandCanvas = this.checkAndExpandCanvas.bind(this)
-        this.expandCanvas = this.expandCanvas.bind(this)
 
         this.clearSelections = this.clearSelections.bind(this)
         this.clearCanvas = this.clearCanvas.bind(this)
@@ -195,7 +194,7 @@ class Canvas extends React.Component {
                     const newPosY = y + (deltaY/this.state.zoom) // account for the zoom, since the widget is relative to canvas
 
                     widget.setPos(newPosX, newPosY)
-                    this.checkAndExpandCanvas(newPosX, newPosY,  widget.getSize().width,  widget.getSize().height)
+                    // this.checkAndExpandCanvas(newPosX, newPosY,  widget)
                 })
                 // this.fitCanvasToBoundingBox(10)
                 
@@ -219,122 +218,9 @@ class Canvas extends React.Component {
     wheelZoom(event){
         let delta = event.deltaY
         let zoom = this.state.zoom * 0.999 ** delta
+        
         this.setZoom(zoom, {x: event.offsetX, y: event.offsetY})
     }
-
-    checkAndExpandCanvas(widgetX, widgetY, widgetWidth, widgetHeight) {
-        const canvasWidth = this.canvasRef.current.offsetWidth
-        const canvasHeight = this.canvasRef.current.offsetHeight
-        
-        const canvasRect = this.canvasRef.current.getBoundingClientRect()
-
-        // Get the zoom level
-        const zoom = this.state.zoom
-    
-        // Calculate effective canvas boundaries considering zoom
-        const effectiveCanvasRight = canvasWidth
-        const effectiveCanvasBottom = canvasHeight
-    
-        // Calculate widget boundaries
-        const widgetRight = widgetX + widgetWidth
-        const widgetBottom = widgetY + widgetHeight
-    
-        // Determine if expansion is needed
-        const expandRight = widgetRight > effectiveCanvasRight
-        const expandDown = widgetBottom > effectiveCanvasBottom
-        const expandLeft = widgetX < canvasRect.left * this.state.zoom
-        const expandUp = widgetY < canvasRect.top
-    
-        if (expandRight || expandLeft || expandDown || expandUp) {
-            this.expandCanvas(expandRight, expandLeft, expandDown, expandUp, widgetX, widgetY, widgetWidth, widgetHeight)
-        }
-    }
-    
-    // Expand the canvas method
-    /**
-     * 
-     * @param {boolean} expandRight 
-     * @param {boolean} expandLeft 
-     * @param {boolean} expandDown 
-     * @param {boolean} expandUp 
-     * @param {number} widgetX 
-     * @param {number} widgetY 
-     * @param {number} widgetRight 
-     * @param {number} widgetBottom 
-     */
-    expandCanvas(expandRight, expandLeft, expandDown, expandUp, widgetX, widgetY, widgetWidth, widgetHeight) {
-        const currentWidth = this.canvasRef.current.offsetWidth
-        const currentHeight = this.canvasRef.current.offsetHeight
-
-        console.log("current: ", expandRight, expandDown, expandLeft, expandUp)
-
-        let newWidth = currentWidth
-        let newHeight = currentHeight
-        let newTranslateX = this.state.currentTranslate.x
-        let newTranslateY = this.state.currentTranslate.y
-
-        if (expandRight) {
-            // const requiredWidth = widgetRight - newTranslateX // Add padding
-            // newWidth = Math.max(requiredWidth, currentWidth)
-            newWidth = currentWidth + 50
-        }
-
-        if (expandLeft) {
-            // const leftOffset = widgetX + newTranslateX // Position of the widget relative to the left edge
-            // const requiredLeftExpansion = -leftOffset + 50 // Add padding
-            newWidth = currentWidth + widgetWidth
-            newTranslateX -= widgetWidth // Adjust translation to move the canvas to the left
-        }
-
-        if (expandDown) {
-            newHeight = currentHeight + 50
-
-            // const requiredHeight = widgetBottom - newTranslateY // Add padding
-            // newHeight = Math.max(requiredHeight, currentHeight)
-        }
-
-        if (expandUp) {
-            newHeight = currentHeight + widgetHeight
-            newTranslateY -= widgetHeight
-            // const topOffset = widgetY + newTranslateY // Position of the widget relative to the top edge
-            // const requiredTopExpansion = -topOffset + 50 // Add padding
-            // newHeight = currentHeight + requiredTopExpansion
-            // newTranslateY -= requiredTopExpansion // Adjust translation to move the canvas upwards
-        }
-
-        // Apply new dimensions and translation
-        this.canvasRef.current.style.width = `${newWidth}px`
-        this.canvasRef.current.style.height = `${newHeight}px`
-
-        console.log("translate: ", this.canvasRef.current.offsetWidth, )
-        // Now, to keep the widget in the same relative position:
-        const updatedWidgetX = widgetX - newTranslateX / this.state.zoom;
-        const updatedWidgetY = widgetY - newTranslateY / this.state.zoom;
-
-        this.setState({
-            currentTranslate: {
-                x: newTranslateX,
-                y: newTranslateY
-            }
-        }, () =>  {
-            this.applyTransform()
-            this.updateWidgetPosition(updatedWidgetX, updatedWidgetY, widgetWidth, widgetHeight)
-        })
-
-    }
-
-    // TODO: FIX this, to ensure that the widget position remains the same
-    // Function to update the widget's position based on new updated canvas coordinates, use it after expandCanvas
-    updateWidgetPosition(widgetX, widgetY, widgetWidth, widgetHeight) {
-        const widgetElement = this.selectedWidgets[0].current; // Assuming the widget is referenced via `widgetRef`
-
-        console.log("widget element: ", this.selectedWidgets[0].current)
-        widgetElement.style.left = `${widgetX}px`;
-        widgetElement.style.top = `${widgetY}px`;
-        widgetElement.style.width = `${widgetWidth}px`;
-        widgetElement.style.height = `${widgetHeight}px`;
-    }
-
 
     /**
      * fits the canvas size to fit the widgets bounding box
@@ -381,6 +267,9 @@ class Canvas extends React.Component {
                 y: newTranslateY
             }
         }, this.applyTransform)
+
+        // this.canvasRef.current.style.width = `${100/zoom}%`
+        // this.canvasRef.current.style.height = `${100/zoom}%`
 
     }
     
@@ -485,19 +374,24 @@ class Canvas extends React.Component {
                     </Tooltip>
                 </div>
 
-                <div className="tw-w-full tw-relative tw-h-full tw-overflow-hidden" 
-                        ref={this.canvasContainerRef}
-                        style={{transition: " transform 0.3s ease-in-out"}}
-                        >
-                    <div data-canvas className="tw-w-full tw-absolute tw-top-0 tw-h-full tw-bg-green-300" 
-                            ref={this.canvasRef}>
-                        <div className="tw-relative tw-w-full tw-h-full">
-                            {
-                                this.state.widgets.map(this.renderWidget)
-                            }
+                    <Droppable id="canvas-droppable" className="tw-w-full tw-h-full">
+                        {/* Canvas container */}
+                        <div className="tw-w-full tw-h-full tw-flex tw-relative tw-bg-black tw-overflow-hidden" 
+                                ref={this.canvasContainerRef}
+                                style={{transition: " transform 0.3s ease-in-out"}}
+                                >
+                            {/* Canvas */}
+                            <div data-canvas className="tw-w-full tw-h-full tw-absolute tw-top-0 tw-select-none
+                                                        t tw-bg-green-300 tw-overflow-hidden" 
+                                    ref={this.canvasRef}>
+                                <div className="tw-relative tw-w-full tw-h-full">
+                                    {
+                                        this.state.widgets.map(this.renderWidget)
+                                    }
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>       
+                    </Droppable>
             </div>
         )
     }

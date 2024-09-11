@@ -8,7 +8,13 @@ import ButtonWidget from "../assets/widgets/button.png"
 
 import { filterObjectListStartingWith } from "../utils/filter"
 
-function WidgetsContainer(){
+
+/**
+ * 
+ * @param {function} onWidgetsUpdate - this is a callback that will be called once the sidebar is populated with widgets
+ * @returns 
+ */
+function WidgetsContainer({onWidgetsUpdate}){
 
     const widgets = useMemo(() => {
         return [
@@ -42,7 +48,13 @@ function WidgetsContainer(){
 
         setWidgetData(widgets)
 
+        if (onWidgetsUpdate){
+            onWidgetsUpdate(widgets)
+        }
+
     }, [widgets])
+
+    
 
     useEffect(() => {
 
@@ -78,14 +90,15 @@ function WidgetsContainer(){
                 </div>
             </div>
             <div className="tw-flex tw-flex-col tw-gap-2 tw-h-full tw-p-1">
+                
                 {
                     widgetData.map((widget, index) => {
                         return (    
                             <DraggableWidgetCard key={widget.name} 
-                                                  name={widget.name}
-                                                  img={widget.img}
-                                                  url={widget.link}
-                                                  />
+                                                name={widget.name}
+                                                img={widget.img}
+                                                url={widget.link}
+                                                />
                                 
                         )
                     })

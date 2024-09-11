@@ -6,7 +6,7 @@ import { FileImageOutlined, GithubOutlined, GitlabOutlined, LinkOutlined,
             FileTextOutlined} from "@ant-design/icons"
 
 
-export function DraggableWidgetCard({name, img, url}){
+export function DraggableWidgetCard({ name, img, url}){
 
     const urlIcon = useMemo(() => {
         if (url){
@@ -28,8 +28,8 @@ export function DraggableWidgetCard({name, img, url}){
 
 
     return (
-        <Draggable className="tw-cursor-pointer">
-            <div className="tw-w-full tw-h-[240px] tw-flex tw-flex-col tw-rounded-md tw-overflow-hidden 
+        <Draggable className="tw-cursor-pointer" id={name}>
+            <div className="tw-w-full tw-select-none tw-h-[240px] tw-flex tw-flex-col tw-rounded-md tw-overflow-hidden 
                             tw-gap-2 tw-text-gray-600 tw-bg-[#ffffff44] tw-border-solid tw-border-[1px] tw-border-[#888] ">
                 <div className="tw-h-[200px] tw-w-full tw-overflow-hidden">
                     <img src={img} alt={name} className="tw-object-contain tw-h-full tw-w-full tw-select-none" />
