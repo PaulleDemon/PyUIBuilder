@@ -3,7 +3,7 @@ import React from "react"
 import {DndContext} from '@dnd-kit/core'
 
 import { CloseOutlined, FullscreenOutlined, ReloadOutlined } from "@ant-design/icons"
-import { Button, Tooltip } from "antd"
+import { Button, Tooltip, Dropdown } from "antd"
 
 import Droppable from "../components/utils/droppable"
 import Widget from "./widgets/base"
@@ -41,12 +41,15 @@ class Canvas extends React.Component {
             y: 0
         }
 
+        // this._contextMenuItems = []
+
         this.state = {
             widgets: [], //  don't store the refs directly here, instead store it in widgetRef, store the widget type here
             zoom: 1,
             isPanning: false,
             currentTranslate: { x: 0, y: 0 },
             canvasSize:  { width: 500, height: 500 },
+            contextMenuItems: []
         }
 
         this.selectedWidgets = []
@@ -146,28 +149,56 @@ class Canvas extends React.Component {
 
 
     mouseDownEvent(event){
-        this.mousePressed = true
+
         this.mousePos = { x: event.clientX, y: event.clientY }
-
+        
         let selectedWidget = this.getWidgetFromTarget(event.target)
-        if (selectedWidget){
-            // if the widget is selected don't pan, instead move the widget
+        if (event.button === 0){
+            this.mousePressed = true
+        
+            if (selectedWidget){
+                // if the widget is selected don't pan, instead move the widget
+                if (!selectedWidget._disableSelection){
+                    selectedWidget.select()
 
-            if (!selectedWidget._disableSelection){
-                selectedWidget.select()
-                this.selectedWidgets.push(selectedWidget)
-                this.currentMode = CanvasModes.MOVE_WIDGET
+                    if (this.selectedWidgets.length >= 1){ // allow only one selection for now
+                        this.clearSelections()
+                    }
+
+                    this.selectedWidgets.push(selectedWidget)
+                    this.currentMode = CanvasModes.MOVE_WIDGET
+                }
+
+                this.currentMode = CanvasModes.PAN
+
+            }else if (this.state?.widgets?.length > 0){
+                // get the canvas ready to pan, if there are widgets on the canvas
+                this.clearSelections()
+                this.currentMode = CanvasModes.PAN
+                this.setCursor(Cursor.GRAB)
+
             }
 
-            this.currentMode = CanvasModes.PAN
+            this.setState({
+                contextMenuItems: []
+            })
+            // this.setState({
+            //     showContextMenu: false
+            // })
+        }else if (event.button === 2){
+            //right click
+            if (selectedWidget)
+                this.setState({
+                    contextMenuItems: [{
+                        key: "delete",
+                        label: "Delete"
+                    }]
+                })
 
-            
-
-        }else if (this.state?.widgets?.length > 0){
-            // get the canvas ready to pan, if there are widgets on the canvas
-            this.clearSelections()
-            this.currentMode = CanvasModes.PAN
-            this.setCursor(Cursor.GRAB)
+            // this.setState({
+            //     showContextMenu: true
+            // })
+            console.log("button: ", selectedWidget)
 
         }
 
@@ -201,7 +232,6 @@ class Canvas extends React.Component {
                     // this.checkAndExpandCanvas(newPosX, newPosY,  widget)
                 })
                 // this.fitCanvasToBoundingBox(10)
-                
             }
 
 
@@ -215,8 +245,6 @@ class Canvas extends React.Component {
         this.mousePressed = false
         this.currentMode = CanvasModes.DEFAULT
         this.setCursor(Cursor.DEFAULT)
-
-
     }
 
     wheelZoom(event){
@@ -426,22 +454,23 @@ class Canvas extends React.Component {
                 </div>
 
                     <Droppable id="canvas-droppable" className="tw-w-full tw-h-full">
-                        {/* Canvas container */}
-                        <div className="tw-w-full tw-h-full tw-flex tw-relative tw-bg-black tw-overflow-hidden" 
-                                ref={this.canvasContainerRef}
-                                style={{transition: " transform 0.3s ease-in-out"}}
-                                >
-                            {/* Canvas */}
-                            <div data-canvas className="tw-w-full tw-h-full tw-absolute tw-top-0 tw-select-none
-                                                        t tw-bg-green-300" 
-                                    ref={this.canvasRef}>
-                                <div className="tw-relative tw-w-full tw-h-full">
-                                    {
-                                        this.state.widgets.map(this.renderWidget)
-                                    }
+                        <Dropdown trigger={['contextMenu']} menu={{items: this.state.contextMenuItems, }}>
+                                <div className="tw-w-full tw-h-full tw-flex tw-relative tw-bg-black tw-overflow-hidden" 
+                                        ref={this.canvasContainerRef}
+                                        style={{transition: " transform 0.3s ease-in-out"}}
+                                        >
+                                    {/* Canvas */}
+                                    <div data-canvas className="tw-w-full tw-h-full tw-absolute tw-top-0 tw-select-none
+                                                                t tw-bg-green-300" 
+                                            ref={this.canvasRef}>
+                                        <div className="tw-relative tw-w-full tw-h-full">
+                                            {
+                                                this.state.widgets.map(this.renderWidget)
+                                            }
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
+                        </Dropdown>
                     </Droppable>
             </div>
         )

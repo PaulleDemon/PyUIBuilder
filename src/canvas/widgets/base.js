@@ -104,14 +104,6 @@ class Widget extends React.Component{
 
     }   
 
-
-    setComponentAdded(added=true){
-
-
-        // this.elementRef = document.querySelector(`[data-id="${this.__id}"]`)
-
-    }
-
     componentDidMount(){
         console.log("mounted: ")
         this.elementRef.current?.addEventListener("click", this.mousePress)
@@ -129,7 +121,7 @@ class Widget extends React.Component{
 
     // TODO: add context menu items such as delete, add etc
     contextMenu(){
-
+        
     }
 
     getVariableName(){
@@ -187,7 +179,21 @@ class Widget extends React.Component{
             pos: {x: x, y: y}
         })
 
-        console.log("POs: ", x, y)
+        // console.log("POs: ", x, y)
+    }
+
+    setParent(parentId){
+        this._parent = parentId
+    }
+
+    addChild(childId){
+        this._children.push(childId)
+    }
+
+    removeChild(childId){
+        this._children = this._children.filter(function(item) {
+                                        return item !== childId
+                                    })
     }
 
     getPos(){

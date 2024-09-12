@@ -77,6 +77,7 @@ function App() {
 		}
 		setDropAnimation(null)
 
+		// FIXME: drop offset is not correct
 		// Calculate the dragged item's bounding rectangle
 		// const itemRect = activeItemElement.getBoundingClientRect();
 		// const itemCenterX = itemRect.left + itemRect.width / 2
