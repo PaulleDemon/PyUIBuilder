@@ -6,7 +6,7 @@ function Droppable(props) {
     id: props.id,
   })
   const style = {
-    color: isOver ? 'green' : undefined,
+    backgroundColor: isOver ? 'green' : '',
   }
   
   

@@ -20,7 +20,7 @@ class Widget extends React.Component{
         super(props)
 
         const {id, widgetName, canvasRef} = props
-        console.log("Id: ", id)
+        // console.log("Id: ", id)
         // this id has to be unique inside the canvas, it will be set automatically and should never be changed
         this.__id = id
         this._zIndex = 0
@@ -30,6 +30,9 @@ class Widget extends React.Component{
         // this._selected = false
         this._disableResize = false
         this._disableSelection = false
+
+        this._parent = "" // id of the parent widget, default empty string
+        this._children = [] // id's of all the child widgets
 
         this.minSize = {width: 50, height: 50} // disable resizing below this number
         this.maxSize = {width: 500, height: 500} // disable resizing above this number
@@ -133,6 +136,13 @@ class Widget extends React.Component{
         return toSnakeCase(this.state.widgetName)
     }
 
+    /**
+     * removes the element/widget
+     */
+    remove(){
+        this.elementRef.current.remove()
+    }
+
     mousePress(event){
         // event.preventDefault()
         if (!this._disableSelection){
@@ -176,6 +186,8 @@ class Widget extends React.Component{
         this.setState({
             pos: {x: x, y: y}
         })
+
+        console.log("POs: ", x, y)
     }
 
     getPos(){
@@ -314,6 +326,7 @@ class Widget extends React.Component{
             left: `${this.state.pos.x}px`,  
             width: `${this.state.size.width}px`,
             height: `${this.state.size.height}px`,
+            position: "absolute" //  don't change this
         }
 
         let selectionStyle = {
@@ -333,7 +346,7 @@ class Widget extends React.Component{
 
         return (
             
-            <div data-id={this.__id} ref={this.elementRef} className="tw-relative tw-w-fit tw-h-fit" 
+            <div data-id={this.__id} ref={this.elementRef} className="tw-absolute tw-w-fit tw-h-fit" 
                     style={style}
                 >
 

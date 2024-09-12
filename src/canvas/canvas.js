@@ -2,7 +2,7 @@ import React from "react"
 
 import {DndContext} from '@dnd-kit/core'
 
-import { FullscreenOutlined, ReloadOutlined } from "@ant-design/icons"
+import { CloseOutlined, FullscreenOutlined, ReloadOutlined } from "@ant-design/icons"
 import { Button, Tooltip } from "antd"
 
 import Droppable from "../components/utils/droppable"
@@ -22,6 +22,8 @@ class Canvas extends React.Component {
 
     constructor(props) {
         super(props)
+
+        const { canvasWidgets, onWidgetListUpdated } = props
         
         this.canvasRef = React.createRef()  
         this.canvasContainerRef = React.createRef()
@@ -40,7 +42,7 @@ class Canvas extends React.Component {
         }
 
         this.state = {
-            widgets: [], //  don't store the widget directly here, instead store it in widgetRef, else the changes in the widget will re-render the whole canvas
+            widgets: [], //  don't store the refs directly here, instead store it in widgetRef, store the widget type here
             zoom: 1,
             isPanning: false,
             currentTranslate: { x: 0, y: 0 },
@@ -48,6 +50,8 @@ class Canvas extends React.Component {
         }
 
         this.selectedWidgets = []
+
+        this._onWidgetListUpdated = onWidgetListUpdated // a function callback when the widget is added to the canvas
 
         this.resetTransforms = this.resetTransforms.bind(this)
         this.renderWidget = this.renderWidget.bind(this)
@@ -62,7 +66,7 @@ class Canvas extends React.Component {
 
         this.getCanvasObjectsBoundingBox = this.getCanvasObjectsBoundingBox.bind(this)
         this.fitCanvasToBoundingBox = this.fitCanvasToBoundingBox.bind(this)
-
+        this.getCanvasBoundingRect = this.getCanvasContainerBoundingRect.bind(this)
 
         this.clearSelections = this.clearSelections.bind(this)
         this.clearCanvas = this.clearCanvas.bind(this)
@@ -222,6 +226,30 @@ class Canvas extends React.Component {
         this.setZoom(zoom, {x: event.offsetX, y: event.offsetY})
     }
 
+    getCanvasContainerBoundingRect(){
+        return this.canvasContainerRef.current.getBoundingClientRect()
+    }
+
+    getCanvasBoundingRect(){
+        return this.canvasRef.current.getBoundingClientRect()
+    }
+
+    getCanvasTranslation(){
+        return this.state.currentTranslate
+    }
+
+    /**
+     * Given a position relative to canvas container, 
+     * returns the position relative to the canvas
+     */
+    getRelativePositionToCanvas(x, y){
+
+        const canvasRect = this.canvasRef.current.getBoundingClientRect()
+        let zoom = this.state.zoom
+
+        return {x: (canvasRect.left - x ), y: (canvasRect.top - y)}
+    }
+
     /**
      * fits the canvas size to fit the widgets bounding box
      */
@@ -272,6 +300,10 @@ class Canvas extends React.Component {
         // this.canvasRef.current.style.height = `${100/zoom}%`
 
     }
+
+    getZoom(){
+        return this.state.zoom
+    }
     
     resetTransforms() {
         this.setState({
@@ -315,7 +347,7 @@ class Canvas extends React.Component {
      * 
      * @param {Widget} widgetComponentType - don't pass <Widget /> instead pass Widget object
      */
-    addWidget(widgetComponentType){
+    addWidget(widgetComponentType, callback){
         const widgetRef = React.createRef()
 
         const id = `${widgetComponentType.widgetType}_${UID()}`
@@ -323,10 +355,22 @@ class Canvas extends React.Component {
         // Store the ref in the instance variable
         this.widgetRefs[id] = widgetRef
         // console.log("widget ref: ", this.widgetRefs)
+
+        const widgets = [...this.state.widgets, { id, widgetType: widgetComponentType }] // don't add the widget refs in the state
         // Update the state to include the new widget's type and ID
-        this.setState((prevState) => ({
-            widgets: [...prevState.widgets, { id, type: widgetComponentType }]
-        }))
+        this.setState({
+            widgets: widgets
+        }, () => {
+            if (callback)
+                callback({id, widgetRef})
+
+            if (this._onWidgetListUpdated)
+                this._onWidgetListUpdated(widgets)
+        })
+
+        
+
+        return {id, widgetRef}
     }
 
     /**
@@ -335,14 +379,17 @@ class Canvas extends React.Component {
     clearCanvas(){
 
         for (let [key, value] of Object.entries(this.widgetRefs)){
-            console.log("removed: ", key, value)
+            console.log("removed: ", value, value.current?.getElement())
+
             value.current?.remove()
         }
 
         this.widgetRefs = {}
         this.setState(() => ({
             widgets: []
-        }))
+        }), () => {
+            
+        })
     }
 
     removeWidget(widgetId){
@@ -356,10 +403,11 @@ class Canvas extends React.Component {
     }
 
     renderWidget(widget){
-        const { id, type: ComponentType } = widget
+        const { id, widgetType: ComponentType } = widget
         // console.log("widet: ", this.widgetRefs, id)
     
-        return <ComponentType key={id} id={id} ref={this.widgetRefs[id]} canvasRef={this.canvasRef} />
+        return <ComponentType key={id} id={id} ref={this.widgetRefs[id]} 
+                                canvasRef={this.canvasRef} />
     }
 
     render() {
@@ -372,6 +420,9 @@ class Canvas extends React.Component {
                     <Tooltip title="Reset viewport">
                         <Button  icon={<ReloadOutlined />} onClick={this.resetTransforms} />
                     </Tooltip>
+                    <Tooltip title="Reset viewport">
+                        <Button  icon={<CloseOutlined />} onClick={this.clearCanvas} />
+                    </Tooltip>
                 </div>
 
                     <Droppable id="canvas-droppable" className="tw-w-full tw-h-full">
@@ -382,7 +433,7 @@ class Canvas extends React.Component {
                                 >
                             {/* Canvas */}
                             <div data-canvas className="tw-w-full tw-h-full tw-absolute tw-top-0 tw-select-none
-                                                        t tw-bg-green-300 tw-overflow-hidden" 
+                                                        t tw-bg-green-300" 
                                     ref={this.canvasRef}>
                                 <div className="tw-relative tw-w-full tw-h-full">
                                     {

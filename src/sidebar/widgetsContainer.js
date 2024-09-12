@@ -74,7 +74,7 @@ function WidgetsContainer({onWidgetsUpdate}){
     }
 
     return (
-        <div className="tw-w-full tw-p-2 tw-gap-4 tw-flex tw-flex-col">
+        <div className="tw-w-full tw-p-2 tw-gap-4 tw-flex tw-flex-col tw-overflow-x-hidden">
 
             <div className="tw-flex tw-gap-2 input tw-place-items-center">
                 <SearchOutlined />
