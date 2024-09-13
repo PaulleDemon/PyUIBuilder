@@ -251,7 +251,6 @@ class Canvas extends React.Component {
 
                     const newPosX = x + (deltaX/this.state.zoom) // account for the zoom, since the widget is relative to canvas
                     const newPosY = y + (deltaY/this.state.zoom) // account for the zoom, since the widget is relative to canvas
-
                     widget.setPos(newPosX, newPosY)
                     // this.checkAndExpandCanvas(newPosX, newPosY,  widget)
                 })
@@ -497,7 +496,7 @@ class Canvas extends React.Component {
         // console.log("widet: ", this.widgetRefs, id)
     
         return <ComponentType key={id} id={id} ref={this.widgetRefs[id]} 
-                                canvasRef={this.canvasRef} />
+                                canvasRef={this.canvasContainerRef} />
     }
 
     render() {

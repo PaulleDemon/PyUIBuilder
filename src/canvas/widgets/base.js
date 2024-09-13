@@ -23,7 +23,7 @@ class Widget extends React.Component{
         // console.log("Id: ", id)
         // this id has to be unique inside the canvas, it will be set automatically and should never be changed
         this.__id = id
-        this.canvas = canvasRef?.current || null
+        this.canvas = canvasRef?.current || null // canvasContainerRef, because some events work properly only if attached to the container
 
         // this._selected = false
         this._disableResize = false
@@ -76,19 +76,26 @@ class Widget extends React.Component{
 
         this.state = {
             zIndex: 0,
-            pos: {x: 0, y: 0},
-            size: { width: 100, height: 100 },
             selected: false,
-            widgetName: widgetName  || 'unnamed widget', // this will later be converted to variable name
+            widgetName: widgetName  || 'widget', // this will later be converted to variable name
             enableRename: false, // will open the widgets editable div for renaming
             resizing: false,
             resizeCorner: "",
+
+            widgetStyling: {
+                position: "absolute",
+                left: 0,
+                top: 0,
+                width: 100,
+                height: 100
+            },
 
             attrs: { 
                 styling: {
                     backgroundColor: {
                         tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
-                        value: ""
+                        value: "",
+                        onChange: (value) => this.setWidgetStyling("backgroundColor", value) 
                     },
                     foregroundColor: {
                         tool: Tools.COLOR_PICKER,
@@ -119,6 +126,8 @@ class Widget extends React.Component{
         this.getPos = this.getPos.bind(this)
         this.setPos = this.setPos.bind(this)
 
+        this.setWidgetStyling = this.setWidgetStyling.bind(this)
+
         this.startResizing = this.startResizing.bind(this)
         this.handleResize = this.handleResize.bind(this)
         this.stopResizing = this.stopResizing.bind(this)
@@ -126,17 +135,16 @@ class Widget extends React.Component{
     }   
 
     componentDidMount(){
-        console.log("mounted: ")
         this.elementRef.current?.addEventListener("click", this.mousePress)
 
-        this.canvas.addEventListener("mousemove", this.handleResize);
+        this.canvas.addEventListener("mousemove", this.handleResize)
         this.canvas.addEventListener("mouseup", this.stopResizing)
     }
 
     componentWillUnmount(){
         this.elementRef.current?.removeEventListener("click", this.mousePress)
 
-        this.canvas.addEventListener("mousemove", this.handleResize);
+        this.canvas.addEventListener("mousemove", this.handleResize)
         this.canvas.addEventListener("mouseup", this.stopResizing)
     }
 
@@ -208,9 +216,14 @@ class Widget extends React.Component{
             return
         }
 
-        this.setState({
-            pos: {x: x, y: y}
-        })
+        this.setState((prev) => ({
+            // pos: {x: x, y: y}
+            widgetStyling: {
+                ...prev.widgetStyling,
+                left: x,
+                top: y,
+            }
+        }))
 
         // console.log("POs: ", x, y)
     }
@@ -230,7 +243,7 @@ class Widget extends React.Component{
     }
 
     getPos(){
-        return this.state.pos
+        return {x: this.state.widgetStyling.left, y: this.state.widgetStyling.top}
     }
 
     getProps(){
@@ -244,7 +257,7 @@ class Widget extends React.Component{
     getSize(){
         // const boundingRect = this.getBoundingRect()
 
-        return {width: this.state.size.width, height: this.state.size.height}
+        return {width: this.state.widgetStyling.width, height: this.state.widgetStyling.height}
     }
 
     getScaleAwareDimensions() {
@@ -305,33 +318,33 @@ class Widget extends React.Component{
     handleResize(event) {
         if (!this.state.resizing) return
 
-        const { resizeCorner, size, pos } = this.state
+        const { resizeCorner, widgetStyling } = this.state
         const deltaX = event.movementX
         const deltaY = event.movementY
 
-        let newSize = { ...size }
-        let newPos = { ...pos }
+        let newSize = { width: widgetStyling.width, height: widgetStyling.height }
+        let newPos = { x: widgetStyling.left, y: widgetStyling.top }
         
         const {width: minWidth, height: minHeight} = this.minSize
         const {width: maxWidth, height: maxHeight} = this.maxSize
-        console.log("resizing: ", minHeight, minHeight)
+        console.log("resizing: ", deltaX, deltaY, event)
 
         switch (resizeCorner) {
             case "nw":
                 newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width - deltaX))
                 newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height - deltaY))
-                newPos.x += (newSize.width !== size.width) ? deltaX : 0
-                newPos.y += (newSize.height !== size.height) ? deltaY : 0
+                newPos.x += (newSize.width !== widgetStyling.width) ? deltaX : 0
+                newPos.y += (newSize.height !== widgetStyling.height) ? deltaY : 0
                 break
             case "ne":
                 newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width + deltaX))
                 newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height - deltaY))
-                newPos.y += (newSize.height !== size.height) ? deltaY : 0
+                newPos.y += (newSize.height !== widgetStyling.height) ? deltaY : 0
                 break
             case "sw":
                 newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width - deltaX))
                 newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height + deltaY))
-                newPos.x += (newSize.width !== size.width) ? deltaX : 0
+                newPos.x += (newSize.width !== widgetStyling.width) ? deltaX : 0
                 break
             case "se":
                 newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width + deltaX))
@@ -341,7 +354,16 @@ class Widget extends React.Component{
                 break
         }
 
-        this.setState({ size: newSize, pos: newPos })
+        // this.setState({ size: newSize, pos: newPos })
+        this.setState((prev) => ({  
+            widgetStyling: {
+                ...prev.widgetStyling,
+                left: newPos.x,
+                top: newPos.y,
+                width: newSize.width,
+                height: newSize.height,
+            }
+        }))
     }
 
     stopResizing() {
@@ -366,10 +388,19 @@ class Widget extends React.Component{
     setWidgetName(name){
 
         this.setState((prev) => ({
-            ...prev,
-            widgetName: name.length > 0 ? name : prev.widgetName,
-            
+            widgetName: name.length > 0 ? name : prev.widgetName 
         }))
+    }
+
+    setWidgetStyling(key, value){
+
+        this.setState((prev) => ({
+            widgetStyling: {
+                ...prev.widgetStyling,
+                [key]: value
+            }
+        }))
+
     }
 
     renderContent(){
@@ -387,14 +418,18 @@ class Widget extends React.Component{
      */
     render(){
         
+        const widgetStyle = this.state.widgetStyling
+
+
         let style = {
+            ...widgetStyle,
             cursor: this.cursor,
             zIndex: this.state.zIndex,
             position: "absolute", //  don't change this if it has to be movable on the canvas
-            top: `${this.state.pos.y}px`,  
-            left: `${this.state.pos.x}px`,  
-            width: `${this.state.size.width}px`,
-            height: `${this.state.size.height}px`,
+            top: `${widgetStyle.top}px`,  
+            left: `${widgetStyle.left}px`,  
+            width: `${widgetStyle.width}px`,
+            height: `${widgetStyle.height}px`,
         }
 
         let selectionStyle = {

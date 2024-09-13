@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react"
 
-import { Input } from "antd"
+import { ColorPicker, Input } from "antd"
 
 import { capitalize } from "../utils/common"
+import Tools from "./constants/tools.js"
 
 
 /**
@@ -44,6 +45,28 @@ function CanvasToolBar({isOpen, activeWidget, setActiveWidget}){
                     value={activeWidget?.getWidgetName() || ""}
                     onChange={handleWidgetNameChange}
                     />
+            </div>
+            <hr />
+            <div className="tw-flex tw-flex-col tw-gap-4">
+                {
+                    Object.entries(activeWidget?.state?.attrs || {}).map(([key, value], i) => {
+                        console.log("valyes: ")
+                        return (
+                            <div className="tw-flex tw-flex-col tw-gap-1">
+                                <div className="tw-text-xl">{key}</div>
+                                {
+                                    value?.backgroundColor?.tool === Tools.COLOR_PICKER && 
+                                        <ColorPicker defaultValue={value?.backgroundColor?.value || "#fff"} 
+                                                disabledAlpha size="small" showText 
+                                                format="hex"
+                                                placement="bottomRight"
+                                                className="tw-w-fit"/>
+                                }
+                            </div>
+                        )
+
+                    })
+                }
             </div>
 
         </div>
