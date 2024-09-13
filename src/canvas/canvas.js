@@ -10,6 +10,7 @@ import Widget from "./widgets/base"
 import Cursor from "./constants/cursor"
 import { UID } from "../utils/uid"
 import { removeDuplicateObjects } from "../utils/common"
+import CanvasToolBar from "./toolbar"
 
 
 const CanvasModes = {
@@ -50,10 +51,11 @@ class Canvas extends React.Component {
             isPanning: false,
             currentTranslate: { x: 0, y: 0 },
             canvasSize:  { width: 500, height: 500 },
-            contextMenuItems: []
-        }
+            contextMenuItems: [],
+            toolbarOpen: true,
 
-        this.selectedWidgets = []
+            selectedWidgets: []
+        }
 
         this._onWidgetListUpdated = onWidgetListUpdated // a function callback when the widget is added to the canvas
 
@@ -118,12 +120,6 @@ class Canvas extends React.Component {
         this.canvasContainerRef.current.addEventListener("mouseup", this.mouseUpEvent)
         this.canvasContainerRef.current.addEventListener("mousemove", this.mouseMoveEvent)
 
-
-        // this.canvasRef.current.addEventListener("selection:created", () => {
-        //     console.log("selected")
-        //     this.currentMode = Modes.DEFAULT
-        // })
-
         this.canvasContainerRef.current.addEventListener('wheel', (event) => {
             this.wheelZoom(event)
         })
@@ -163,15 +159,20 @@ class Canvas extends React.Component {
                 // if the widget is selected don't pan, instead move the widget
                 if (!selectedWidget._disableSelection){
 
-                    const selectedLength = this.selectedWidgets.length
+                    const selectedLength = this.state.selectedWidgets.length
 
-                    if (selectedLength === 0 || (selectedLength === 1 && selectedWidget.__id !== this.selectedWidgets[0].__id)){
-                        this.selectedWidgets[0]?.deSelect() // deselect the previous widget before adding the new one
-                        this.selectedWidgets[0]?.setZIndex(0)
+                    if (selectedLength === 0 || (selectedLength === 1 && selectedWidget.__id !== this.state.selectedWidgets[0].__id)){
+                        this.state.selectedWidgets[0]?.deSelect() // deselect the previous widget before adding the new one
+                        this.state.selectedWidgets[0]?.setZIndex(0)
 
                         selectedWidget.setZIndex(1000)
                         selectedWidget.select()
-                        this.selectedWidgets[0] = selectedWidget
+
+                        this.setState({
+                            selectedWidgets: [selectedWidget]
+                        })
+
+                        console.log("selected")
                     }
                     this.currentMode = CanvasModes.MOVE_WIDGET
                 }
@@ -187,7 +188,8 @@ class Canvas extends React.Component {
             }
 
             this.setState({
-                contextMenuItems: []
+                contextMenuItems: [],
+                toolbarOpen: true
             })
             // this.setState({
             //     showContextMenu: false
@@ -195,13 +197,16 @@ class Canvas extends React.Component {
         }else if (event.button === 2){
             //right click
             
-            if (this.selectedWidgets.length > 0 && this.selectedWidgets[0].__id !== selectedWidget.__id){
+            if (this.state.selectedWidgets.length > 0 && this.state.selectedWidgets[0].__id !== selectedWidget.__id){
                 this.clearSelections()
             }
 
             if (selectedWidget)
-                this.selectedWidgets[0] = selectedWidget
-                console.log("renaming: ", selectedWidget)
+
+                this.setState({
+                    selectedWidget: [selectedWidget]
+                })
+
                 this.setState({
                     contextMenuItems: [
                         {
@@ -229,8 +234,7 @@ class Canvas extends React.Component {
             const deltaX = event.clientX - this.mousePos.x
             const deltaY = event.clientY - this.mousePos.y
             
-
-            if (this.selectedWidgets.length === 0){
+            if (this.state.selectedWidgets.length === 0){
                 // if there aren't any selected widgets, then pan the canvas
                 this.setState(prevState => ({
                     currentTranslate: {
@@ -241,7 +245,7 @@ class Canvas extends React.Component {
 
             }else{
                 // update the widgets position
-                this.selectedWidgets.forEach(widget => {
+                this.state.selectedWidgets.forEach(widget => {
                     const {x, y} = widget.getPos()
 
                     const newPosX = x + (deltaX/this.state.zoom) // account for the zoom, since the widget is relative to canvas
@@ -363,7 +367,11 @@ class Canvas extends React.Component {
         this.getActiveObjects().forEach(widget => {
             widget.current?.deSelect()
         })
-        this.selectedWidgets = []
+
+        this.setState({
+            selectedWidgets: []
+        })
+
     }
 
     /**
@@ -420,11 +428,11 @@ class Canvas extends React.Component {
         return {id, widgetRef}
     }
 
-    deleteSelectedWidgets(widgets){
+    deleteSelectedWidgets(widgets=[]){
 
         
-        let activeWidgets = removeDuplicateObjects([...widgets, ...this.selectedWidgets], "__id")
-        console.log("active widget: ", widgets, activeWidgets)
+        let activeWidgets = removeDuplicateObjects([...widgets, ...this.state.selectedWidgets], "__id")
+        
         const widgetIds = activeWidgets.map(widget => widget.__id)
 
         for (let widgetId of widgetIds){
@@ -489,30 +497,32 @@ class Canvas extends React.Component {
                     <Tooltip title="Reset viewport">
                         <Button  icon={<ReloadOutlined />} onClick={this.resetTransforms} />
                     </Tooltip>
-                    <Tooltip title="Reset viewport">
+                    <Tooltip title="Clear canvas">
                         <Button  icon={<CloseOutlined />} onClick={this.clearCanvas} />
                     </Tooltip>
                 </div>
 
-                    <Droppable id="canvas-droppable" className="tw-w-full tw-h-full">
-                        <Dropdown trigger={['contextMenu']} mouseLeaveDelay={0} menu={{items: this.state.contextMenuItems, }}>
-                                <div className="tw-w-full tw-h-full tw-flex tw-relative tw-bg-black tw-overflow-hidden" 
-                                        ref={this.canvasContainerRef}
-                                        style={{transition: " transform 0.3s ease-in-out"}}
-                                        >
-                                    {/* Canvas */}
-                                    <div data-canvas className="tw-w-full tw-h-full tw-absolute tw-top-0 tw-select-none
-                                                                t tw-bg-green-300" 
-                                            ref={this.canvasRef}>
-                                        <div className="tw-relative tw-w-full tw-h-full">
-                                            {
-                                                this.state.widgets.map(this.renderWidget)
-                                            }
-                                        </div>
+                <Droppable id="canvas-droppable" className="tw-w-full tw-h-full">
+                    <Dropdown trigger={['contextMenu']} mouseLeaveDelay={0} menu={{items: this.state.contextMenuItems, }}>
+                            <div className="tw-w-full tw-h-full tw-flex tw-relative tw-bg-black tw-overflow-hidden" 
+                                    ref={this.canvasContainerRef}
+                                    style={{transition: " transform 0.3s ease-in-out"}}
+                                    >
+                                {/* Canvas */}
+                                <div data-canvas className="tw-w-full tw-h-full tw-absolute tw-top-0 tw-select-none
+                                                            t tw-bg-green-300" 
+                                        ref={this.canvasRef}>
+                                    <div className="tw-relative tw-w-full tw-h-full">
+                                        {
+                                            this.state.widgets.map(this.renderWidget)
+                                        }
                                     </div>
                                 </div>
-                        </Dropdown>
-                    </Droppable>
+                            </div>
+                    </Dropdown>
+                </Droppable>
+
+                <CanvasToolBar isOpen={this.state.toolbarOpen} activeWidget={this.state.selectedWidgets[0]}/>
             </div>
         )
     }

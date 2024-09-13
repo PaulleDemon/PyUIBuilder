@@ -43,7 +43,7 @@ function App() {
 			content: <WidgetsContainer onWidgetsUpdate={(widgets) => setSidebarWidgets(widgets)}/>
 		},
 		{
-			name: "Extensions",
+			name: "Plugins",
 			icon: <ProductFilled />,
 			content: <></>
 		},

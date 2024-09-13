@@ -45,14 +45,15 @@ function Sidebar({tabs}){
     return (
         <div className={`tw-relative tw-duration-[0.3s] tw-transition-all
                         tw-max-w-[400px] tw-flex tw-h-full tw-z-10
-                        ${sidebarOpen ? "tw-bg-white tw-min-w-[400px] tw-w-[400px] tw-shadow-lg": "tw-bg-primaryBg tw-min-w-[80px] tw-w-[80px]"}
+                        ${sidebarOpen ? "tw-bg-white tw-min-w-[400px] tw-w-[400px] tw-shadow-lg": 
+                            "tw-bg-primaryBg tw-min-w-[80px] tw-w-[80px]"}
                         `} 
                         ref={sideBarRef} 
                         onMouseLeave={hideOnMouseLeave}
                 >
             
 
-            <div className="tw-w-full  tw-max-w-[80px] tw-h-full tw-flex tw-flex-col tw-gap-4 tw-p-3 tw-place-items-center">
+            <div className="tw-min-w-[80px] tw-w-[80px] tw-h-full tw-flex tw-flex-col tw-gap-4 tw-p-3 tw-place-items-center">
                 {
                     sidebarTabs.map((tab, index) => {
                         return (

@@ -92,6 +92,8 @@ class Widget extends React.Component{
         this.getElement = this.getElement.bind(this)
         this.getBoundingRect = this.getBoundingRect.bind(this)
 
+        this.getWidgetName = this.getWidgetName.bind(this)
+        this.getWidgetType = this.getWidgetType.bind(this)
         // this.openRenaming = this.openRenaming.bind(this)
 
         this.isSelected = this.isSelected.bind(this)
@@ -127,6 +129,14 @@ class Widget extends React.Component{
 
     getVariableName(){
         return toSnakeCase(this.state.widgetName)
+    }
+
+    getWidgetName(){
+        return this.state.widgetName
+    }
+
+    getWidgetType(){
+        return this.constructor.widgetType
     }
 
     /**
