@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react'
 
 
-function EditableDiv({value, onChange, maxLength=Infinity, className='', inputClassName}) {
-    const [isEditable, setIsEditable] = useState(false)
+function EditableDiv({value, onChange, openEdit=false, maxLength=Infinity, className='', inputClassName}) {
+    const [isEditable, setIsEditable] = useState(openEdit)
     const [content, setContent] = useState(value)
     const inputRef = useRef(null)
 
@@ -11,6 +11,17 @@ function EditableDiv({value, onChange, maxLength=Infinity, className='', inputCl
         setContent(value)
 
     }, [value])
+
+    useEffect(() => {
+        setIsEditable(openEdit)
+        
+        if (openEdit){
+            setTimeout(() => {
+                inputRef.current.focus()
+            }, 15)
+        }
+
+    }, [openEdit])
 
     const handleInput = (event) => {
 

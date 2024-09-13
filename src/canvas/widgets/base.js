@@ -23,8 +23,6 @@ class Widget extends React.Component{
         // console.log("Id: ", id)
         // this id has to be unique inside the canvas, it will be set automatically and should never be changed
         this.__id = id
-        this._zIndex = 0
-
         this.canvas = canvasRef?.current || null
 
         // this._selected = false
@@ -85,6 +83,7 @@ class Widget extends React.Component{
             size: { width: 100, height: 100 },
             selected: false,
             widgetName: widgetName  || 'unnamed widget', // this will later be converted to variable name
+            enableRename: false, // will open the widgets editable div for renaming
             resizing: false,
             resizeCorner: ""
         }
@@ -92,6 +91,8 @@ class Widget extends React.Component{
         this.mousePress = this.mousePress.bind(this)
         this.getElement = this.getElement.bind(this)
         this.getBoundingRect = this.getBoundingRect.bind(this)
+
+        // this.openRenaming = this.openRenaming.bind(this)
 
         this.isSelected = this.isSelected.bind(this)
 
@@ -155,7 +156,7 @@ class Widget extends React.Component{
         this.setState({
             selected: true
         })
-        console.log("selected")
+        
     }
 
     deSelect(){
@@ -209,9 +210,9 @@ class Widget extends React.Component{
     }
 
     getSize(){
-        const boundingRect = this.getBoundingRect()
+        // const boundingRect = this.getBoundingRect()
 
-        return {width: boundingRect.width, height: boundingRect.height}
+        return {width: this.state.size.width, height: this.state.size.height}
     }
 
     getScaleAwareDimensions() {
@@ -263,6 +264,12 @@ class Widget extends React.Component{
         this.setState({ resizing: true, resizeCorner: corner })
     }
 
+    setZIndex(zIndex){
+        this.setState({
+            zIndex: zIndex
+        })
+    }
+
     handleResize(event) {
         if (!this.state.resizing) return
 
@@ -311,6 +318,19 @@ class Widget extends React.Component{
         }
     }
 
+    openRenaming(){
+        this.setState({
+            selected: true,
+            enableRename: true
+        })
+    }
+
+    closeRenaming(){
+        this.setState({
+            enableRename: false
+        })
+    }
+
     renderContent(){
         // throw new NotImplementedError("render method has to be implemented")
         return (
@@ -328,11 +348,12 @@ class Widget extends React.Component{
         
         let style = {
             cursor: this.cursor,
+            zIndex: this.state.zIndex,
+            position: "absolute", //  don't change this if it has to be movable on the canvas
             top: `${this.state.pos.y}px`,  
             left: `${this.state.pos.x}px`,  
             width: `${this.state.size.width}px`,
             height: `${this.state.size.height}px`,
-            position: "absolute" //  don't change this
         }
 
         let selectionStyle = {
@@ -349,7 +370,7 @@ class Widget extends React.Component{
                 widgetName: value.length > 0 ? value : prev.widgetName
             }))
         }
-
+        // console.log("selected: ", this.state.selected)
         return (
             
             <div data-id={this.__id} ref={this.elementRef} className="tw-absolute tw-w-fit tw-h-fit" 
@@ -364,6 +385,7 @@ class Widget extends React.Component{
                     <div className="tw-relative tw-w-full tw-h-full">
                         <EditableDiv value={this.state.widgetName} onChange={onWidgetNameChange}
                                         maxLength={40}
+                                        openEdit={this.state.enableRename}
                                         className="tw-text-sm tw-w-fit tw-max-w-[160px] tw-text-clip tw-min-w-[150px] 
                                                     tw-overflow-hidden tw-absolute tw--top-6 tw-h-6"
                                 />

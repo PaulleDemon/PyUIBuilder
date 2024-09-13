@@ -14,10 +14,10 @@ function Draggable(props) {
     
     return (
       <button className={`tw-bg-transparent tw-outline-none tw-border-none ${props.className}`} 
-			ref={setNodeRef} 
-			style={style} 
-			{...listeners} 
-			{...attributes}>
+              ref={setNodeRef} 
+              style={style} 
+              {...listeners} 
+              {...attributes}>
         {props.children}
       </button>
     )

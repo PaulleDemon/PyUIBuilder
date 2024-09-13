@@ -2,13 +2,14 @@ import React from "react"
 
 import {DndContext} from '@dnd-kit/core'
 
-import { CloseOutlined, FullscreenOutlined, ReloadOutlined } from "@ant-design/icons"
+import { CloseOutlined, DeleteOutlined, EditOutlined, FullscreenOutlined, ReloadOutlined } from "@ant-design/icons"
 import { Button, Tooltip, Dropdown } from "antd"
 
 import Droppable from "../components/utils/droppable"
 import Widget from "./widgets/base"
 import Cursor from "./constants/cursor"
 import { UID } from "../utils/uid"
+import { removeDuplicateObjects } from "../utils/common"
 
 
 const CanvasModes = {
@@ -71,6 +72,8 @@ class Canvas extends React.Component {
         this.fitCanvasToBoundingBox = this.fitCanvasToBoundingBox.bind(this)
         this.getCanvasBoundingRect = this.getCanvasContainerBoundingRect.bind(this)
 
+        this.deleteSelectedWidgets = this.deleteSelectedWidgets.bind(this)
+        this.removeWidget = this.removeWidget.bind(this)
         this.clearSelections = this.clearSelections.bind(this)
         this.clearCanvas = this.clearCanvas.bind(this)
 
@@ -159,19 +162,23 @@ class Canvas extends React.Component {
             if (selectedWidget){
                 // if the widget is selected don't pan, instead move the widget
                 if (!selectedWidget._disableSelection){
-                    selectedWidget.select()
 
-                    if (this.selectedWidgets.length >= 1){ // allow only one selection for now
-                        this.clearSelections()
+                    const selectedLength = this.selectedWidgets.length
+
+                    if (selectedLength === 0 || (selectedLength === 1 && selectedWidget.__id !== this.selectedWidgets[0].__id)){
+                        this.selectedWidgets[0]?.deSelect() // deselect the previous widget before adding the new one
+                        this.selectedWidgets[0]?.setZIndex(0)
+
+                        selectedWidget.setZIndex(1000)
+                        selectedWidget.select()
+                        this.selectedWidgets[0] = selectedWidget
                     }
-
-                    this.selectedWidgets.push(selectedWidget)
                     this.currentMode = CanvasModes.MOVE_WIDGET
                 }
 
                 this.currentMode = CanvasModes.PAN
 
-            }else if (this.state?.widgets?.length > 0){
+            }else if (!selectedWidget){
                 // get the canvas ready to pan, if there are widgets on the canvas
                 this.clearSelections()
                 this.currentMode = CanvasModes.PAN
@@ -187,24 +194,36 @@ class Canvas extends React.Component {
             // })
         }else if (event.button === 2){
             //right click
-            if (selectedWidget)
-                this.setState({
-                    contextMenuItems: [{
-                        key: "delete",
-                        label: "Delete"
-                    }]
-                })
+            
+            if (this.selectedWidgets.length > 0 && this.selectedWidgets[0].__id !== selectedWidget.__id){
+                this.clearSelections()
+            }
 
-            // this.setState({
-            //     showContextMenu: true
-            // })
-            console.log("button: ", selectedWidget)
+            if (selectedWidget)
+                this.selectedWidgets[0] = selectedWidget
+                console.log("renaming: ", selectedWidget)
+                this.setState({
+                    contextMenuItems: [
+                        {
+                            key: "rename",
+                            label: (<div onClick={() => selectedWidget.openRenaming()}><EditOutlined /> Rename</div>),
+                            icons: <EditOutlined />,
+                        },
+                        {
+                            key: "delete",
+                            label: (<div onClick={() => this.deleteSelectedWidgets([selectedWidget])}><DeleteOutlined /> Delete</div>),
+                            icons: <DeleteOutlined />,
+                            danger: true
+                        }
+                    ]
+                })
 
         }
 
     }
 
     mouseMoveEvent(event){
+
         // console.log("mode: ", this.currentMode, this.getActiveObjects())
         if (this.mousePressed && [CanvasModes.PAN, CanvasModes.MOVE_WIDGET].includes(this.currentMode)) {
             const deltaX = event.clientX - this.mousePos.x
@@ -401,16 +420,38 @@ class Canvas extends React.Component {
         return {id, widgetRef}
     }
 
+    deleteSelectedWidgets(widgets){
+
+        
+        let activeWidgets = removeDuplicateObjects([...widgets, ...this.selectedWidgets], "__id")
+        console.log("active widget: ", widgets, activeWidgets)
+        const widgetIds = activeWidgets.map(widget => widget.__id)
+
+        for (let widgetId of widgetIds){
+            console.log("removed: ", widgetId)
+
+            // this.widgetRefs[widgetId]?.current.remove()
+            delete this.widgetRefs[widgetId]
+
+            this.setState((prevState) => ({
+                widgets: prevState.widgets.filter(widget => widget.id !== widgetId)
+            }))
+            // value.current?.remove()
+        }
+
+    }
+
     /**
      * removes all the widgets from the canvas
      */
     clearCanvas(){
 
-        for (let [key, value] of Object.entries(this.widgetRefs)){
-            console.log("removed: ", value, value.current?.getElement())
+        // NOTE: Don't remove from it using remove() function since, it already removed from the DOM tree when its removed from widgets
+        // for (let [key, value] of Object.entries(this.widgetRefs)){
+        //     console.log("removed: ", value, value.current?.getElement())
 
-            value.current?.remove()
-        }
+        //     value.current?.remove()
+        // }
 
         this.widgetRefs = {}
         this.setState(() => ({
@@ -422,7 +463,7 @@ class Canvas extends React.Component {
 
     removeWidget(widgetId){
 
-        this.widgetRefs[widgetId]?.current.remove()
+        // this.widgetRefs[widgetId]?.current.remove()
         delete this.widgetRefs[widgetId]
 
         this.setState((prevState) => ({
@@ -454,7 +495,7 @@ class Canvas extends React.Component {
                 </div>
 
                     <Droppable id="canvas-droppable" className="tw-w-full tw-h-full">
-                        <Dropdown trigger={['contextMenu']} menu={{items: this.state.contextMenuItems, }}>
+                        <Dropdown trigger={['contextMenu']} mouseLeaveDelay={0} menu={{items: this.state.contextMenuItems, }}>
                                 <div className="tw-w-full tw-h-full tw-flex tw-relative tw-bg-black tw-overflow-hidden" 
                                         ref={this.canvasContainerRef}
                                         style={{transition: " transform 0.3s ease-in-out"}}
