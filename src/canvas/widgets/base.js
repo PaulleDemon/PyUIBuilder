@@ -75,9 +75,6 @@ class Widget extends React.Component{
         } 
 
         this.state = {
-            attrs: { // attributes
-                // replace this with this.props
-            },
             zIndex: 0,
             pos: {x: 0, y: 0},
             size: { width: 100, height: 100 },
@@ -85,7 +82,27 @@ class Widget extends React.Component{
             widgetName: widgetName  || 'unnamed widget', // this will later be converted to variable name
             enableRename: false, // will open the widgets editable div for renaming
             resizing: false,
-            resizeCorner: ""
+            resizeCorner: "",
+
+            attrs: { 
+                styling: {
+                    backgroundColor: {
+                        tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
+                        value: ""
+                    },
+                    foregroundColor: {
+                        tool: Tools.COLOR_PICKER,
+                        value: ""
+                    },
+                },
+                layout: "show", // enables layout use "hide" to hide layout dropdown, takes the layout from this.layout
+                events: {
+                    event1: {
+                        tool: Tools.EVENT_HANDLER,
+                        value: ""
+                    }
+                }
+            },
         }
 
         this.mousePress = this.mousePress.bind(this)
@@ -97,6 +114,7 @@ class Widget extends React.Component{
         // this.openRenaming = this.openRenaming.bind(this)
 
         this.isSelected = this.isSelected.bind(this)
+        this.setWidgetName = this.setWidgetName.bind(this)
 
         this.getPos = this.getPos.bind(this)
         this.setPos = this.setPos.bind(this)
@@ -137,6 +155,10 @@ class Widget extends React.Component{
 
     getWidgetType(){
         return this.constructor.widgetType
+    }
+
+    getAttributes(){
+        return this.state.attrs
     }
 
     /**
@@ -341,6 +363,15 @@ class Widget extends React.Component{
         })
     }
 
+    setWidgetName(name){
+
+        this.setState((prev) => ({
+            ...prev,
+            widgetName: name.length > 0 ? name : prev.widgetName,
+            
+        }))
+    }
+
     renderContent(){
         // throw new NotImplementedError("render method has to be implemented")
         return (
@@ -373,13 +404,6 @@ class Widget extends React.Component{
             height: this.boundingRect.height + 5
         }
 
-        const onWidgetNameChange = (value) => {
-
-            this.setState((prev) => ({
-                ...prev,
-                widgetName: value.length > 0 ? value : prev.widgetName
-            }))
-        }
         // console.log("selected: ", this.state.selected)
         return (
             
@@ -393,7 +417,7 @@ class Widget extends React.Component{
                                 ${this.state.selected ? 'tw-border-2 tw-border-solid tw-border-blue-500' : 'tw-hidden'}`}>
                     
                     <div className="tw-relative tw-w-full tw-h-full">
-                        <EditableDiv value={this.state.widgetName} onChange={onWidgetNameChange}
+                        <EditableDiv value={this.state.widgetName} onChange={this.setWidgetName}
                                         maxLength={40}
                                         openEdit={this.state.enableRename}
                                         className="tw-text-sm tw-w-fit tw-max-w-[160px] tw-text-clip tw-min-w-[150px] 

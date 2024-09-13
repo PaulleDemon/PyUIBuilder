@@ -24,16 +24,10 @@ function EditableDiv({value, onChange, openEdit=false, maxLength=Infinity, class
     }, [openEdit])
 
     const handleInput = (event) => {
-
-        console.log("Event key: ", event.key)
         onChange(event.target.value)
-
-        // if (event.key === "")
     }
 
     const handleEnterKey = (event) => {
-        console.log("Event key: ", event.key)
-
         if (event.key === "Enter"){
             setIsEditable(false)
         }

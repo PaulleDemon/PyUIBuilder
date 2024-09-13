@@ -20,6 +20,5 @@ export function removeDuplicateObjects(array, key) {
  * @returns 
  */
 export function capitalize(str) {
-  console.log("Text: ", str)
   return str.charAt(0).toUpperCase() + str.slice(1)
 }

@@ -74,6 +74,7 @@ class Canvas extends React.Component {
         this.fitCanvasToBoundingBox = this.fitCanvasToBoundingBox.bind(this)
         this.getCanvasBoundingRect = this.getCanvasContainerBoundingRect.bind(this)
 
+        this.setSelectedWidget = this.setSelectedWidget.bind(this)
         this.deleteSelectedWidgets = this.deleteSelectedWidgets.bind(this)
         this.removeWidget = this.removeWidget.bind(this)
         this.clearSelections = this.clearSelections.bind(this)
@@ -363,6 +364,10 @@ class Canvas extends React.Component {
         }, this.applyTransform)
     }
 
+    setSelectedWidget(selectedWidget){
+        this.setState({ selectedWidget: [selectedWidget] })
+    }
+
     clearSelections(){
         this.getActiveObjects().forEach(widget => {
             widget.current?.deSelect()
@@ -467,6 +472,9 @@ class Canvas extends React.Component {
         }), () => {
             
         })
+
+        if (this._onWidgetListUpdated)
+            this._onWidgetListUpdated([])
     }
 
     removeWidget(widgetId){
@@ -474,9 +482,14 @@ class Canvas extends React.Component {
         // this.widgetRefs[widgetId]?.current.remove()
         delete this.widgetRefs[widgetId]
 
-        this.setState((prevState) => ({
-            widgets: prevState.widgets.filter(widget => widget.id !== widgetId)
-        }))
+        const widgets = this.state.widgets.filter(widget => widget.id !== widgetId)
+
+        this.setState({
+            widgets: widgets
+        })
+
+        if (this._onWidgetListUpdated)
+            this._onWidgetListUpdated(widgets)
     }
 
     renderWidget(widget){
@@ -522,7 +535,10 @@ class Canvas extends React.Component {
                     </Dropdown>
                 </Droppable>
 
-                <CanvasToolBar isOpen={this.state.toolbarOpen} activeWidget={this.state.selectedWidgets[0]}/>
+                <CanvasToolBar isOpen={this.state.toolbarOpen} 
+                                activeWidget={this.state.selectedWidgets[0]}
+                                setActiveWidget={this.setSelectedWidget}
+                                />
             </div>
         )
     }

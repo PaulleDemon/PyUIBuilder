@@ -1,7 +1,7 @@
 import { useState } from "react"
 
-import { Select, Input } from "antd"
-import { DownOutlined } from "@ant-design/icons"
+import { Select, Input, Button } from "antd"
+import { DownloadOutlined, DownOutlined } from "@ant-design/icons"
 
 const items = [
     {
@@ -29,8 +29,11 @@ function Header(props){
                 className="tw-min-w-[150px]"
             />
             
-            <div className="tw-ml-auto tw-flex tw-place-content-center">
+            <div className="tw-ml-auto tw-flex tw-gap-2 tw-place-content-center">
                 <Input value={projectName} onChange={(e) => setProjectName(e.target.value)} placeholder="project name"/>
+                <Button icon={<DownloadOutlined />} >
+                    Export code
+                </Button>
             </div>
 
         </div>
