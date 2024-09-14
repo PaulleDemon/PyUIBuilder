@@ -1,16 +1,17 @@
 import { useRef, useState } from 'react'
 
 import { LayoutFilled, ProductFilled, CloudUploadOutlined } from "@ant-design/icons"
+import { DndContext, useSensors, useSensor, PointerSensor, closestCorners, DragOverlay, rectIntersection } from '@dnd-kit/core'
+import { snapCenterToCursor } from '@dnd-kit/modifiers'
 
-import Sidebar from './sidebar/sidebar'
-import WidgetsContainer from './sidebar/widgetsContainer'
-import UploadsContainer from './sidebar/uploadsContainer'
 import Canvas from './canvas/canvas'
 import Header from './components/header'
-import { DndContext, useSensors, useSensor, PointerSensor, closestCorners, DragOverlay, rectIntersection } from '@dnd-kit/core'
-import { DraggableWidgetCard } from './components/cards'
+import Sidebar from './sidebar/sidebar'
+import UploadsContainer from './sidebar/uploadsContainer'
+import WidgetsContainer from './sidebar/widgetsContainer'
+
 import Widget from './canvas/widgets/base'
-import { snapCenterToCursor } from '@dnd-kit/modifiers'
+import { DraggableWidgetCard } from './components/cards'
 
 
 function App() {

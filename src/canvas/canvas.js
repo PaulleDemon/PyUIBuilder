@@ -8,10 +8,17 @@ import { Button, Tooltip, Dropdown } from "antd"
 import Droppable from "../components/utils/droppable"
 import Widget from "./widgets/base"
 import Cursor from "./constants/cursor"
-import { UID } from "../utils/uid"
-import { removeDuplicateObjects } from "../utils/common"
+
 import CanvasToolBar from "./toolbar"
 
+import { UID } from "../utils/uid"
+import { removeDuplicateObjects } from "../utils/common"
+
+// import {ReactComponent as DotsBackground} from "../assets/background/dots.svg"
+
+import DotsBackground from "../assets/background/dots.svg"
+
+// const DotsBackground = require("../assets/background/dots.svg")
 
 const CanvasModes = {
     DEFAULT: 0,
@@ -202,13 +209,10 @@ class Canvas extends React.Component {
                 this.clearSelections()
             }
 
-            if (selectedWidget)
+            if (selectedWidget){
 
                 this.setState({
-                    selectedWidget: [selectedWidget]
-                })
-
-                this.setState({
+                    selectedWidget: [selectedWidget],
                     contextMenuItems: [
                         {
                             key: "rename",
@@ -223,6 +227,8 @@ class Canvas extends React.Component {
                         }
                     ]
                 })
+            
+            }
 
         }
 
@@ -330,8 +336,13 @@ class Canvas extends React.Component {
 
     setZoom(zoom, pos={x:0, y:0}){
         
+        // if (zoom < 0.5 || zoom > 2){
+        //     return
+        // }
+
         const { currentTranslate } = this.state
 
+        
         // Calculate the new translation to zoom into the mouse position
         const offsetX = pos.x - (this.canvasContainerRef.current.clientWidth / 2 + currentTranslate.x)
         const offsetY = pos.y - (this.canvasContainerRef.current.clientHeight / 2 + currentTranslate.y)
@@ -340,7 +351,7 @@ class Canvas extends React.Component {
         const newTranslateY = currentTranslate.y - offsetY * (zoom - this.state.zoom)
     
         this.setState({
-            zoom: zoom,
+            zoom: Math.max(0.5, Math.min(zoom, 1.5)), // clamp between 0.5 and 1.5
             currentTranslate: {
                 x: newTranslateX,
                 y: newTranslateY
@@ -440,16 +451,21 @@ class Canvas extends React.Component {
         const widgetIds = activeWidgets.map(widget => widget.__id)
 
         for (let widgetId of widgetIds){
-            console.log("removed: ", widgetId)
 
             // this.widgetRefs[widgetId]?.current.remove()
             delete this.widgetRefs[widgetId]
 
             this.setState((prevState) => ({
                 widgets: prevState.widgets.filter(widget => widget.id !== widgetId)
-            }))
+            }), () => {
+
+                if (this._onWidgetListUpdated)
+                    this._onWidgetListUpdated(this.state.widgets)
+            })
             // value.current?.remove()
         }
+
+        
 
     }
 
@@ -510,19 +526,24 @@ class Canvas extends React.Component {
                         <Button  icon={<ReloadOutlined />} onClick={this.resetTransforms} />
                     </Tooltip>
                     <Tooltip title="Clear canvas">
-                        <Button  icon={<CloseOutlined />} onClick={this.clearCanvas} />
+                        <Button danger icon={<DeleteOutlined />} onClick={this.clearCanvas} />
                     </Tooltip>
                 </div>
 
                 <Droppable id="canvas-droppable" className="tw-w-full tw-h-full">
                     <Dropdown trigger={['contextMenu']} mouseLeaveDelay={0} menu={{items: this.state.contextMenuItems, }}>
-                            <div className="tw-w-full tw-h-full tw-flex tw-relative tw-bg-black tw-overflow-hidden" 
+                            <div className="dots-bg tw-w-full tw-h-full tw-flex tw-relative tw-bg-[#f2f2f2] tw-overflow-hidden" 
                                     ref={this.canvasContainerRef}
-                                    style={{transition: " transform 0.3s ease-in-out"}}
+                                    style={{
+                                            transition: " transform 0.3s ease-in-out", 
+                                            backgroundImage: `url('${DotsBackground}')`,
+                                            backgroundSize: 'cover', // Ensure proper sizing if needed
+                                            backgroundRepeat: 'no-repeat',
+                                        }}
                                     >
                                 {/* Canvas */}
                                 <div data-canvas className="tw-w-full tw-h-full tw-absolute tw-top-0 tw-select-none
-                                                            t tw-bg-green-300" 
+                                                            tw-bg-green-300" 
                                         ref={this.canvasRef}>
                                     <div className="tw-relative tw-w-full tw-h-full">
                                         {

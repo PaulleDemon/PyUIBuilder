@@ -82,27 +82,53 @@ class Widget extends React.Component{
             resizing: false,
             resizeCorner: "",
 
+            pos: {x: 0, y: 0}, // used for outer styling
+            size: {width: 100, height: 100}, // used for outer styling
+            position: "absolute",
+
             widgetStyling: {
-                position: "absolute",
-                left: 0,
-                top: 0,
-                width: 100,
-                height: 100
+                // use for widget's inner styling
             },
 
             attrs: { 
                 styling: {
                     backgroundColor: {
+                        label: "Background Color",
                         tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
                         value: "",
                         onChange: (value) => this.setWidgetStyling("backgroundColor", value) 
                     },
                     foregroundColor: {
+                        label: "Foreground Color",
                         tool: Tools.COLOR_PICKER,
-                        value: ""
+                        value: "",
                     },
                 },
-                layout: "show", // enables layout use "hide" to hide layout dropdown, takes the layout from this.layout
+                layout: {
+                    label: "Layout",
+                    tool: Tools.SELECT_DROPDOWN, // the tool to display, can be either HTML ELement or a constant string
+                    value: "flex",
+                    options: [
+                        {value: "flex", label: "Flex"},
+                        {value: "grid", label: "Grid"},
+                        {value: "place", label: "Place"},
+                    ],
+                    onChange: (value) => this.setWidgetStyling("backgroundColor", value) 
+                }, 
+                size: {
+                    width: {
+                        label: "Width",
+                        tool: Tools.NUMBER_INPUT, // the tool to display, can be either HTML ELement or a constant string
+                        value: 100,
+                        // onChange: (value) => this.setS("backgroundColor", value) 
+                    },
+                    height: {
+                        label: "Height",
+                        tool: Tools.NUMBER_INPUT, // the tool to display, can be either HTML ELement or a constant string
+                        value: 100,
+                        // onChange: (value) => this.setS("backgroundColor", value) 
+                    },
+                },
                 events: {
                     event1: {
                         tool: Tools.EVENT_HANDLER,
@@ -122,6 +148,7 @@ class Widget extends React.Component{
 
         this.isSelected = this.isSelected.bind(this)
         this.setWidgetName = this.setWidgetName.bind(this)
+        this.setAttrValue = this.setAttrValue.bind(this)
 
         this.getPos = this.getPos.bind(this)
         this.setPos = this.setPos.bind(this)
@@ -215,17 +242,19 @@ class Widget extends React.Component{
             // don't change position when resizing the widget
             return
         }
+        this.setState({
+            pos: {x, y}
+        })
 
-        this.setState((prev) => ({
-            // pos: {x: x, y: y}
-            widgetStyling: {
-                ...prev.widgetStyling,
-                left: x,
-                top: y,
-            }
-        }))
+        // this.setState((prev) => ({
+        //     // pos: {x: x, y: y}
+        //     widgetStyling: {
+        //         ...prev.widgetStyling,
+        //         left: x,
+        //         top: y,
+        //     }
+        // }))
 
-        // console.log("POs: ", x, y)
     }
 
     setParent(parentId){
@@ -243,7 +272,7 @@ class Widget extends React.Component{
     }
 
     getPos(){
-        return {x: this.state.widgetStyling.left, y: this.state.widgetStyling.top}
+        return this.state.pos
     }
 
     getProps(){
@@ -257,7 +286,7 @@ class Widget extends React.Component{
     getSize(){
         // const boundingRect = this.getBoundingRect()
 
-        return {width: this.state.widgetStyling.width, height: this.state.widgetStyling.height}
+        return {width: this.state.size.width, height: this.state.size.height}
     }
 
     getScaleAwareDimensions() {
@@ -304,6 +333,31 @@ class Widget extends React.Component{
         return this.elementRef.current
     }
 
+    /**
+     * Given the key as a path, sets the value for the widget attribute
+     * @param {string} path - path to the key, eg: styling.backgroundColor
+     * @param {any} value 
+     */
+    setAttrValue(path, value){
+        this.setState((prevState) => {
+            // Split the path to access the nested property (e.g., "styling.backgroundColor")
+            const keys = path.split('.')
+            const lastKey = keys.pop()
+            
+            // Traverse the state and update the nested value immutably
+            let newAttrs = { ...prevState.attrs }
+            let nestedObject = newAttrs
+    
+            keys.forEach(key => {
+                nestedObject[key] = { ...nestedObject[key] } // Ensure immutability
+                nestedObject = nestedObject[key]
+            })
+            nestedObject[lastKey].value = value
+    
+            return { attrs: newAttrs }
+        })
+    }
+
     startResizing(corner, event) {
         event.stopPropagation()
         this.setState({ resizing: true, resizeCorner: corner })
@@ -315,36 +369,54 @@ class Widget extends React.Component{
         })
     }
 
+    setWidgetName(name){
+
+        this.setState((prev) => ({
+            widgetName: name.length > 0 ? name : prev.widgetName 
+        }))
+    }
+
+    setWidgetStyling(key, value){
+        
+        this.setState((prev) => ({
+            widgetStyling: {
+                ...prev.widgetStyling,
+                [key]: value
+            }
+        }))
+
+    }
+
     handleResize(event) {
         if (!this.state.resizing) return
 
-        const { resizeCorner, widgetStyling } = this.state
+        const { resizeCorner, size, pos } = this.state
         const deltaX = event.movementX
         const deltaY = event.movementY
 
-        let newSize = { width: widgetStyling.width, height: widgetStyling.height }
-        let newPos = { x: widgetStyling.left, y: widgetStyling.top }
+        let newSize = { ...size }
+        let newPos = { ...pos }
         
         const {width: minWidth, height: minHeight} = this.minSize
         const {width: maxWidth, height: maxHeight} = this.maxSize
-        console.log("resizing: ", deltaX, deltaY, event)
+        // console.log("resizing: ", deltaX, deltaY, event)
 
         switch (resizeCorner) {
             case "nw":
                 newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width - deltaX))
                 newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height - deltaY))
-                newPos.x += (newSize.width !== widgetStyling.width) ? deltaX : 0
-                newPos.y += (newSize.height !== widgetStyling.height) ? deltaY : 0
+                newPos.x += (newSize.width !== size.width) ? deltaX : 0
+                newPos.y += (newSize.height !== size.height) ? deltaY : 0
                 break
             case "ne":
                 newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width + deltaX))
                 newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height - deltaY))
-                newPos.y += (newSize.height !== widgetStyling.height) ? deltaY : 0
+                newPos.y += (newSize.height !== size.height) ? deltaY : 0
                 break
             case "sw":
                 newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width - deltaX))
                 newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height + deltaY))
-                newPos.x += (newSize.width !== widgetStyling.width) ? deltaX : 0
+                newPos.x += (newSize.width !== size.width) ? deltaX : 0
                 break
             case "se":
                 newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width + deltaX))
@@ -354,16 +426,7 @@ class Widget extends React.Component{
                 break
         }
 
-        // this.setState({ size: newSize, pos: newPos })
-        this.setState((prev) => ({  
-            widgetStyling: {
-                ...prev.widgetStyling,
-                left: newPos.x,
-                top: newPos.y,
-                width: newSize.width,
-                height: newSize.height,
-            }
-        }))
+        this.setState({ size: newSize, pos: newPos })
     }
 
     stopResizing() {
@@ -385,28 +448,10 @@ class Widget extends React.Component{
         })
     }
 
-    setWidgetName(name){
-
-        this.setState((prev) => ({
-            widgetName: name.length > 0 ? name : prev.widgetName 
-        }))
-    }
-
-    setWidgetStyling(key, value){
-
-        this.setState((prev) => ({
-            widgetStyling: {
-                ...prev.widgetStyling,
-                [key]: value
-            }
-        }))
-
-    }
-
     renderContent(){
         // throw new NotImplementedError("render method has to be implemented")
         return (
-            <div className="tw-w-full tw-h-full tw-bg-red-400">
+            <div className="tw-w-full tw-h-full tw-rounded-md tw-bg-red-500" style={this.state.widgetStyling}>
 
             </div>
         )
@@ -421,15 +466,14 @@ class Widget extends React.Component{
         const widgetStyle = this.state.widgetStyling
 
 
-        let style = {
-            ...widgetStyle,
+        let outerStyle = {
             cursor: this.cursor,
             zIndex: this.state.zIndex,
             position: "absolute", //  don't change this if it has to be movable on the canvas
-            top: `${widgetStyle.top}px`,  
-            left: `${widgetStyle.left}px`,  
-            width: `${widgetStyle.width}px`,
-            height: `${widgetStyle.height}px`,
+            top: `${this.state.pos.y}px`,  
+            left: `${this.state.pos.x}px`,  
+            width: `${this.state.size.width}px`,
+            height: `${this.state.size.height}px`,
         }
 
         let selectionStyle = {
@@ -442,8 +486,8 @@ class Widget extends React.Component{
         // console.log("selected: ", this.state.selected)
         return (
             
-            <div data-id={this.__id} ref={this.elementRef} className="tw-absolute tw-w-fit tw-h-fit" 
-                    style={style}
+            <div data-id={this.__id} ref={this.elementRef} className="tw-absolute tw-shadow-xl tw-w-fit tw-h-fit" 
+                    style={outerStyle}
                 >
 
                 {this.renderContent()}

@@ -11,6 +11,11 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+.dots-bg{
+	background-image: url("../assets/background/dots.svg");
+	background-repeat: no-repeat;
+	background-size: cover;
+}
 
 .input{
 	border: 2px solid #e3e5e8;
