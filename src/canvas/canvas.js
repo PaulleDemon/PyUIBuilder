@@ -14,6 +14,7 @@ import CanvasToolBar from "./toolbar"
 import { UID } from "../utils/uid"
 import { removeDuplicateObjects } from "../utils/common"
 
+import { WidgetContext } from './context/widgetContext'
 // import {ReactComponent as DotsBackground} from "../assets/background/dots.svg"
 
 import DotsBackground from "../assets/background/dots.svg"
@@ -58,10 +59,12 @@ class Canvas extends React.Component {
             isPanning: false,
             currentTranslate: { x: 0, y: 0 },
             canvasSize:  { width: 500, height: 500 },
+            
             contextMenuItems: [],
-            toolbarOpen: true,
-
-            selectedWidgets: []
+            selectedWidgets: [],
+            
+            toolbarOpen: true,  
+            toolbarAttrs: null
         }
 
         this._onWidgetListUpdated = onWidgetListUpdated // a function callback when the widget is added to the canvas
@@ -72,7 +75,9 @@ class Canvas extends React.Component {
         this.mouseDownEvent = this.mouseDownEvent.bind(this)
         this.mouseMoveEvent = this.mouseMoveEvent.bind(this)
         this.mouseUpEvent = this.mouseUpEvent.bind(this)
-        
+
+        this.onActiveWidgetUpdate = this.onActiveWidgetUpdate.bind(this)
+
         this.getWidgets = this.getWidgets.bind(this)
         this.getActiveObjects = this.getActiveObjects.bind(this)
         this.getWidgetFromTarget = this.getWidgetFromTarget.bind(this)
@@ -169,6 +174,8 @@ class Canvas extends React.Component {
 
                     const selectedLength = this.state.selectedWidgets.length
 
+                    console.log("selected widget: ", selectedWidget)
+
                     if (selectedLength === 0 || (selectedLength === 1 && selectedWidget.__id !== this.state.selectedWidgets[0].__id)){
                         this.state.selectedWidgets[0]?.deSelect() // deselect the previous widget before adding the new one
                         this.state.selectedWidgets[0]?.setZIndex(0)
@@ -177,10 +184,9 @@ class Canvas extends React.Component {
                         selectedWidget.select()
 
                         this.setState({
-                            selectedWidgets: [selectedWidget]
+                            selectedWidgets: [selectedWidget],
+                            toolbarAttrs: selectedWidget.getToolbarAttrs()
                         })
-
-                        console.log("selected")
                     }
                     this.currentMode = CanvasModes.MOVE_WIDGET
                 }
@@ -384,7 +390,9 @@ class Canvas extends React.Component {
         })
 
         this.setState({
-            selectedWidgets: []
+            selectedWidgets: [],
+            toolbarAttrs: {},
+            // toolbarOpen: 
         })
 
     }
@@ -482,10 +490,8 @@ class Canvas extends React.Component {
         // }
 
         this.widgetRefs = {}
-        this.setState(() => ({
+        this.setState({
             widgets: []
-        }), () => {
-            
         })
 
         if (this._onWidgetListUpdated)
@@ -507,12 +513,25 @@ class Canvas extends React.Component {
             this._onWidgetListUpdated(widgets)
     }
 
+    onActiveWidgetUpdate(widgetId){
+
+        if (this.state.selectedWidgets.length === 0 || widgetId !== this.state.selectedWidgets[0].__id)
+            return
+
+        this.setState({
+            toolbarAttrs: this.state.selectedWidgets.at(0).getToolbarAttrs()
+        })
+
+    }
+
     renderWidget(widget){
         const { id, widgetType: ComponentType } = widget
         // console.log("widet: ", this.widgetRefs, id)
     
         return <ComponentType key={id} id={id} ref={this.widgetRefs[id]} 
-                                canvasRef={this.canvasContainerRef} />
+                                canvasRef={this.canvasContainerRef} 
+                                onWidgetUpdate={this.onActiveWidgetUpdate}
+                                />
     }
 
     render() {
@@ -556,8 +575,8 @@ class Canvas extends React.Component {
                 </Droppable>
 
                 <CanvasToolBar isOpen={this.state.toolbarOpen} 
-                                activeWidget={this.state.selectedWidgets[0]}
-                                setActiveWidget={this.setSelectedWidget}
+                                widgetType={this.state.selectedWidgets?.at(0)?.getWidgetType() || ""}
+                                attrs={this.state.toolbarAttrs}
                                 />
             </div>
         )

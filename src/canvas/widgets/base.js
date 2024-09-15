@@ -8,18 +8,17 @@ import { toSnakeCase } from "../utils/utils"
 import EditableDiv from "../../components/editableDiv"
 
 
-
 /**
  * Base class to be extended
  */
-class Widget extends React.Component{
+class Widget extends React.Component {
 
     static widgetType = "widget"
 
-    constructor(props){
+    constructor(props) {
         super(props)
 
-        const {id, widgetName, canvasRef} = props
+        const { id, widgetName, canvasRef } = props
         // console.log("Id: ", id)
         // this id has to be unique inside the canvas, it will be set automatically and should never be changed
         this.__id = id
@@ -32,37 +31,17 @@ class Widget extends React.Component{
         this._parent = "" // id of the parent widget, default empty string
         this._children = [] // id's of all the child widgets
 
-        this.minSize = {width: 50, height: 50} // disable resizing below this number
-        this.maxSize = {width: 500, height: 500} // disable resizing above this number
+        this.minSize = { width: 50, height: 50 } // disable resizing below this number
+        this.maxSize = { width: 500, height: 500 } // disable resizing above this number
 
         this.cursor = Cursor.POINTER
 
         this.icon = "" // antd icon name representing this widget
-        
+
         this.elementRef = React.createRef()
 
-        this.attrs = {
-            styling: {
-                backgroundColor: {
-                    tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
-                    value: ""
-                },
-                foregroundColor: {
-                    tool: Tools.COLOR_PICKER,
-                    value: ""
-                },
-            },
-            layout: "show", // enables layout use "hide" to hide layout dropdown, takes the layout from this.layout
-            events: {
-                event1: {
-                    tool: Tools.EVENT_HANDLER,
-                    value: ""
-                }
-            }
-        }
-
         this.functions = {
-            "load": {"args1": "number", "args2": "string"}
+            "load": { "args1": "number", "args2": "string" }
         }
 
 
@@ -72,62 +51,49 @@ class Widget extends React.Component{
             y: 0,
             height: 100,
             width: 100
-        } 
+        }
 
         this.state = {
             zIndex: 0,
             selected: false,
-            widgetName: widgetName  || 'widget', // this will later be converted to variable name
+            widgetName: widgetName || 'widget', // this will later be converted to variable name
             enableRename: false, // will open the widgets editable div for renaming
             resizing: false,
             resizeCorner: "",
 
-            pos: {x: 0, y: 0}, // used for outer styling
-            size: {width: 100, height: 100}, // used for outer styling
+            pos: { x: 0, y: 0 },
+            size: { width: 100, height: 100 },
             position: "absolute",
 
             widgetStyling: {
                 // use for widget's inner styling
             },
 
-            attrs: { 
+            attrs: {
                 styling: {
                     backgroundColor: {
                         label: "Background Color",
                         tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
                         value: "",
-                        onChange: (value) => this.setWidgetStyling("backgroundColor", value) 
+                        onChange: (value) => this.setWidgetStyling("backgroundColor", value)
                     },
                     foregroundColor: {
                         label: "Foreground Color",
                         tool: Tools.COLOR_PICKER,
                         value: "",
                     },
+                    label: "Styling"
                 },
                 layout: {
                     label: "Layout",
                     tool: Tools.SELECT_DROPDOWN, // the tool to display, can be either HTML ELement or a constant string
                     value: "flex",
                     options: [
-                        {value: "flex", label: "Flex"},
-                        {value: "grid", label: "Grid"},
-                        {value: "place", label: "Place"},
+                        { value: "flex", label: "Flex" },
+                        { value: "grid", label: "Grid" },
+                        { value: "place", label: "Place" },
                     ],
-                    onChange: (value) => this.setWidgetStyling("backgroundColor", value) 
-                }, 
-                size: {
-                    width: {
-                        label: "Width",
-                        tool: Tools.NUMBER_INPUT, // the tool to display, can be either HTML ELement or a constant string
-                        value: 100,
-                        // onChange: (value) => this.setS("backgroundColor", value) 
-                    },
-                    height: {
-                        label: "Height",
-                        tool: Tools.NUMBER_INPUT, // the tool to display, can be either HTML ELement or a constant string
-                        value: 100,
-                        // onChange: (value) => this.setS("backgroundColor", value) 
-                    },
+                    onChange: (value) => this.setWidgetStyling("backgroundColor", value)
                 },
                 events: {
                     event1: {
@@ -140,72 +106,128 @@ class Widget extends React.Component{
 
         this.mousePress = this.mousePress.bind(this)
         this.getElement = this.getElement.bind(this)
-        this.getBoundingRect = this.getBoundingRect.bind(this)
 
+        this.getPos = this.getPos.bind(this)
+        this.getSize = this.getSize.bind(this)
         this.getWidgetName = this.getWidgetName.bind(this)
         this.getWidgetType = this.getWidgetType.bind(this)
+        this.getBoundingRect = this.getBoundingRect.bind(this)
+
+        this.getToolbarAttrs = this.getToolbarAttrs.bind(this)
+
         // this.openRenaming = this.openRenaming.bind(this)
 
         this.isSelected = this.isSelected.bind(this)
-        this.setWidgetName = this.setWidgetName.bind(this)
-        this.setAttrValue = this.setAttrValue.bind(this)
 
-        this.getPos = this.getPos.bind(this)
         this.setPos = this.setPos.bind(this)
-
+        this.setAttrValue = this.setAttrValue.bind(this)
+        this.setWidgetName = this.setWidgetName.bind(this)
         this.setWidgetStyling = this.setWidgetStyling.bind(this)
+
 
         this.startResizing = this.startResizing.bind(this)
         this.handleResize = this.handleResize.bind(this)
         this.stopResizing = this.stopResizing.bind(this)
 
-    }   
+    }
 
-    componentDidMount(){
+    componentDidMount() {
         this.elementRef.current?.addEventListener("click", this.mousePress)
 
         this.canvas.addEventListener("mousemove", this.handleResize)
         this.canvas.addEventListener("mouseup", this.stopResizing)
     }
 
-    componentWillUnmount(){
+    componentWillUnmount() {
         this.elementRef.current?.removeEventListener("click", this.mousePress)
 
         this.canvas.addEventListener("mousemove", this.handleResize)
         this.canvas.addEventListener("mouseup", this.stopResizing)
     }
 
-    // TODO: add context menu items such as delete, add etc
-    contextMenu(){
-        
+    updateState = (newState, callback) => {
+        this.setState(newState, () => {
+            const { onWidgetUpdate } = this.props
+            if (onWidgetUpdate) {
+                onWidgetUpdate(this.__id)
+            }
+            if (callback) callback()
+        })
     }
 
-    getVariableName(){
+    _getWidgetMethods = () => {
+        return {
+            rename: this.setWidgetName,
+            resize: this.setWidgetSize,
+            setWidgetAttrs: this.setAttrValue,
+        }
+    }
+
+    getToolbarAttrs(){
+
+        return ({
+                widgetName: {
+                    label: "Widget Name",
+                    tool: Tools.INPUT, // the tool to display, can be either HTML ELement or a constant string
+                    toolProps: {placeholder: "Widget name", maxLength: 40}, 
+                    value: this.state.widgetName,
+                    onChange: (value) => this.setWidgetName(value)
+                },
+                size: {
+                    label: "Sizing",
+                    display: "horizontal",
+                    width: {
+                        label: "Width",
+                        tool: Tools.NUMBER_INPUT, // the tool to display, can be either HTML ELement or a constant string
+                        toolProps: {placeholder: "width", max: this.maxSize.width, min: this.minSize.width}, 
+                        value: this.state.size.width || 100,
+                        onChange: (value) => this.setWidgetSize(value, null)
+                    },
+                    height: {
+                        label: "Height",
+                        tool: Tools.NUMBER_INPUT,
+                        toolProps: {placeholder: "width", max: this.maxSize.height, min: this.minSize.height}, 
+                        value: this.state.size.height || 100,
+                        onChange: (value) => this.setWidgetSize(null, value)
+                    },
+                },
+                
+                ...this.state.attrs,
+
+        })
+    }
+
+    // TODO: add context menu items such as delete, add etc
+    contextMenu() {
+
+    }
+
+    getVariableName() {
         return toSnakeCase(this.state.widgetName)
     }
 
-    getWidgetName(){
+    getWidgetName() {
         return this.state.widgetName
     }
 
-    getWidgetType(){
+    getWidgetType() {
         return this.constructor.widgetType
     }
 
-    getAttributes(){
+    getAttributes() {
         return this.state.attrs
     }
 
     /**
      * removes the element/widget
      */
-    remove(){
-        this.elementRef.current.remove()
+    remove() {
+        this.canvas.removeWidget(this.__id)
     }
 
-    mousePress(event){
+    mousePress(event) {
         // event.preventDefault()
-        if (!this._disableSelection){
+        if (!this._disableSelection) {
 
             // const widgetSelected = new CustomEvent("selection:created", {
             //     detail: {
@@ -219,117 +241,109 @@ class Widget extends React.Component{
         }
     }
 
-    select(){
+    select() {
         this.setState({
             selected: true
         })
-        
+
     }
 
-    deSelect(){
+    deSelect() {
         this.setState({
             selected: false
         })
     }
 
-    isSelected(){
+    isSelected() {
         return this.state.selected
     }
 
-    setPos(x, y){
+    setPos(x, y) {
 
-        if (this.state.resizing){
+        if (this.state.resizing) {
             // don't change position when resizing the widget
             return
         }
-        this.setState({
-            pos: {x, y}
+        // this.setState({
+        //     pos: { x, y }
+        // })
+
+        this.updateState({
+            pos: { x, y }
         })
-
-        // this.setState((prev) => ({
-        //     // pos: {x: x, y: y}
-        //     widgetStyling: {
-        //         ...prev.widgetStyling,
-        //         left: x,
-        //         top: y,
-        //     }
-        // }))
-
     }
 
-    setParent(parentId){
+    setParent(parentId) {
         this._parent = parentId
     }
 
-    addChild(childId){
+    addChild(childId) {
         this._children.push(childId)
     }
 
-    removeChild(childId){
-        this._children = this._children.filter(function(item) {
-                                        return item !== childId
-                                    })
+    removeChild(childId) {
+        this._children = this._children.filter(function (item) {
+            return item !== childId
+        })
     }
 
-    getPos(){
+    getPos() {
         return this.state.pos
     }
 
-    getProps(){
+    getProps() {
         return this.attrs
     }
 
-    getBoundingRect(){
+    getBoundingRect() {
         return this.elementRef.current?.getBoundingClientRect()
     }
 
-    getSize(){
-        // const boundingRect = this.getBoundingRect()
-
-        return {width: this.state.size.width, height: this.state.size.height}
+    getSize() {
+        return this.state.size
     }
 
     getScaleAwareDimensions() {
         // Get the bounding rectangle
         const rect = this.elementRef.current.getBoundingClientRect()
-      
+
         // Get the computed style of the element
         const style = window.getComputedStyle(this.elementRef.current)
-      
+
         // Get the transform matrix
         const transform = style.transform
-      
+
         // Extract scale factors from the matrix
         let scaleX = 1
         let scaleY = 1
-      
+
         if (transform && transform !== 'none') {
-          // For 2D transforms (a, c, b, d)
-          const matrix = transform.match(/^matrix\(([^,]+),[^,]+,([^,]+),[^,]+,[^,]+,[^,]+\)$/);
-      
-          if (matrix) {
-            scaleX = parseFloat(matrix[1])
-            scaleY = parseFloat(matrix[2])
-          }
+            // For 2D transforms (a, c, b, d)
+            const matrix = transform.match(/^matrix\(([^,]+),[^,]+,([^,]+),[^,]+,[^,]+,[^,]+\)$/);
+
+            if (matrix) {
+                scaleX = parseFloat(matrix[1])
+                scaleY = parseFloat(matrix[2])
+            }
         }
-      
+
         // Return scaled width and height
         return {
-          width: rect.width / scaleX,
-          height: rect.height / scaleY
+            width: rect.width / scaleX,
+            height: rect.height / scaleY
         }
-      }
-      
+    }
 
-    getWidgetFunctions(){
+
+    getWidgetFunctions() {
         return this.functions
     }
 
-    getId(){
+    getId() {
         return this.__id
     }
 
-    getElement(){
+    getElement() {
         return this.elementRef.current
     }
 
@@ -338,22 +352,22 @@ class Widget extends React.Component{
      * @param {string} path - path to the key, eg: styling.backgroundColor
      * @param {any} value 
      */
-    setAttrValue(path, value){
+    setAttrValue(path, value) {
         this.setState((prevState) => {
             // Split the path to access the nested property (e.g., "styling.backgroundColor")
             const keys = path.split('.')
             const lastKey = keys.pop()
-            
+
             // Traverse the state and update the nested value immutably
             let newAttrs = { ...prevState.attrs }
             let nestedObject = newAttrs
-    
+
             keys.forEach(key => {
                 nestedObject[key] = { ...nestedObject[key] } // Ensure immutability
                 nestedObject = nestedObject[key]
             })
             nestedObject[lastKey].value = value
-    
+
             return { attrs: newAttrs }
         })
     }
@@ -363,28 +377,72 @@ class Widget extends React.Component{
         this.setState({ resizing: true, resizeCorner: corner })
     }
 
-    setZIndex(zIndex){
+    setZIndex(zIndex) {
         this.setState({
             zIndex: zIndex
         })
     }
 
-    setWidgetName(name){
+    setWidgetName(name) {
 
-        this.setState((prev) => ({
-            widgetName: name.length > 0 ? name : prev.widgetName 
-        }))
+        // this.setState((prev) => ({
+        //     widgetName: name.length > 0 ? name : prev.widgetName
+        // }))
+
+        this.updateState({
+            widgetName: name.length > 0 ? name : this.state.widgetName
+        })
     }
 
-    setWidgetStyling(key, value){
-        
-        this.setState((prev) => ({
-            widgetStyling: {
-                ...prev.widgetStyling,
-                [key]: value
-            }
-        }))
+    /**
+     * 
+     * @param {string} key - The string in react Style format
+     * @param {string} value - Value of the style
+     * @param {function():void} [callback] - optional callback, thats called after setting the internal state
+     */
+    setWidgetStyling(key, value, callback) {
 
+        const widgetStyle = {
+            ...this.state.widgetStyling,
+            [key]: value
+        }
+
+        this.setState({
+            widgetStyling: widgetStyle
+        }, () => {
+            if (callback)
+                callback(widgetStyle)
+        })
+
+    }
+
+    /**
+     * 
+     * @param {number|null} width 
+     * @param {number|null} height 
+     * @param {function():void} [callback] - optional callback, thats called after setting the internal state
+     */
+    setWidgetSize(width, height, callback) {
+
+        const newSize = {
+            width: Math.max(this.minSize.width, Math.min(width || this.state.size.width, this.maxSize.width)),
+            height: Math.max(this.minSize.height, Math.min(height || this.state.size.height, this.maxSize.height)),
+        }
+
+        this.setState({
+            size: newSize
+        }, () => {
+            if (callback) {
+                callback(newSize)
+            }
+        })
+
+        this.updateState({
+            size: newSize
+        }, () => {
+            if (callback)
+                callback(newSize)
+        })
     }
 
     handleResize(event) {
@@ -396,9 +454,9 @@ class Widget extends React.Component{
 
         let newSize = { ...size }
         let newPos = { ...pos }
-        
-        const {width: minWidth, height: minHeight} = this.minSize
-        const {width: maxWidth, height: maxHeight} = this.maxSize
+
+        const { width: minWidth, height: minHeight } = this.minSize
+        const { width: maxWidth, height: maxHeight } = this.maxSize
         // console.log("resizing: ", deltaX, deltaY, event)
 
         switch (resizeCorner) {
@@ -426,7 +484,11 @@ class Widget extends React.Component{
                 break
         }
 
-        this.setState({ size: newSize, pos: newPos })
+        // this.setState({ size: newSize, pos: newPos })
+        this.updateState({
+            size: newSize,
+            pos: newPos
+        })
     }
 
     stopResizing() {
@@ -435,20 +497,20 @@ class Widget extends React.Component{
         }
     }
 
-    openRenaming(){
+    openRenaming() {
         this.setState({
             selected: true,
             enableRename: true
         })
     }
 
-    closeRenaming(){
+    closeRenaming() {
         this.setState({
             enableRename: false
         })
     }
 
-    renderContent(){
+    renderContent() {
         // throw new NotImplementedError("render method has to be implemented")
         return (
             <div className="tw-w-full tw-h-full tw-rounded-md tw-bg-red-500" style={this.state.widgetStyling}>
@@ -461,8 +523,8 @@ class Widget extends React.Component{
      * This is an internal methods don't override
      * @returns {HTMLElement}
      */
-    render(){
-        
+    render() {
+
         const widgetStyle = this.state.widgetStyling
 
 
@@ -470,8 +532,8 @@ class Widget extends React.Component{
             cursor: this.cursor,
             zIndex: this.state.zIndex,
             position: "absolute", //  don't change this if it has to be movable on the canvas
-            top: `${this.state.pos.y}px`,  
-            left: `${this.state.pos.x}px`,  
+            top: `${this.state.pos.y}px`,
+            left: `${this.state.pos.x}px`,
             width: `${this.state.size.width}px`,
             height: `${this.state.size.height}px`,
         }
@@ -485,23 +547,23 @@ class Widget extends React.Component{
 
         // console.log("selected: ", this.state.selected)
         return (
-            
-            <div data-id={this.__id} ref={this.elementRef} className="tw-absolute tw-shadow-xl tw-w-fit tw-h-fit" 
-                    style={outerStyle}
-                >
+
+            <div data-id={this.__id} ref={this.elementRef} className="tw-absolute tw-shadow-xl tw-w-fit tw-h-fit"
+                style={outerStyle}
+            >
 
                 {this.renderContent()}
                 <div className={`tw-absolute tw-bg-transparent tw-scale-[1.1] tw-opacity-100 
                                 tw-w-full tw-h-full tw-top-0  
                                 ${this.state.selected ? 'tw-border-2 tw-border-solid tw-border-blue-500' : 'tw-hidden'}`}>
-                    
+
                     <div className="tw-relative tw-w-full tw-h-full">
                         <EditableDiv value={this.state.widgetName} onChange={this.setWidgetName}
-                                        maxLength={40}
-                                        openEdit={this.state.enableRename}
-                                        className="tw-text-sm tw-w-fit tw-max-w-[160px] tw-text-clip tw-min-w-[150px] 
+                            maxLength={40}
+                            openEdit={this.state.enableRename}
+                            className="tw-text-sm tw-w-fit tw-max-w-[160px] tw-text-clip tw-min-w-[150px] 
                                                     tw-overflow-hidden tw-absolute tw--top-6 tw-h-6"
-                                />
+                        />
 
                         <div
                             className="tw-w-2 tw-h-2 tw-absolute tw--left-1 tw--top-1 tw-bg-blue-500"
@@ -526,7 +588,7 @@ class Widget extends React.Component{
 
                     </div>
 
-                
+
 
                 </div>
             </div>
@@ -534,7 +596,7 @@ class Widget extends React.Component{
 
     }
 
-}   
+}
 
 
 export default Widget
