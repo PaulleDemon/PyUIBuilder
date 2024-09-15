@@ -85,7 +85,9 @@ class Canvas extends React.Component {
 
         this.getCanvasObjectsBoundingBox = this.getCanvasObjectsBoundingBox.bind(this)
         this.fitCanvasToBoundingBox = this.fitCanvasToBoundingBox.bind(this)
-        this.getCanvasBoundingRect = this.getCanvasContainerBoundingRect.bind(this)
+
+        this.getCanvasContainerBoundingRect = this.getCanvasContainerBoundingRect.bind(this)
+        this.getCanvasBoundingRect = this.getCanvasBoundingRect.bind(this)
 
         this.setSelectedWidget = this.setSelectedWidget.bind(this)
         this.deleteSelectedWidgets = this.deleteSelectedWidgets.bind(this)
@@ -531,17 +533,21 @@ class Canvas extends React.Component {
 
         console.log("event: ", e, this.canvasContainerRef.current.offsetTop)
 
-        const canvasContainerRect = this.getCanvasContainerBoundingRect()
-        const canvasRect = this.getCanvasBoundingRect()
+        // const canvasContainerRect = this.getCanvasContainerBoundingRect()
+        const canvasRect = this.canvasRef.current.getBoundingClientRect()
+
+        console.log("canvas rect: ", canvasRect)
 
         const { clientX, clientY } = e
 
         let finalPosition = {	
-			x: (e.clientX - canvasContainerRect.left  - this.state.currentTranslate.x) / this.state.zoom,
-			y: (e.clientY - canvasContainerRect.top - this.state.currentTranslate.y) / this.state.zoom,
+			x: (e.clientX - canvasRect.left) / this.state.zoom,
+			y: (e.clientY - canvasRect.top) / this.state.zoom,
 		}
 
-        console.log("final: ", finalPosition)
+
+
+        console.log("final: ", finalPosition, finalPosition.x*this.state.zoom, finalPosition.y*this.state.zoom, this.state.zoom)
 
         this.addWidget(Widget, ({id, widgetRef}) => {
             widgetRef.current.setPos(finalPosition.x, finalPosition.y)
@@ -576,7 +582,7 @@ class Canvas extends React.Component {
 
                 <DroppableWrapper id="canvas-droppable" 
                                     className="tw-w-full tw-h-full" onDrop={this.handleDropEvent}>
-                    <Dropdown trigger={['contextMenu']} mouseLeaveDelay={0} menu={{items: this.state.contextMenuItems, }}>
+                    {/* <Dropdown trigger={['contextMenu']} mouseLeaveDelay={0} menu={{items: this.state.contextMenuItems, }}> */}
                             <div className="dots-bg tw-w-full tw-h-full tw-flex tw-relative tw-bg-[#f2f2f2] tw-overflow-hidden" 
                                     ref={this.canvasContainerRef}
                                     style={{
@@ -597,7 +603,7 @@ class Canvas extends React.Component {
                                     </div>
                                 </div>
                             </div>
-                    </Dropdown>
+                    {/* </Dropdown> */}
                 </DroppableWrapper>
 
                 {/* <CanvasToolBar isOpen={this.state.toolbarOpen} 
