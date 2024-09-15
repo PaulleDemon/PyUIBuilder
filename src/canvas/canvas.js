@@ -5,7 +5,7 @@ import {DndContext} from '@dnd-kit/core'
 import { CloseOutlined, DeleteOutlined, EditOutlined, FullscreenOutlined, ReloadOutlined } from "@ant-design/icons"
 import { Button, Tooltip, Dropdown } from "antd"
 
-import Droppable from "../components/utils/droppable"
+import Droppable from "../components/utils/droppableDnd"
 import Widget from "./widgets/base"
 import Cursor from "./constants/cursor"
 
@@ -18,6 +18,7 @@ import { WidgetContext } from './context/widgetContext'
 // import {ReactComponent as DotsBackground} from "../assets/background/dots.svg"
 
 import DotsBackground from "../assets/background/dots.svg"
+import DroppableWrapper from "../components/utils/droppable"
 
 // const DotsBackground = require("../assets/background/dots.svg")
 
@@ -524,6 +525,30 @@ class Canvas extends React.Component {
 
     }
 
+    handleDropEvent = (e) => {
+
+        e.preventDefault()
+
+        console.log("event: ", e, this.canvasContainerRef.current.offsetTop)
+
+        const canvasContainerRect = this.getCanvasContainerBoundingRect()
+        const canvasRect = this.getCanvasBoundingRect()
+
+        const { clientX, clientY } = e
+
+        let finalPosition = {	
+			x: (e.clientX - canvasContainerRect.left  - this.state.currentTranslate.x) / this.state.zoom,
+			y: (e.clientY - canvasContainerRect.top - this.state.currentTranslate.y) / this.state.zoom,
+		}
+
+        console.log("final: ", finalPosition)
+
+        this.addWidget(Widget, ({id, widgetRef}) => {
+            widgetRef.current.setPos(finalPosition.x, finalPosition.y)
+        })
+
+    }
+
     renderWidget(widget){
         const { id, widgetType: ComponentType } = widget
         // console.log("widet: ", this.widgetRefs, id)
@@ -549,7 +574,8 @@ class Canvas extends React.Component {
                     </Tooltip>
                 </div>
 
-                <Droppable id="canvas-droppable" className="tw-w-full tw-h-full">
+                <DroppableWrapper id="canvas-droppable" 
+                                    className="tw-w-full tw-h-full" onDrop={this.handleDropEvent}>
                     <Dropdown trigger={['contextMenu']} mouseLeaveDelay={0} menu={{items: this.state.contextMenuItems, }}>
                             <div className="dots-bg tw-w-full tw-h-full tw-flex tw-relative tw-bg-[#f2f2f2] tw-overflow-hidden" 
                                     ref={this.canvasContainerRef}
@@ -572,12 +598,12 @@ class Canvas extends React.Component {
                                 </div>
                             </div>
                     </Dropdown>
-                </Droppable>
+                </DroppableWrapper>
 
-                <CanvasToolBar isOpen={this.state.toolbarOpen} 
+                {/* <CanvasToolBar isOpen={this.state.toolbarOpen} 
                                 widgetType={this.state.selectedWidgets?.at(0)?.getWidgetType() || ""}
                                 attrs={this.state.toolbarAttrs}
-                                />
+                                /> */}
             </div>
         )
     }

@@ -1,4 +1,4 @@
-// This is only for testing purpose, not really meant to be used
+//NOTE: This is only for testing purpose, not really meant to be used
 import './polyfills'
 
 import {

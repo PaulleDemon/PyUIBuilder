@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef } from "react"
-import Draggable from "./utils/draggable"
+import Draggable from "./utils/draggableDnd"
 
 import { FileImageOutlined, GithubOutlined, GitlabOutlined, LinkOutlined,
             AudioOutlined, VideoCameraOutlined,
             FileTextOutlined} from "@ant-design/icons"
+import DraggableWrapper from "./utils/draggable"
 
 
 export function DraggableWidgetCard({ name, img, url, innerRef}){
@@ -28,21 +29,25 @@ export function DraggableWidgetCard({ name, img, url, innerRef}){
 
 
     return (
-        <Draggable className="tw-cursor-pointer" id={name}>
-            <div ref={innerRef} className="tw-select-none tw-h-[240px] tw-w-[280px] tw-flex tw-flex-col tw-rounded-md tw-overflow-hidden 
-                            tw-gap-2 tw-text-gray-600 tw-bg-[#ffffff44] tw-border-solid tw-border-[1px] tw-border-[#888] ">
-                <div className="tw-h-[200px] tw-w-full tw-overflow-hidden">
-                    <img src={img} alt={name} className="tw-object-contain tw-h-full tw-w-full tw-select-none" />
-                </div>
-                <span className="tw-text-xl">{name}</span>
-                <div className="tw-flex tw-text-lg  tw-justify-between tw-px-4">
+        // <Draggable className="tw-cursor-pointer" id={name}>
+            <DraggableWrapper className="tw-cursor-pointer tw-w-fit tw-h-fit">
+                <div ref={innerRef} className="tw-select-none tw-pointer-events-none tw-h-[240px] tw-w-[280px] tw-flex tw-flex-col 
+                                                tw-rounded-md tw-overflow-hidden 
+                                                tw-gap-2 tw-text-gray-600 tw-bg-[#ffffff44] tw-border-solid tw-border-[1px]
+                                                tw-border-[#888] ">
+                    <div className="tw-h-[200px] tw-w-full tw-overflow-hidden">
+                        <img src={img} alt={name} className="tw-object-contain tw-h-full tw-w-full tw-select-none" />
+                    </div>
+                    <span className="tw-text-xl tw-text-center">{name}</span>
+                    <div className="tw-flex tw-text-lg tw-place tw-px-4">
 
-                    <a href={url} className="tw-text-black" target="_blank" rel="noopener noreferrer">
-                        {urlIcon}
-                    </a>
+                        <a href={url} className="tw-text-black" target="_blank" rel="noopener noreferrer">
+                            {urlIcon}
+                        </a>
+                    </div>
                 </div>
-            </div>
-        </Draggable>
+            </DraggableWrapper>
+        // </Draggable> 
     )
 
 }

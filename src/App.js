@@ -156,7 +156,7 @@ function App() {
 					collisionDetection={rectIntersection}
 					onDragStart={handleDragStart}
 					onDragMove={handleDragMove}
-					onDragEnd={handleDragEnd}
+					// onDragEnd={handleDragEnd}
 					
 				>
 				<div className="tw-w-full tw-h-[94vh] tw-flex">
