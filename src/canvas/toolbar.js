@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { memo, useEffect, useState } from "react"
 
 import { ColorPicker, Input, InputNumber, Select } from "antd"
 
@@ -14,7 +14,7 @@ import Tools from "./constants/tools.js"
  * @param {string} widgetType 
  * @param {object} attrs - widget attributes 
  */
-function CanvasToolBar({ isOpen, widgetType, attrs = {} }) {
+const  CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
 
     const [toolbarOpen, setToolbarOpen] = useState(isOpen)
     const [toolbarAttrs, setToolbarAttrs] = useState(attrs)
@@ -27,24 +27,6 @@ function CanvasToolBar({ isOpen, widgetType, attrs = {} }) {
         setToolbarAttrs(attrs)
     }, [attrs])
 
-    // const handleTextInputChange = (e) => {
-    //     activeWidget?.setWidgetName(e.target.value) // Update widget's internal state
-    //     const updatedWidget = { ...activeWidget } // Create a shallow copy of the widget
-    //     setActiveWidget(updatedWidget) // Update the state with the modified widget
-    // }
-
-
-    // const handleChange = (attrPath, value, callback) => {
-    //     // console.log("Value: ", attrPath, value)
-    //     activeWidget?.setAttrValue(attrPath, value) // Update widget's internal state
-    //     const updatedWidget = { ...activeWidget }
-
-    //     if (callback) {
-    //         callback(value)
-    //     }
-
-    //     setActiveWidget(updatedWidget)
-    // }
 
     const handleChange = (value, callback) => {
         if (callback) {
@@ -148,7 +130,7 @@ function CanvasToolBar({ isOpen, widgetType, attrs = {} }) {
         </div>
     )
 
-}
+})
 
 
 

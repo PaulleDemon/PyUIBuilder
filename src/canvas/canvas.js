@@ -174,7 +174,7 @@ class Canvas extends React.Component {
 
                     const selectedLength = this.state.selectedWidgets.length
 
-                    console.log("selected widget: ", selectedWidget)
+                    // console.log("selected widget: ", selectedWidget)
 
                     if (selectedLength === 0 || (selectedLength === 1 && selectedWidget.__id !== this.state.selectedWidgets[0].__id)){
                         this.state.selectedWidgets[0]?.deSelect() // deselect the previous widget before adding the new one
@@ -264,9 +264,7 @@ class Canvas extends React.Component {
                     const newPosX = x + (deltaX/this.state.zoom) // account for the zoom, since the widget is relative to canvas
                     const newPosY = y + (deltaY/this.state.zoom) // account for the zoom, since the widget is relative to canvas
                     widget.setPos(newPosX, newPosY)
-                    // this.checkAndExpandCanvas(newPosX, newPosY,  widget)
                 })
-                // this.fitCanvasToBoundingBox(10)
             }
 
 
@@ -391,7 +389,7 @@ class Canvas extends React.Component {
 
         this.setState({
             selectedWidgets: [],
-            toolbarAttrs: {},
+            toolbarAttrs: null,
             // toolbarOpen: 
         })
 
@@ -517,6 +515,8 @@ class Canvas extends React.Component {
 
         if (this.state.selectedWidgets.length === 0 || widgetId !== this.state.selectedWidgets[0].__id)
             return
+
+        // console.log("updating...")
 
         this.setState({
             toolbarAttrs: this.state.selectedWidgets.at(0).getToolbarAttrs()

@@ -186,7 +186,7 @@ class Widget extends React.Component {
                     height: {
                         label: "Height",
                         tool: Tools.NUMBER_INPUT,
-                        toolProps: {placeholder: "width", max: this.maxSize.height, min: this.minSize.height}, 
+                        toolProps: {placeholder: "height", max: this.maxSize.height, min: this.minSize.height}, 
                         value: this.state.size.height || 100,
                         onChange: (value) => this.setWidgetSize(null, value)
                     },
@@ -510,6 +510,10 @@ class Widget extends React.Component {
         })
     }
 
+    handleDragStart = (event) => {
+        console.log("dragging event: ", event)
+    }
+
     renderContent() {
         // throw new NotImplementedError("render method has to be implemented")
         return (
@@ -518,6 +522,7 @@ class Widget extends React.Component {
             </div>
         )
     }
+
 
     /**
      * This is an internal methods don't override
