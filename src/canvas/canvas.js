@@ -18,7 +18,7 @@ import { WidgetContext } from './context/widgetContext'
 // import {ReactComponent as DotsBackground} from "../assets/background/dots.svg"
 
 import DotsBackground from "../assets/background/dots.svg"
-import DroppableWrapper from "../components/utils/droppable"
+import DroppableWrapper from "../components/draggable/droppable"
 
 // const DotsBackground = require("../assets/background/dots.svg")
 
@@ -527,27 +527,22 @@ class Canvas extends React.Component {
 
     }
 
+    /**
+     * Handles drop event to canvas from the sidebar
+     * @param {DragEvent} e 
+     */
     handleDropEvent = (e) => {
 
         e.preventDefault()
 
-        console.log("event: ", e, this.canvasContainerRef.current.offsetTop)
-
         // const canvasContainerRect = this.getCanvasContainerBoundingRect()
         const canvasRect = this.canvasRef.current.getBoundingClientRect()
-
-        console.log("canvas rect: ", canvasRect)
-
         const { clientX, clientY } = e
 
-        let finalPosition = {	
-			x: (e.clientX - canvasRect.left) / this.state.zoom,
-			y: (e.clientY - canvasRect.top) / this.state.zoom,
+        const finalPosition = {	
+			x: (clientX - canvasRect.left) / this.state.zoom,
+			y: (clientY - canvasRect.top) / this.state.zoom,
 		}
-
-
-
-        console.log("final: ", finalPosition, finalPosition.x*this.state.zoom, finalPosition.y*this.state.zoom, this.state.zoom)
 
         this.addWidget(Widget, ({id, widgetRef}) => {
             widgetRef.current.setPos(finalPosition.x, finalPosition.y)
@@ -606,10 +601,10 @@ class Canvas extends React.Component {
                     {/* </Dropdown> */}
                 </DroppableWrapper>
 
-                {/* <CanvasToolBar isOpen={this.state.toolbarOpen} 
+                <CanvasToolBar isOpen={this.state.toolbarOpen} 
                                 widgetType={this.state.selectedWidgets?.at(0)?.getWidgetType() || ""}
                                 attrs={this.state.toolbarAttrs}
-                                /> */}
+                                />
             </div>
         )
     }

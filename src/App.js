@@ -12,6 +12,7 @@ import WidgetsContainer from './sidebar/widgetsContainer'
 
 import Widget from './canvas/widgets/base'
 import { DraggableWidgetCard } from './components/cards'
+import { DragProvider } from './components/draggable/draggableContext'
 
 
 function App() {
@@ -95,15 +96,6 @@ function App() {
 			return
 		}
 		setDropAnimation(null)
-
-		// FIXME: drop offset is not correct
-		// Calculate the dragged item's bounding rectangle
-		const itemRect = activeItemElement.getBoundingClientRect();
-		const itemCenterX = itemRect.left + itemRect.width / 2
-		const itemCenterY = itemRect.top + itemRect.height / 2
-
-		console.log("widget overlay: ", delta, itemRect)
-
 	
 		 // Get widget dimensions (assuming you have a way to get these)
 		 const widgetWidth = activeItemElement.offsetWidth; // Adjust this based on how you get widget size
@@ -113,11 +105,6 @@ function App() {
 		const canvasContainerRect = canvasRef.current.getCanvasContainerBoundingRect()
 		const canvasTranslate = canvasRef.current.getCanvasTranslation()
 		const zoom = canvasRef.current.getZoom()
-
-		// let finalPosition = {	
-		// 	x: (delta.x - canvasContainerRect.x - canvasTranslate.x) / zoom,
-		// 	y: (delta.y - canvasContainerRect.y - canvasTranslate.y) / zoom,
-		// }
 
 		let finalPosition = {	
 			x: (initialPosition.x + delta.x - canvasContainerRect.x - canvasTranslate.x) / zoom - (widgetWidth / 2),
@@ -151,32 +138,15 @@ function App() {
 		<div className="tw-w-full tw-h-[100vh] tw-flex tw-flex-col tw-bg-primaryBg">
 			<Header className="tw-h-[6vh]"/>
 			
-			<DndContext
-					modifiers={[snapCenterToCursor]}
-					collisionDetection={rectIntersection}
-					onDragStart={handleDragStart}
-					onDragMove={handleDragMove}
-					// onDragEnd={handleDragEnd}
-					
-				>
+			<DragProvider>
 				<div className="tw-w-full tw-h-[94vh] tw-flex">
 					<Sidebar tabs={sidebarTabs}/>
 					<Canvas ref={canvasRef} widgets={canvasWidgets} onWidgetAdded={handleWidgetAddedToCanvas}/>
 				</div>
 
 				{/* dragOverlay (dnd-kit) helps move items from one container to another */}
-				<DragOverlay dropAnimation={dropAnimation}>
-					{activeSidebarWidget ? (
-							<DraggableWidgetCard name={activeSidebarWidget.name}
-												 img={activeSidebarWidget.img}
-												 url={activeSidebarWidget.link}
-												 innerRef={widgetOverlayRef}
-												/> 
-							): 
-					null}
-				</DragOverlay>
 
-			</DndContext>
+			</DragProvider>
 		</div>
 	)
 }

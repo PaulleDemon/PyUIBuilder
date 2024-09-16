@@ -4,7 +4,7 @@ import Draggable from "./utils/draggableDnd"
 import { FileImageOutlined, GithubOutlined, GitlabOutlined, LinkOutlined,
             AudioOutlined, VideoCameraOutlined,
             FileTextOutlined} from "@ant-design/icons"
-import DraggableWrapper from "./utils/draggable"
+import DraggableWrapper from "./draggable/draggable"
 
 
 export function DraggableWidgetCard({ name, img, url, innerRef}){
@@ -30,7 +30,8 @@ export function DraggableWidgetCard({ name, img, url, innerRef}){
 
     return (
         // <Draggable className="tw-cursor-pointer" id={name}>
-            <DraggableWrapper className="tw-cursor-pointer tw-w-fit tw-h-fit">
+            <DraggableWrapper dragElementType={"widget"} className="tw-cursor-pointer tw-w-fit tw-h-fit">
+                
                 <div ref={innerRef} className="tw-select-none tw-pointer-events-none tw-h-[240px] tw-w-[280px] tw-flex tw-flex-col 
                                                 tw-rounded-md tw-overflow-hidden 
                                                 tw-gap-2 tw-text-gray-600 tw-bg-[#ffffff44] tw-border-solid tw-border-[1px]
@@ -45,6 +46,7 @@ export function DraggableWidgetCard({ name, img, url, innerRef}){
                             {urlIcon}
                         </a>
                     </div>
+                    
                 </div>
             </DraggableWrapper>
         // </Draggable> 
