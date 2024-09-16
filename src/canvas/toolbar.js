@@ -4,6 +4,7 @@ import { ColorPicker, Input, InputNumber, Select } from "antd"
 
 import { capitalize } from "../utils/common"
 import Tools from "./constants/tools.js"
+import { useActiveWidget } from "./activeWidgetContext.js"
 
 
 // FIXME: Maximum recursion error
@@ -16,6 +17,9 @@ import Tools from "./constants/tools.js"
  */
 const  CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
 
+    // const { activeWidgetAttrs } = useActiveWidget()
+
+    // console.log("active widget context: ", activeWidgetAttrs)
     const [toolbarOpen, setToolbarOpen] = useState(isOpen)
     const [toolbarAttrs, setToolbarAttrs] = useState(attrs)
 
@@ -24,11 +28,19 @@ const  CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
     }, [isOpen])
 
     useEffect(() => {
+        console.log("active widget: ", attrs)
         setToolbarAttrs(attrs)
     }, [attrs])
 
+    // useEffect(() => {
+
+    //     console.log("active widget: ", activeWidgetAttrs)
+    //     setToolbarAttrs(activeWidgetAttrs || {})
+
+    // }, [activeWidgetAttrs])
 
     const handleChange = (value, callback) => {
+        console.log("changed...")
         if (callback) {
             callback(value)
         }
@@ -42,14 +54,14 @@ const  CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
             const isFirstLevel = parentKey === ""
 
             const outerLabelClass = isFirstLevel
-                ? "tw-text-lg tw-text-blue-700 tw-font-medium"
-                : "tw-text-lg"
+                ? "tw-text-base tw-text-blue-700 tw-font-medium"
+                : "tw-text-base"
 
             // Render tool widgets
             if (typeof val === "object" && val.tool) {
                 return (
                     <div key={keyName} className="tw-flex tw-flex-col tw-gap-2">
-                        <div className={`${isFirstLevel ? outerLabelClass : "tw-text-base"}`}>{val.label}</div>
+                        <div className={`${isFirstLevel ? outerLabelClass : "tw-text-sm"}`}>{val.label}</div>
 
                         {val.tool === Tools.INPUT && (
                             <Input

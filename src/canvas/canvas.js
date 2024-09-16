@@ -19,6 +19,7 @@ import { WidgetContext } from './context/widgetContext'
 
 import DotsBackground from "../assets/background/dots.svg"
 import DroppableWrapper from "../components/draggable/droppable"
+import { ActiveWidgetContext, ActiveWidgetProvider, withActiveWidget } from "./activeWidgetContext"
 
 // const DotsBackground = require("../assets/background/dots.svg")
 
@@ -30,6 +31,8 @@ const CanvasModes = {
 
 
 class Canvas extends React.Component {
+
+    // static contextType = ActiveWidgetContext
 
     constructor(props) {
         super(props)
@@ -76,6 +79,8 @@ class Canvas extends React.Component {
         this.mouseDownEvent = this.mouseDownEvent.bind(this)
         this.mouseMoveEvent = this.mouseMoveEvent.bind(this)
         this.mouseUpEvent = this.mouseUpEvent.bind(this)
+        this.keyDownEvent = this.keyDownEvent.bind(this)
+        this.wheelZoom = this.wheelZoom.bind(this)
 
         this.onActiveWidgetUpdate = this.onActiveWidgetUpdate.bind(this)
 
@@ -107,15 +112,42 @@ class Canvas extends React.Component {
 
     componentWillUnmount() {
         
+        this.canvasContainerRef.current.removeEventListener("mousedown", this.mouseDownEvent)
+        this.canvasContainerRef.current.removeEventListener("mouseup", this.mouseUpEvent)
+        this.canvasContainerRef.current.removeEventListener("mousemove", this.mouseMoveEvent)
+        this.canvasContainerRef.current.removeEventListener("wheel", this.wheelZoom)
+
+        this.canvasContainerRef.current.removeEventListener("keydown", this.keyDownEvent)
+
+
         // NOTE: this will clear the canvas
         this.clearCanvas()
     }
 
-    /**
+    initEvents(){
+
+        this.canvasContainerRef.current.addEventListener("mousedown", this.mouseDownEvent)
+        this.canvasContainerRef.current.addEventListener("mouseup", this.mouseUpEvent)
+        this.canvasContainerRef.current.addEventListener("mousemove", this.mouseMoveEvent)
+        this.canvasContainerRef.current.addEventListener("wheel", this.wheelZoom)
+
+      
+        this.canvasContainerRef.current.addEventListener("keydown", this.keyDownEvent, true)
+        // window.addEventListener("keydown", this.keyDownEvent, true)
+
+              
+    }
+
+    applyTransform(){
+        const { currentTranslate, zoom } = this.state
+        this.canvasRef.current.style.transform = `translate(${currentTranslate.x}px, ${currentTranslate.y}px) scale(${zoom})`
+    }
+
+     /**
      * 
      * @returns  {import("./widgets/base").Widget[]}
      */
-    getWidgets(){
+     getWidgets(){
         
         return this.state.widgets
     }
@@ -130,22 +162,6 @@ class Canvas extends React.Component {
         })
     }
 
-    initEvents(){
-
-        this.canvasContainerRef.current.addEventListener("mousedown", this.mouseDownEvent)
-        this.canvasContainerRef.current.addEventListener("mouseup", this.mouseUpEvent)
-        this.canvasContainerRef.current.addEventListener("mousemove", this.mouseMoveEvent)
-
-        this.canvasContainerRef.current.addEventListener('wheel', (event) => {
-            this.wheelZoom(event)
-        })
-              
-    }
-
-    applyTransform(){
-        const { currentTranslate, zoom } = this.state
-        this.canvasRef.current.style.transform = `translate(${currentTranslate.x}px, ${currentTranslate.y}px) scale(${zoom})`
-    }
 
     /**
      * returns the widget that contains the target
@@ -155,6 +171,7 @@ class Canvas extends React.Component {
     getWidgetFromTarget(target){
 
         for (let [key, ref] of Object.entries(this.widgetRefs)){
+            // console.log("ref: ", ref)
             if (ref.current.getElement().contains(target)){
                 return ref.current
             }
@@ -162,6 +179,21 @@ class Canvas extends React.Component {
 
     }
 
+    keyDownEvent(event){
+
+        if (event.key === "Delete"){
+            this.deleteSelectedWidgets()
+        }
+
+        if (event.key === "+"){
+            this.setZoom(this.state.zoom + 0.1)
+        }
+
+        if (event.key === "-"){
+            this.setZoom(this.state.zoom - 0.1)
+        }
+
+    }
 
     mouseDownEvent(event){
 
@@ -190,6 +222,10 @@ class Canvas extends React.Component {
                             selectedWidgets: [selectedWidget],
                             toolbarAttrs: selectedWidget.getToolbarAttrs()
                         })
+
+                        this.context.updateActiveWidget(selectedWidget.__id)
+                        this.context.updateToolAttrs(selectedWidget.getToolbarAttrs())
+                        // this.props.updateActiveWidget(selectedWidget)
                     }
                     this.currentMode = CanvasModes.MOVE_WIDGET
                 }
@@ -303,18 +339,6 @@ class Canvas extends React.Component {
     }
 
     /**
-     * Given a position relative to canvas container, 
-     * returns the position relative to the canvas
-     */
-    getRelativePositionToCanvas(x, y){
-
-        const canvasRect = this.canvasRef.current.getBoundingClientRect()
-        let zoom = this.state.zoom
-
-        return {x: (canvasRect.left - x ), y: (canvasRect.top - y)}
-    }
-
-    /**
      * fits the canvas size to fit the widgets bounding box
      */
     fitCanvasToBoundingBox(padding=0){
@@ -341,32 +365,30 @@ class Canvas extends React.Component {
         this.canvasContainerRef.current.style.cursor = cursor
     }
 
-    setZoom(zoom, pos={x:0, y:0}){
+    setZoom(zoom, pos){
         
-        // if (zoom < 0.5 || zoom > 2){
-        //     return
-        // }
-
         const { currentTranslate } = this.state
 
+        let newTranslate = currentTranslate
+
+        if (pos){
+            // Calculate the new translation to zoom into the mouse position
+            const offsetX = pos.x - (this.canvasContainerRef.current.clientWidth / 2 + currentTranslate.x)
+            const offsetY = pos.y - (this.canvasContainerRef.current.clientHeight / 2 + currentTranslate.y)
         
-        // Calculate the new translation to zoom into the mouse position
-        const offsetX = pos.x - (this.canvasContainerRef.current.clientWidth / 2 + currentTranslate.x)
-        const offsetY = pos.y - (this.canvasContainerRef.current.clientHeight / 2 + currentTranslate.y)
-    
-        const newTranslateX = currentTranslate.x - offsetX * (zoom - this.state.zoom)
-        const newTranslateY = currentTranslate.y - offsetY * (zoom - this.state.zoom)
-    
-        this.setState({
-            zoom: Math.max(0.5, Math.min(zoom, 1.5)), // clamp between 0.5 and 1.5
-            currentTranslate: {
+            const newTranslateX = currentTranslate.x - offsetX * (zoom - this.state.zoom)
+            const newTranslateY = currentTranslate.y - offsetY * (zoom - this.state.zoom)
+            newTranslate = {
                 x: newTranslateX,
                 y: newTranslateY
             }
+        }
+
+        this.setState({
+            zoom: Math.max(0.5, Math.min(zoom, 1.5)), // clamp between 0.5 and 1.5
+            currentTranslate: newTranslate
         }, this.applyTransform)
 
-        // this.canvasRef.current.style.width = `${100/zoom}%`
-        // this.canvasRef.current.style.height = `${100/zoom}%`
 
     }
 
@@ -390,6 +412,9 @@ class Canvas extends React.Component {
             widget.current?.deSelect()
         })
 
+        this.context?.updateActiveWidget("")
+        this.context.updateToolAttrs({})
+        
         this.setState({
             selectedWidgets: [],
             toolbarAttrs: null,
@@ -433,7 +458,6 @@ class Canvas extends React.Component {
 
         // Store the ref in the instance variable
         this.widgetRefs[id] = widgetRef
-        // console.log("widget ref: ", this.widgetRefs)
 
         const widgets = [...this.state.widgets, { id, widgetType: widgetComponentType }] // don't add the widget refs in the state
         // Update the state to include the new widget's type and ID
@@ -452,6 +476,10 @@ class Canvas extends React.Component {
         return {id, widgetRef}
     }
 
+    /**
+     * delete's the selected widgets from the canvas
+     * @param {null|Widget} widgets - optional widgets that can be deleted along the selected widgets
+     */
     deleteSelectedWidgets(widgets=[]){
 
         
@@ -519,7 +547,9 @@ class Canvas extends React.Component {
         if (this.state.selectedWidgets.length === 0 || widgetId !== this.state.selectedWidgets[0].__id)
             return
 
-        // console.log("updating...")
+        console.log("updating...", this.state.toolbarAttrs, this.state.selectedWidgets.at(0).getToolbarAttrs())
+
+        // console.log("attrs: ", this.state.selectedWidgets.at(0).getToolbarAttrs())
 
         this.setState({
             toolbarAttrs: this.state.selectedWidgets.at(0).getToolbarAttrs()
@@ -575,36 +605,39 @@ class Canvas extends React.Component {
                     </Tooltip>
                 </div>
 
+                {/* <ActiveWidgetProvider> */}
                 <DroppableWrapper id="canvas-droppable" 
                                     className="tw-w-full tw-h-full" onDrop={this.handleDropEvent}>
-                    {/* <Dropdown trigger={['contextMenu']} mouseLeaveDelay={0} menu={{items: this.state.contextMenuItems, }}> */}
-                            <div className="dots-bg tw-w-full tw-h-full tw-flex tw-relative tw-bg-[#f2f2f2] tw-overflow-hidden" 
-                                    ref={this.canvasContainerRef}
-                                    style={{
-                                            transition: " transform 0.3s ease-in-out", 
-                                            backgroundImage: `url('${DotsBackground}')`,
-                                            backgroundSize: 'cover', // Ensure proper sizing if needed
-                                            backgroundRepeat: 'no-repeat',
-                                        }}
-                                    >
-                                {/* Canvas */}
-                                <div data-canvas className="tw-w-full tw-h-full tw-absolute tw-top-0 tw-select-none
-                                                            tw-bg-green-300" 
-                                        ref={this.canvasRef}>
-                                    <div className="tw-relative tw-w-full tw-h-full">
-                                        {
-                                            this.state.widgets.map(this.renderWidget)
-                                        }
-                                    </div>
+                    <Dropdown trigger={['contextMenu']} mouseLeaveDelay={0} menu={{items: this.state.contextMenuItems, }}>
+                        <div className="dots-bg tw-w-full tw-h-full tw-outline-none tw-flex tw-relative tw-bg-[#f2f2f2] tw-overflow-hidden" 
+                                ref={this.canvasContainerRef}
+                                style={{
+                                        transition: " transform 0.3s ease-in-out", 
+                                        backgroundImage: `url('${DotsBackground}')`,
+                                        backgroundSize: 'cover', // Ensure proper sizing if needed
+                                        backgroundRepeat: 'no-repeat',
+                                    }}
+                                tabIndex={0} // allow focus
+                                >
+                            {/* Canvas */}
+                            <div data-canvas className="tw-w-full tw-h-full tw-absolute tw-top-0 tw-select-none
+                                                        tw-bg-green-300" 
+                                    ref={this.canvasRef}>
+                                <div className="tw-relative tw-w-full tw-h-full">
+                                    {
+                                        this.state.widgets.map(this.renderWidget)
+                                    }
                                 </div>
                             </div>
-                    {/* </Dropdown> */}
+                        </div>
+                    </Dropdown>
                 </DroppableWrapper>
 
                 <CanvasToolBar isOpen={this.state.toolbarOpen} 
                                 widgetType={this.state.selectedWidgets?.at(0)?.getWidgetType() || ""}
                                 attrs={this.state.toolbarAttrs}
                                 />
+                {/* </ActiveWidgetProvider> */}
             </div>
         )
     }

@@ -6,6 +6,10 @@ import Layouts from "../constants/layouts"
 import Cursor from "../constants/cursor"
 import { toSnakeCase } from "../utils/utils"
 import EditableDiv from "../../components/editableDiv"
+import DraggableWrapper from "../../components/draggable/draggable"
+import DroppableWrapper from "../../components/draggable/droppable"
+
+import { ActiveWidgetContext } from "../activeWidgetContext"
 
 
 /**
@@ -14,6 +18,8 @@ import EditableDiv from "../../components/editableDiv"
 class Widget extends React.Component {
 
     static widgetType = "widget"
+
+    // static contextType = ActiveWidgetContext
 
     constructor(props) {
         super(props)
@@ -75,7 +81,10 @@ class Widget extends React.Component {
                         label: "Background Color",
                         tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
                         value: "",
-                        onChange: (value) => this.setWidgetStyling("backgroundColor", value)
+                        onChange: (value) => {
+                            this.setWidgetStyling("backgroundColor", value)
+                            this.setAttrValue("styling.backgroundColor", value)
+                        }
                     },
                     foregroundColor: {
                         label: "Foreground Color",
@@ -145,13 +154,33 @@ class Widget extends React.Component {
         this.canvas.addEventListener("mouseup", this.stopResizing)
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        // if (prevState !== this.state) {
+        //     // State has changed
+        //     console.log('State has been updated')
+        // } else {
+        //     // State has not changed
+        //     console.log('State has not changed')
+        // }
+    }
+
     updateState = (newState, callback) => {
+
+        // FIXME: maximum recursion error when updating size
         this.setState(newState, () => {
+
             const { onWidgetUpdate } = this.props
             if (onWidgetUpdate) {
                 onWidgetUpdate(this.__id)
             }
+
+            // const { activeWidgetId, updateToolAttrs } = this.context
+
+            // if (activeWidgetId === this.__id)
+            //     updateToolAttrs(this.getToolbarAttrs())
+
             if (callback) callback()
+
         })
     }
 
@@ -174,7 +203,7 @@ class Widget extends React.Component {
                     onChange: (value) => this.setWidgetName(value)
                 },
                 size: {
-                    label: "Sizing",
+                    label: "Size",
                     display: "horizontal",
                     width: {
                         label: "Width",
@@ -228,16 +257,6 @@ class Widget extends React.Component {
     mousePress(event) {
         // event.preventDefault()
         if (!this._disableSelection) {
-
-            // const widgetSelected = new CustomEvent("selection:created", {
-            //     detail: {
-            //         event,
-            //         id: this.__id,
-            //         element: this
-            //     },
-            //     // bubbles: true // Allow the event to bubble up the DOM tree
-            // })
-            // this.canvas.dispatchEvent(widgetSelected)
         }
     }
 
@@ -264,13 +283,14 @@ class Widget extends React.Component {
             // don't change position when resizing the widget
             return
         }
-        // this.setState({
-        //     pos: { x, y }
-        // })
 
-        this.updateState({
+        this.setState({
             pos: { x, y }
         })
+
+        // this.updateState({
+        //     pos: { x, y }
+        // })
     }
 
     setParent(parentId) {
@@ -302,38 +322,6 @@ class Widget extends React.Component {
     getSize() {
         return this.state.size
     }
-
-    getScaleAwareDimensions() {
-        // Get the bounding rectangle
-        const rect = this.elementRef.current.getBoundingClientRect()
-
-        // Get the computed style of the element
-        const style = window.getComputedStyle(this.elementRef.current)
-
-        // Get the transform matrix
-        const transform = style.transform
-
-        // Extract scale factors from the matrix
-        let scaleX = 1
-        let scaleY = 1
-
-        if (transform && transform !== 'none') {
-            // For 2D transforms (a, c, b, d)
-            const matrix = transform.match(/^matrix\(([^,]+),[^,]+,([^,]+),[^,]+,[^,]+,[^,]+\)$/);
-
-            if (matrix) {
-                scaleX = parseFloat(matrix[1])
-                scaleY = parseFloat(matrix[2])
-            }
-        }
-
-        // Return scaled width and height
-        return {
-            width: rect.width / scaleX,
-            height: rect.height / scaleY
-        }
-    }
-
 
     getWidgetFunctions() {
         return this.functions
@@ -400,7 +388,7 @@ class Widget extends React.Component {
      * @param {string} value - Value of the style
      * @param {function():void} [callback] - optional callback, thats called after setting the internal state
      */
-    setWidgetStyling(key, value, callback) {
+    setWidgetStyling(key, value) {
 
         const widgetStyle = {
             ...this.state.widgetStyling,
@@ -409,9 +397,6 @@ class Widget extends React.Component {
 
         this.setState({
             widgetStyling: widgetStyle
-        }, () => {
-            if (callback)
-                callback(widgetStyle)
         })
 
     }
@@ -420,28 +405,15 @@ class Widget extends React.Component {
      * 
      * @param {number|null} width 
      * @param {number|null} height 
-     * @param {function():void} [callback] - optional callback, thats called after setting the internal state
      */
-    setWidgetSize(width, height, callback) {
+    setWidgetSize(width, height) {
 
         const newSize = {
             width: Math.max(this.minSize.width, Math.min(width || this.state.size.width, this.maxSize.width)),
             height: Math.max(this.minSize.height, Math.min(height || this.state.size.height, this.maxSize.height)),
         }
-
-        this.setState({
-            size: newSize
-        }, () => {
-            if (callback) {
-                callback(newSize)
-            }
-        })
-
         this.updateState({
             size: newSize
-        }, () => {
-            if (callback)
-                callback(newSize)
         })
     }
 
@@ -530,9 +502,6 @@ class Widget extends React.Component {
      */
     render() {
 
-        const widgetStyle = this.state.widgetStyling
-
-
         let outerStyle = {
             cursor: this.cursor,
             zIndex: this.state.zIndex,
@@ -552,51 +521,50 @@ class Widget extends React.Component {
 
         // console.log("selected: ", this.state.selected)
         return (
+                <div data-id={this.__id} ref={this.elementRef} className="tw-absolute tw-shadow-xl tw-w-fit tw-h-fit"
+                        style={outerStyle}
+                    >
 
-            <div data-id={this.__id} ref={this.elementRef} className="tw-absolute tw-shadow-xl tw-w-fit tw-h-fit"
-                style={outerStyle}
-            >
+                    {this.renderContent()}
+                    <div className={`tw-absolute tw-bg-transparent tw-scale-[1.1] tw-opacity-100 
+                                    tw-w-full tw-h-full tw-top-0  
+                                    ${this.state.selected ? 'tw-border-2 tw-border-solid tw-border-blue-500' : 'tw-hidden'}`}>
 
-                {this.renderContent()}
-                <div className={`tw-absolute tw-bg-transparent tw-scale-[1.1] tw-opacity-100 
-                                tw-w-full tw-h-full tw-top-0  
-                                ${this.state.selected ? 'tw-border-2 tw-border-solid tw-border-blue-500' : 'tw-hidden'}`}>
+                        <div className="tw-relative tw-w-full tw-h-full">
+                            <EditableDiv value={this.state.widgetName} onChange={this.setWidgetName}
+                                maxLength={40}
+                                openEdit={this.state.enableRename}
+                                className="tw-text-sm tw-w-fit tw-max-w-[160px] tw-text-clip tw-min-w-[150px] 
+                                                        tw-overflow-hidden tw-absolute tw--top-6 tw-h-6"
+                            />
 
-                    <div className="tw-relative tw-w-full tw-h-full">
-                        <EditableDiv value={this.state.widgetName} onChange={this.setWidgetName}
-                            maxLength={40}
-                            openEdit={this.state.enableRename}
-                            className="tw-text-sm tw-w-fit tw-max-w-[160px] tw-text-clip tw-min-w-[150px] 
-                                                    tw-overflow-hidden tw-absolute tw--top-6 tw-h-6"
-                        />
+                            <div
+                                className="tw-w-2 tw-h-2 tw-absolute tw--left-1 tw--top-1 tw-bg-blue-500"
+                                style={{ cursor: Cursor.NW_RESIZE }}
+                                onMouseDown={(e) => this.startResizing("nw", e)}
+                            />
+                            <div
+                                className="tw-w-2 tw-h-2 tw-absolute tw--right-1 tw--top-1 tw-bg-blue-500"
+                                style={{ cursor: Cursor.SW_RESIZE }}
+                                onMouseDown={(e) => this.startResizing("ne", e)}
+                            />
+                            <div
+                                className="tw-w-2 tw-h-2 tw-absolute tw--left-1 tw--bottom-1 tw-bg-blue-500"
+                                style={{ cursor: Cursor.SW_RESIZE }}
+                                onMouseDown={(e) => this.startResizing("sw", e)}
+                            />
+                            <div
+                                className="tw-w-2 tw-h-2 tw-absolute tw--right-1 tw--bottom-1 tw-bg-blue-500"
+                                style={{ cursor: Cursor.SE_RESIZE }}
+                                onMouseDown={(e) => this.startResizing("se", e)}
+                            />
 
-                        <div
-                            className="tw-w-2 tw-h-2 tw-absolute tw--left-1 tw--top-1 tw-bg-blue-500"
-                            style={{ cursor: Cursor.NW_RESIZE }}
-                            onMouseDown={(e) => this.startResizing("nw", e)}
-                        />
-                        <div
-                            className="tw-w-2 tw-h-2 tw-absolute tw--right-1 tw--top-1 tw-bg-blue-500"
-                            style={{ cursor: Cursor.SW_RESIZE }}
-                            onMouseDown={(e) => this.startResizing("ne", e)}
-                        />
-                        <div
-                            className="tw-w-2 tw-h-2 tw-absolute tw--left-1 tw--bottom-1 tw-bg-blue-500"
-                            style={{ cursor: Cursor.SW_RESIZE }}
-                            onMouseDown={(e) => this.startResizing("sw", e)}
-                        />
-                        <div
-                            className="tw-w-2 tw-h-2 tw-absolute tw--right-1 tw--bottom-1 tw-bg-blue-500"
-                            style={{ cursor: Cursor.SE_RESIZE }}
-                            onMouseDown={(e) => this.startResizing("se", e)}
-                        />
+                        </div>
+
+
 
                     </div>
-
-
-
                 </div>
-            </div>
         )
 
     }

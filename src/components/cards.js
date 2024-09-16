@@ -32,11 +32,11 @@ export function DraggableWidgetCard({ name, img, url, innerRef}){
         // <Draggable className="tw-cursor-pointer" id={name}>
             <DraggableWrapper dragElementType={"widget"} className="tw-cursor-pointer tw-w-fit tw-h-fit">
                 
-                <div ref={innerRef} className="tw-select-none tw-pointer-events-none tw-h-[240px] tw-w-[280px] tw-flex tw-flex-col 
+                <div ref={innerRef} className="tw-select-none  tw-h-[240px] tw-w-[280px] tw-flex tw-flex-col 
                                                 tw-rounded-md tw-overflow-hidden 
                                                 tw-gap-2 tw-text-gray-600 tw-bg-[#ffffff44] tw-border-solid tw-border-[1px]
                                                 tw-border-[#888] ">
-                    <div className="tw-h-[200px] tw-w-full tw-overflow-hidden">
+                    <div className="tw-h-[200px] tw-pointer-events-none tw-w-full tw-overflow-hidden">
                         <img src={img} alt={name} className="tw-object-contain tw-h-full tw-w-full tw-select-none" />
                     </div>
                     <span className="tw-text-xl tw-text-center">{name}</span>

@@ -13,6 +13,7 @@ import WidgetsContainer from './sidebar/widgetsContainer'
 import Widget from './canvas/widgets/base'
 import { DraggableWidgetCard } from './components/cards'
 import { DragProvider } from './components/draggable/draggableContext'
+import { ActiveWidgetProvider } from './canvas/activeWidgetContext'
 
 
 function App() {
@@ -141,7 +142,10 @@ function App() {
 			<DragProvider>
 				<div className="tw-w-full tw-h-[94vh] tw-flex">
 					<Sidebar tabs={sidebarTabs}/>
+					
+					{/* <ActiveWidgetProvider> */}
 					<Canvas ref={canvasRef} widgets={canvasWidgets} onWidgetAdded={handleWidgetAddedToCanvas}/>
+					{/* </ActiveWidgetProvider> */}
 				</div>
 
 				{/* dragOverlay (dnd-kit) helps move items from one container to another */}
