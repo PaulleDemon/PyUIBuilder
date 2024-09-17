@@ -1,14 +1,25 @@
-import { memo, useState } from "react"
+import { memo, useEffect, useState } from "react"
 import { useDragWidgetContext } from "./draggableWidgetContext"
 import { useDragContext } from "../../components/draggable/draggableContext"
 
 
-const WidgetDraggable = memo(({ widgetRef, dragElementType="widget", onDrop, droppableTags = ["widget"], ...props }) => {
+/**
+ * @param {} - widgetRef - the widget ref for your widget
+ * @param {boolean} - enableDraggable - should the widget be draggable
+ * @param {string} - dragElementType - the widget type of widget so the droppable knows if the widget can be accepted
+ * @param {() => void} - onDrop - the widget type of widget so the droppable knows if the widget can be accepted
+ * @param {string[]} - droppableTags - array of widget that can be dropped on the widget
+ * 
+ */
+const WidgetDraggable = memo(({ widgetRef, enableDrag=true, dragElementType="widget", 
+                                onDragEnter, onDragLeave, onDrop, 
+                                droppableTags = ["widget"], ...props }) => {
 
 
     // const { draggedElement, onDragStart, onDragEnd } = useDragWidgetContext()
-    const { draggedElement, onDragStart, onDragEnd } = useDragContext()
+    const { draggedElement, onDragStart, onDragEnd, overElement, setOverElement } = useDragContext()
 
+    // const [dragEnabled, setDragEnabled] = useState(enableDraggable)
     const [isDragging, setIsDragging] = useState(false)
 
     const [showDroppable, setShowDroppable] = useState({
@@ -19,7 +30,6 @@ const WidgetDraggable = memo(({ widgetRef, dragElementType="widget", onDrop, dro
     const handleDragStart = (e) => {
         setIsDragging(true)
 
-        console.log("Draggable widget ref: ", widgetRef)
         onDragStart(widgetRef?.current || null)
 
         // Create custom drag image with full opacity, this will ensure the image isn't taken from part of the canvas
@@ -46,17 +56,32 @@ const WidgetDraggable = memo(({ widgetRef, dragElementType="widget", onDrop, dro
 
         const dragEleType = draggedElement.getAttribute("data-draggable-type")
 
+        // console.log("Drag entering...", overElement === e.currentTarget)
+
+        setOverElement(e.currentTarget)
+
+        let showDrop = {
+            allow: true, 
+            show: true
+        }
+
         if (droppableTags.length === 0 || droppableTags.includes(dragEleType)) {
-            setShowDroppable({
+            showDrop = {
                 allow: true,
                 show: true
-            })
+            }
+
         } else {
-            setShowDroppable({
+            showDrop = {
                 allow: false,
                 show: true
-            })
+            }
         }
+
+        setShowDroppable(showDrop)
+        if (onDragEnter)
+            onDragEnter({element: draggedElement, showDrop})
+       
     }
 
     const handleDragOver = (e) => {
@@ -70,6 +95,9 @@ const WidgetDraggable = memo(({ widgetRef, dragElementType="widget", onDrop, dro
     }
 
     const handleDropEvent = (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        // console.log("Dropped")
 
         setShowDroppable({
             allow: false,
@@ -88,6 +116,10 @@ const WidgetDraggable = memo(({ widgetRef, dragElementType="widget", onDrop, dro
                 allow: false,
                 show: false
             })
+
+            if (onDragLeave)
+                onDragLeave()
+
         }
     }
 
@@ -97,27 +129,18 @@ const WidgetDraggable = memo(({ widgetRef, dragElementType="widget", onDrop, dro
     }
 
     return (
-        <div className={`${props.className} tw-w-fit tw-h-fit`}
+        <div className={`${props.className} tw-w-fit tw-h-fit tw-bg-blue`}
             onDragOver={handleDragOver}
             onDrop={handleDropEvent}
             onDragEnter={handleDragEnter}
             onDragLeave={handleDragLeave}
-
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
-            draggable
+            draggable={enableDrag}
             style={{ opacity: isDragging ? 0 : 1}} // hide the initial position when dragging
-        >
-            {
-                showDroppable.show &&
-                <div className={`${showDroppable.allow ? "tw-border-green-600" : "tw-border-red-600"} 
-                                    tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-full tw-z-[2]
-                                    tw-border-2 tw-border-dashed  tw-rounded-lg
-                                    `}>
-                </div>
-            }
+        >   
             {props.children}
-
+            
         </div>
     )
 

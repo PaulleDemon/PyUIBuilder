@@ -68,6 +68,12 @@ class Widget extends React.Component {
             enableRename: false, // will open the widgets editable div for renaming
             resizing: false,
             resizeCorner: "",
+            dragEnabled: true,
+
+            showDroppableStyle: { // shows the droppable indicator
+                allow: false, 
+                show: false,
+            },
 
             pos: { x: 0, y: 0 },
             size: { width: 100, height: 100 },
@@ -484,8 +490,19 @@ class Widget extends React.Component {
         })
     }
 
-    handleDragStart = (event) => {
-        console.log("dragging event: ", event)
+    handleDrop = (event, dragElement) => {
+        console.log("dragging event: ", event, dragElement)
+
+        const container = dragElement.getAttribute("data-container")
+
+        if (container === "canvas"){
+
+            // this.canvas.getWidgetById
+
+            // this._children.push()
+
+        }
+
     }
 
     renderContent() {
@@ -514,16 +531,29 @@ class Widget extends React.Component {
             height: `${this.state.size.height}px`,
         }
 
-        let selectionStyle = {
-            x: "-5px",
-            y: "-5px",
-            width: this.boundingRect.width + 5,
-            height: this.boundingRect.height + 5
-        }
-
+        // console.log("Drag enabled: ", this.state.dragEnabled)
         // console.log("selected: ", this.state.selected)
         return (
-            <WidgetDraggable widgetRef={this.elementRef}>
+            <WidgetDraggable widgetRef={this.elementRef} 
+                                enableDrag={this.state.dragEnabled}
+                                onDrop={this.handleDrop}
+                                onDragEnter={({dragElement, showDrop}) => {
+                                    this.setState({
+                                        showDroppableStyle: showDrop
+                                    })
+                                    }
+                                }
+                                onDragLeave={ () => {
+                                        this.setState({
+                                            showDroppableStyle: {
+                                                allow: false, 
+                                                show: false
+                                            }
+                                        })
+                                    }
+                                }
+                                >
+
                 <div data-widget-id={this.__id} 
                         ref={this.elementRef} 
                         className="tw-absolute tw-shadow-xl tw-w-fit tw-h-fit"
@@ -533,6 +563,25 @@ class Widget extends React.Component {
                     >
 
                     {this.renderContent()}
+
+                    {
+                        // show drop style on drag hover
+                        this.state.showDroppableStyle.show &&
+                            <div className={`${this.state.showDroppableStyle.allow ? "tw-border-blue-600" : "tw-border-red-600"} 
+                                                tw-absolute tw-top-[-5px] tw-left-[-5px] tw-w-full tw-h-full tw-z-[2]
+                                                tw-border-2 tw-border-dashed  tw-rounded-lg tw-pointer-events-none
+
+                                                `}
+                                    style={
+                                            {
+                                                width: "calc(100% + 10px)",
+                                                height: "calc(100% + 10px)",
+                                            }
+                                        }
+                                                >
+                            </div>
+                    }
+                   
                     <div className={`tw-absolute tw-bg-transparent tw-scale-[1.1] tw-opacity-100 
                                     tw-w-full tw-h-full tw-top-0  
                                     ${this.state.selected ? 'tw-border-2 tw-border-solid tw-border-blue-500' : 'tw-hidden'}`}>
@@ -548,22 +597,38 @@ class Widget extends React.Component {
                             <div
                                 className="tw-w-2 tw-h-2 tw-absolute tw--left-1 tw--top-1 tw-bg-blue-500"
                                 style={{ cursor: Cursor.NW_RESIZE }}
-                                onMouseDown={(e) => this.startResizing("nw", e)}
+                                onMouseDown={(e) => {
+                                    this.startResizing("nw", e)
+                                    this.setState({dragEnabled: false})
+                                }}
+                                onMouseLeave={() => this.setState({dragEnabled: true})}
                             />
                             <div
                                 className="tw-w-2 tw-h-2 tw-absolute tw--right-1 tw--top-1 tw-bg-blue-500"
                                 style={{ cursor: Cursor.SW_RESIZE }}
-                                onMouseDown={(e) => this.startResizing("ne", e)}
+                                onMouseDown={(e) => {
+                                    this.startResizing("ne", e)
+                                    this.setState({dragEnabled: false})
+                                }}
+                                onMouseLeave={() => this.setState({dragEnabled: true})}
                             />
                             <div
                                 className="tw-w-2 tw-h-2 tw-absolute tw--left-1 tw--bottom-1 tw-bg-blue-500"
                                 style={{ cursor: Cursor.SW_RESIZE }}
-                                onMouseDown={(e) => this.startResizing("sw", e)}
+                                onMouseDown={(e) => {
+                                    this.startResizing("sw", e)
+                                    this.setState({dragEnabled: false})
+                                }}
+                                onMouseLeave={() => this.setState({dragEnabled: true})}
                             />
                             <div
                                 className="tw-w-2 tw-h-2 tw-absolute tw--right-1 tw--bottom-1 tw-bg-blue-500"
                                 style={{ cursor: Cursor.SE_RESIZE }}
-                                onMouseDown={(e) => this.startResizing("se", e)}
+                                onMouseDown={(e) => {
+                                    this.startResizing("se", e)
+                                    this.setState({dragEnabled: false})
+                                }}
+                                onMouseLeave={() => this.setState({dragEnabled: true})}
                             />
 
                         </div>

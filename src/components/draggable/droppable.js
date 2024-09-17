@@ -5,7 +5,7 @@ import { useDragContext } from "./draggableContext"
 const DroppableWrapper = memo(({onDrop, droppableTags=["widget"], ...props}) => {
 
 
-    const { draggedElement } = useDragContext()
+    const { draggedElement, overElement, setOverElement } = useDragContext()
 
     const [showDroppable, setShowDroppable] = useState({
                                                             show: false, 
@@ -16,6 +16,10 @@ const DroppableWrapper = memo(({onDrop, droppableTags=["widget"], ...props}) => 
     const handleDragEnter = (e) => {
         
         const dragElementType = draggedElement.getAttribute("data-draggable-type")
+
+        // console.log("Current target: ", e.currentTarget)
+
+        setOverElement(e.currentTarget)
 
         if (droppableTags.length === 0 || droppableTags.includes(dragElementType)){
             setShowDroppable({
@@ -41,6 +45,7 @@ const DroppableWrapper = memo(({onDrop, droppableTags=["widget"], ...props}) => 
     }
 
     const handleDropEvent = (e) => {
+        e.stopPropagation()
 
         setShowDroppable({
             allow: false, 
@@ -69,15 +74,17 @@ const DroppableWrapper = memo(({onDrop, droppableTags=["widget"], ...props}) => 
                 onDragEnter={handleDragEnter}
                 onDragLeave={handleDragLeave}
                 >
+            
+            {props.children}
+
             {
                 showDroppable.show && 
                     <div className={`${showDroppable.allow ? "tw-border-green-600" : "tw-border-red-600"} 
                                     tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-full tw-z-[2]
-                                    tw-border-2 tw-border-dashed  tw-rounded-lg
+                                    tw-border-2 tw-border-dashed  tw-rounded-lg tw-pointer-events-none
                                     `}>
                     </div>
             }
-            {props.children}
             
         </div>
     )

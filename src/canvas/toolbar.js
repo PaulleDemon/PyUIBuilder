@@ -129,7 +129,7 @@ const  CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
     return (
         <div
             className={`tw-absolute tw-top-20 tw-right-5 tw-bg-white ${toolbarOpen ? "tw-w-[280px]" : "tw-w-0"
-                } tw-px-4 tw-p-2 tw-h-[600px] tw-rounded-md tw-z-20 tw-shadow-lg 
+                } tw-px-4 tw-p-2 tw-h-[600px] tw-rounded-md tw-z-[1000] tw-shadow-lg 
                              tw-transition-transform tw-duration-75
                              tw-flex tw-flex-col tw-gap-2 tw-overflow-y-auto`}
         >

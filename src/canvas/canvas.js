@@ -573,7 +573,7 @@ class Canvas extends React.Component {
 
         
         const container = draggedElement.getAttribute("data-container")
-        console.log("dragged element: ", e, draggedElement, container)
+        console.log("Dropped on canvas",)
 
         // const canvasContainerRect = this.getCanvasContainerBoundingRect()
         const canvasRect = this.canvasRef.current.getBoundingClientRect()
@@ -585,6 +585,7 @@ class Canvas extends React.Component {
 		}   
 
         if (container === "sidebar"){
+            // if the widget is being dropped from the sidebar, use the info to create the widget first
             this.addWidget(Widget, ({id, widgetRef}) => {
                 widgetRef.current.setPos(finalPosition.x, finalPosition.y)
             })
@@ -640,7 +641,7 @@ class Canvas extends React.Component {
                                     >
                                 {/* Canvas */}
                                 <div data-canvas className="tw-w-full tw-h-full tw-absolute tw-top-0 tw-select-none
-                                                            tw-bg-green-300" 
+                                                            " 
                                         ref={this.canvasRef}>
                                     <div className="tw-relative tw-w-full tw-h-full">
                                         {
