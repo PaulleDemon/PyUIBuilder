@@ -223,8 +223,8 @@ class Canvas extends React.Component {
                             toolbarAttrs: selectedWidget.getToolbarAttrs()
                         })
 
-                        this.context.updateActiveWidget(selectedWidget.__id)
-                        this.context.updateToolAttrs(selectedWidget.getToolbarAttrs())
+                        // this.context.updateActiveWidget(selectedWidget.__id)
+                        // this.context.updateToolAttrs(selectedWidget.getToolbarAttrs())
                         // this.props.updateActiveWidget(selectedWidget)
                     }
                     this.currentMode = CanvasModes.MOVE_WIDGET
@@ -412,8 +412,8 @@ class Canvas extends React.Component {
             widget.current?.deSelect()
         })
 
-        this.context?.updateActiveWidget("")
-        this.context.updateToolAttrs({})
+        // this.context?.updateActiveWidget("")
+        // this.context.updateToolAttrs({})
         
         this.setState({
             selectedWidgets: [],
