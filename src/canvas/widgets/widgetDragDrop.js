@@ -3,6 +3,7 @@ import { useDragWidgetContext } from "./draggableWidgetContext"
 import { useDragContext } from "../../components/draggable/draggableContext"
 
 
+// FIXME: sometimes even after drag end the showDroppable is visible
 /**
  * @param {} - widgetRef - the widget ref for your widget
  * @param {boolean} - enableDraggable - should the widget be draggable

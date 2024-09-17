@@ -17,12 +17,15 @@ import { removeDuplicateObjects } from "../utils/common"
 import { WidgetContext } from './context/widgetContext'
 // import {ReactComponent as DotsBackground} from "../assets/background/dots.svg"
 
-import DotsBackground from "../assets/background/dots.svg"
+// import DotsBackground from "../assets/background/dots.svg"
+import {ReactComponent as DotsBackground} from "../assets/background/dots.svg"
+
 import DroppableWrapper from "../components/draggable/droppable"
 import { ActiveWidgetContext, ActiveWidgetProvider, withActiveWidget } from "./activeWidgetContext"
 import { DragWidgetProvider } from "./widgets/draggableWidgetContext"
 
 // const DotsBackground = require("../assets/background/dots.svg")
+
 
 const CanvasModes = {
     DEFAULT: 0,
@@ -43,8 +46,6 @@ class Canvas extends React.Component {
         this.canvasRef = React.createRef()  
         this.canvasContainerRef = React.createRef()
 
-        this.widgetRefs = {} // stores the actual refs to the widgets inside the canvas
-
     
         this.currentMode = CanvasModes.DEFAULT
 
@@ -57,9 +58,10 @@ class Canvas extends React.Component {
         }
 
         // this._contextMenuItems = []
+        this.widgetRefs = {} // stores the actual refs to the widgets inside the canvas {id: ref, id2, ref2...}
 
         this.state = {
-            widgets: [], //  don't store the refs directly here, instead store it in widgetRef, store the widget type here
+            widgets: [], // stores the mapping to widgetRefs, stores id and WidgetType, later used for rendering [{id: , widgetType: WidgetClass}]
             zoom: 1,
             isPanning: false,
             currentTranslate: { x: 0, y: 0 },
@@ -107,7 +109,7 @@ class Canvas extends React.Component {
     componentDidMount() {
         this.initEvents()
 
-        this.addWidget(Widget)
+        this.createWidget(Widget)
 
     }
 
@@ -298,13 +300,13 @@ class Canvas extends React.Component {
 
             }else{
                 // update the widgets position
-                this.state.selectedWidgets.forEach(widget => {
-                    const {x, y} = widget.getPos()
+                // this.state.selectedWidgets.forEach(widget => {
+                //     const {x, y} = widget.getPos()
 
-                    const newPosX = x + (deltaX/this.state.zoom) // account for the zoom, since the widget is relative to canvas
-                    const newPosY = y + (deltaY/this.state.zoom) // account for the zoom, since the widget is relative to canvas
-                    // widget.setPos(newPosX, newPosY)
-                })
+                //     const newPosX = x + (deltaX/this.state.zoom) // account for the zoom, since the widget is relative to canvas
+                //     const newPosY = y + (deltaY/this.state.zoom) // account for the zoom, since the widget is relative to canvas
+                //     widget.setPos(newPosX, newPosY)
+                // })
             }
 
 
@@ -450,9 +452,9 @@ class Canvas extends React.Component {
 
     /**
      * 
-     * @param {Widget} widgetComponentType - don't pass <Widget /> instead pass Widget object
+     * @param {Widget} widgetComponentType - don't pass <Widget /> instead pass Widget object/class
      */
-    addWidget(widgetComponentType, callback){
+    createWidget(widgetComponentType, callback){
         const widgetRef = React.createRef()
 
         const id = `${widgetComponentType.widgetType}_${UID()}`
@@ -573,7 +575,7 @@ class Canvas extends React.Component {
 
         
         const container = draggedElement.getAttribute("data-container")
-        console.log("Dropped on canvas",)
+        // console.log("Dropped on canvas",)
 
         // const canvasContainerRect = this.getCanvasContainerBoundingRect()
         const canvasRect = this.canvasRef.current.getBoundingClientRect()
@@ -586,7 +588,7 @@ class Canvas extends React.Component {
 
         if (container === "sidebar"){
             // if the widget is being dropped from the sidebar, use the info to create the widget first
-            this.addWidget(Widget, ({id, widgetRef}) => {
+            this.createWidget(Widget, ({id, widgetRef}) => {
                 widgetRef.current.setPos(finalPosition.x, finalPosition.y)
             })
         }else  if (container === "canvas"){
@@ -633,12 +635,19 @@ class Canvas extends React.Component {
                                     ref={this.canvasContainerRef}
                                     style={{
                                             transition: " transform 0.3s ease-in-out", 
-                                            backgroundImage: `url('${DotsBackground}')`,
+                                            backgroundImage: `url(${DotsBackground})`,
                                             backgroundSize: 'cover', // Ensure proper sizing if needed
                                             backgroundRepeat: 'no-repeat',
                                         }}
                                     tabIndex={0} // allow focus
                                     >
+                                 <DotsBackground
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        backgroundSize: 'cover'
+                                    }}
+                                    />
                                 {/* Canvas */}
                                 <div data-canvas className="tw-w-full tw-h-full tw-absolute tw-top-0 tw-select-none
                                                             " 

@@ -1,0 +1,46 @@
+name: New Feature request
+description: Have an idea for new feature? well tell us
+title: "[FEATURE REQUEST]: "
+labels: ["feature request"]
+assignees: 
+  - PaulleDemon
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > [!NOTE]
+        > Please make sure to check the issues tab before requesting a new feature.
+
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Feature Description
+      description:  "Describe about the feature in brief"
+      placeholder: "Tell us about the feature request in brief" 
+      value: "Feature description"
+    validations:
+        required: true
+
+  - type: textarea
+    id: functionalities
+    attributes:
+      label: Functionalities of the Feature
+      description: "What should the feature do? eg: a bold button to make the text bold"
+      placeholder: Functions of the feature
+      value: "Functions of the feature"
+    validations:
+        required: true
+
+  - type: checkboxes
+    id: related-issues
+    attributes:
+      label: This is a new feature request
+      description: I acknowledge that I have checked the issues section for similar request and found none.
+      options:
+        - label: "Yes"
+          required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        The feature request priority are based on number of reaction, a good number of thumbs up will make it to priority queue

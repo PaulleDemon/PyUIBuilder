@@ -1,0 +1,23 @@
+License held by paul 
+Github username: PaulleDemon
+
+1. License Grant
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to use, copy, modify, merge, publish, and distribute the source code, subject to the following conditions:
+
+2. Derived Work License
+Any modifications, derivative works, or copies of the Software must retain this license. All derivative works must be open-sourced under the same license terms. You are not permitted to relicense or sub-license any portion of the Software under a different license without explicit prior written permission from the original author.
+
+3. Distribution Restriction on Executables
+You are not permitted to distribute the Software in compiled, executable, or binary form without prior written consent from the original author. This applies to both original and derivative works.
+
+4. Commercial Use Restriction
+The Software, in its original or modified form, cannot be used for any commercial purpose without prior written permission from the original author. This includes selling, licensing, or offering the Software as part of a service.
+
+5. Non-Commercial Use
+You may freely use, copy, modify, and distribute the source code of the Software for non-commercial purposes, provided that the same terms of this license are maintained in all copies or derivative works.
+
+6. Changes to the License
+The original author reserves the right to modify, amend, or update this license at any time. Any changes will apply only to future versions of the Software. Any prior versions of the Software, including derivative works, will continue to be governed by the version of the license in effect at the time the work was created.
+
+7. Disclaimer
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
