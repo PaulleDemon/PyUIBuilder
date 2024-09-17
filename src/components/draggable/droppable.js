@@ -14,7 +14,6 @@ const DroppableWrapper = memo(({onDrop, droppableTags=["widget"], ...props}) => 
     
 
     const handleDragEnter = (e) => {
-        console.log("Drag Enter",  draggedElement)
         
         const dragElementType = draggedElement.getAttribute("data-draggable-type")
 
@@ -42,7 +41,6 @@ const DroppableWrapper = memo(({onDrop, droppableTags=["widget"], ...props}) => 
     }
 
     const handleDropEvent = (e) => {
-        console.log("Drag over: ", e.dataTransfer.getData("text/plain"), e.dataTransfer)
 
         setShowDroppable({
             allow: false, 
@@ -50,7 +48,7 @@ const DroppableWrapper = memo(({onDrop, droppableTags=["widget"], ...props}) => 
         })
 
         if(onDrop){
-            onDrop(e)
+            onDrop(e, draggedElement)
         }
     }
 

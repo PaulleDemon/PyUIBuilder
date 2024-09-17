@@ -7,7 +7,7 @@ import { useDragContext } from "./draggableContext"
  * @param {string} - dragElementType - this will set the data-draggable-type which can be accessed on droppable to check if its allowed or not
  * @returns 
  */
-const DraggableWrapper = memo(({dragElementType, className, children}) => {
+const DraggableWrapper = memo(({dragElementType, className, children, ...props}) => {
 
     const { onDragStart, onDragEnd } = useDragContext()
 
@@ -40,6 +40,7 @@ const DraggableWrapper = memo(({dragElementType, className, children}) => {
                 onDragStart={handleDragStart} 
                 onDragEnd={handleDragEnd}
                 ref={draggableRef}
+                {...props}
                 >
             {children}
         </div>

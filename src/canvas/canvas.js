@@ -20,6 +20,7 @@ import { WidgetContext } from './context/widgetContext'
 import DotsBackground from "../assets/background/dots.svg"
 import DroppableWrapper from "../components/draggable/droppable"
 import { ActiveWidgetContext, ActiveWidgetProvider, withActiveWidget } from "./activeWidgetContext"
+import { DragWidgetProvider } from "./widgets/draggableWidgetContext"
 
 // const DotsBackground = require("../assets/background/dots.svg")
 
@@ -302,7 +303,7 @@ class Canvas extends React.Component {
 
                     const newPosX = x + (deltaX/this.state.zoom) // account for the zoom, since the widget is relative to canvas
                     const newPosY = y + (deltaY/this.state.zoom) // account for the zoom, since the widget is relative to canvas
-                    widget.setPos(newPosX, newPosY)
+                    // widget.setPos(newPosX, newPosY)
                 })
             }
 
@@ -468,12 +469,17 @@ class Canvas extends React.Component {
                 callback({id, widgetRef})
 
             if (this._onWidgetListUpdated)
-                this._onWidgetListUpdated(widgets)
+                this._onWidgetListUpdated(widgets) // inform the parent container
         })
 
         
 
         return {id, widgetRef}
+    }
+
+    getWidgetById(id){
+
+        return this.widgetRefs[id]
     }
 
     /**
@@ -558,12 +564,16 @@ class Canvas extends React.Component {
     }
 
     /**
-     * Handles drop event to canvas from the sidebar
+     * Handles drop event to canvas from the sidebar and on canvas widget movement
      * @param {DragEvent} e 
      */
-    handleDropEvent = (e) => {
+    handleDropEvent = (e, draggedElement) => {
 
         e.preventDefault()
+
+        
+        const container = draggedElement.getAttribute("data-container")
+        console.log("dragged element: ", e, draggedElement, container)
 
         // const canvasContainerRect = this.getCanvasContainerBoundingRect()
         const canvasRect = this.canvasRef.current.getBoundingClientRect()
@@ -572,11 +582,18 @@ class Canvas extends React.Component {
         const finalPosition = {	
 			x: (clientX - canvasRect.left) / this.state.zoom,
 			y: (clientY - canvasRect.top) / this.state.zoom,
-		}
+		}   
 
-        this.addWidget(Widget, ({id, widgetRef}) => {
-            widgetRef.current.setPos(finalPosition.x, finalPosition.y)
-        })
+        if (container === "sidebar"){
+            this.addWidget(Widget, ({id, widgetRef}) => {
+                widgetRef.current.setPos(finalPosition.x, finalPosition.y)
+            })
+        }else  if (container === "canvas"){
+
+            const widgetObj = this.getWidgetById(draggedElement.getAttribute("data-widget-id"))
+            // console.log("WidgetObj: ", widgetObj)
+            widgetObj.current.setPos(finalPosition.x, finalPosition.y)
+        }
 
     }
 
@@ -607,30 +624,33 @@ class Canvas extends React.Component {
 
                 {/* <ActiveWidgetProvider> */}
                 <DroppableWrapper id="canvas-droppable" 
-                                    className="tw-w-full tw-h-full" onDrop={this.handleDropEvent}>
-                    <Dropdown trigger={['contextMenu']} mouseLeaveDelay={0} menu={{items: this.state.contextMenuItems, }}>
-                        <div className="dots-bg tw-w-full tw-h-full tw-outline-none tw-flex tw-relative tw-bg-[#f2f2f2] tw-overflow-hidden" 
-                                ref={this.canvasContainerRef}
-                                style={{
-                                        transition: " transform 0.3s ease-in-out", 
-                                        backgroundImage: `url('${DotsBackground}')`,
-                                        backgroundSize: 'cover', // Ensure proper sizing if needed
-                                        backgroundRepeat: 'no-repeat',
-                                    }}
-                                tabIndex={0} // allow focus
-                                >
-                            {/* Canvas */}
-                            <div data-canvas className="tw-w-full tw-h-full tw-absolute tw-top-0 tw-select-none
-                                                        tw-bg-green-300" 
-                                    ref={this.canvasRef}>
-                                <div className="tw-relative tw-w-full tw-h-full">
-                                    {
-                                        this.state.widgets.map(this.renderWidget)
-                                    }
+                                    className="tw-w-full tw-h-full" 
+                                    onDrop={this.handleDropEvent}>
+                    {/* <DragWidgetProvider> */}
+                        <Dropdown trigger={['contextMenu']} mouseLeaveDelay={0} menu={{items: this.state.contextMenuItems, }}>
+                            <div className="dots-bg tw-w-full tw-h-full tw-outline-none tw-flex tw-relative tw-bg-[#f2f2f2] tw-overflow-hidden" 
+                                    ref={this.canvasContainerRef}
+                                    style={{
+                                            transition: " transform 0.3s ease-in-out", 
+                                            backgroundImage: `url('${DotsBackground}')`,
+                                            backgroundSize: 'cover', // Ensure proper sizing if needed
+                                            backgroundRepeat: 'no-repeat',
+                                        }}
+                                    tabIndex={0} // allow focus
+                                    >
+                                {/* Canvas */}
+                                <div data-canvas className="tw-w-full tw-h-full tw-absolute tw-top-0 tw-select-none
+                                                            tw-bg-green-300" 
+                                        ref={this.canvasRef}>
+                                    <div className="tw-relative tw-w-full tw-h-full">
+                                        {
+                                            this.state.widgets.map(this.renderWidget)
+                                        }
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </Dropdown>
+                        </Dropdown>
+                    {/* </DragWidgetProvider> */}
                 </DroppableWrapper>
 
                 <CanvasToolBar isOpen={this.state.toolbarOpen} 

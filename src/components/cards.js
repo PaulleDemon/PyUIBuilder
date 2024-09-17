@@ -30,7 +30,7 @@ export function DraggableWidgetCard({ name, img, url, innerRef}){
 
     return (
         // <Draggable className="tw-cursor-pointer" id={name}>
-            <DraggableWrapper dragElementType={"widget"} className="tw-cursor-pointer tw-w-fit tw-h-fit">
+            <DraggableWrapper data-container={"sidebar"} dragElementType={"widget"} className="tw-cursor-pointer tw-w-fit tw-h-fit">
                 
                 <div ref={innerRef} className="tw-select-none  tw-h-[240px] tw-w-[280px] tw-flex tw-flex-col 
                                                 tw-rounded-md tw-overflow-hidden 

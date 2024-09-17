@@ -10,6 +10,8 @@ import DraggableWrapper from "../../components/draggable/draggable"
 import DroppableWrapper from "../../components/draggable/droppable"
 
 import { ActiveWidgetContext } from "../activeWidgetContext"
+import { DragWidgetProvider } from "./draggableWidgetContext"
+import WidgetDraggable from "./widgetDragDrop"
 
 
 /**
@@ -521,8 +523,13 @@ class Widget extends React.Component {
 
         // console.log("selected: ", this.state.selected)
         return (
-                <div data-id={this.__id} ref={this.elementRef} className="tw-absolute tw-shadow-xl tw-w-fit tw-h-fit"
+            <WidgetDraggable widgetRef={this.elementRef}>
+                <div data-widget-id={this.__id} 
+                        ref={this.elementRef} 
+                        className="tw-absolute tw-shadow-xl tw-w-fit tw-h-fit"
                         style={outerStyle}
+                        data-draggable-type={this.getWidgetType()} // helps with droppable 
+                        data-container={"canvas"} // indicates how the canvas should handle dragging, one is sidebar other is canvas
                     >
 
                     {this.renderContent()}
@@ -565,6 +572,7 @@ class Widget extends React.Component {
 
                     </div>
                 </div>
+            </WidgetDraggable>
         )
 
     }
