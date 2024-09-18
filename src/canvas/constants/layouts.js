@@ -1,5 +1,5 @@
 const Layouts = {
-    PACK: "flex",
+    FLEX: "flex",
     GRID: "grid",
     PLACE: "absolute"
 }

@@ -5,6 +5,7 @@ import { ColorPicker, Input, InputNumber, Select } from "antd"
 import { capitalize } from "../utils/common"
 import Tools from "./constants/tools.js"
 import { useActiveWidget } from "./activeWidgetContext.js"
+import Layouts from "./constants/layouts.js"
 
 
 // FIXME: Maximum recursion error
@@ -15,7 +16,7 @@ import { useActiveWidget } from "./activeWidgetContext.js"
  * @param {string} widgetType 
  * @param {object} attrs - widget attributes 
  */
-const  CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
+const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
 
     // const { activeWidgetAttrs } = useActiveWidget()
 
@@ -28,16 +29,9 @@ const  CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
     }, [isOpen])
 
     useEffect(() => {
-        console.log("active widget: ", attrs)
         setToolbarAttrs(attrs)
     }, [attrs])
 
-    // useEffect(() => {
-
-    //     console.log("active widget: ", activeWidgetAttrs)
-    //     setToolbarAttrs(activeWidgetAttrs || {})
-
-    // }, [activeWidgetAttrs])
 
     const handleChange = (value, callback) => {
         console.log("changed...")
@@ -45,6 +39,69 @@ const  CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
             callback(value)
         }
     }
+
+
+    const renderLayoutManager = (val) => {
+
+        return (
+            <div className="tw-flex tw-flex-col tw-gap-2">
+                <Select
+                    options={[
+                        { value: Layouts.FLEX, label: "Flex" },
+                        { value: Layouts.GRID, label: "Grid" },
+                        { value: Layouts.PLACE, label: "Place" },
+                    ]}
+                    showSearch
+                    value={val.value?.layout || ""}
+                    placeholder={`${val.label}`}
+                    size="medium"
+                    onChange={(value) => handleChange(value, val.onChange)}
+                />
+
+                <div className="tw-flex tw-flex-col tw-gap-1">
+                    <span className="tw-text-sm">Direction</span>
+                    <Select
+                        options={[
+                            { value: "vertical", label: "Vertical" },
+                            { value: "horizontal", label: "Horizontal" },
+                        ]}
+                        showSearch
+                        value={val.value?.direction || ""}
+                        placeholder={`${val.label}`}
+                        onChange={(value) => handleChange(value, val.onChange)}
+                    />
+                </div>
+                <div className="tw-flex tw-flex-col">
+                    <span className="tw-text-sm tw-font-medium">Grids</span>
+                    <div className="tw-flex tw-gap-2">
+                        <div className="tw-flex tw-flex-col">
+                            <span className="tw-text-sm">Rows</span>
+                            <InputNumber
+                                max={12}
+                                min={1}
+                                value={val.value?.grid.rows || 1}
+                                size="small"
+                                onChange={(value) => handleChange(value, val.onChange)}
+                            />
+                        </div>
+                        <div className="tw-flex tw-flex-col">
+                            <span className="tw-text-sm">Columns</span>
+                            <InputNumber
+                                max={12}
+                                min={1}
+                                value={val.value?.grid.cols || 1}
+                                size="small"
+                                onChange={(value) => handleChange(value, val.onChange)}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        )
+
+    }
+
 
     const renderWidgets = (obj, parentKey = "") => {
         return Object.entries(obj).map(([key, val], i) => {
@@ -103,6 +160,13 @@ const  CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
                                 onChange={(value) => handleChange(value, val.onChange)}
                             />
                         )}
+
+                        {
+                            val.tool === Tools.LAYOUT_MANAGER && (
+                                renderLayoutManager(val)
+                            )
+                        }
+
                     </div>
                 );
             }
@@ -137,7 +201,6 @@ const  CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
                 {capitalize(`${widgetType || ""}`)}
             </h3>
 
-            <hr />
             <div className="tw-flex tw-flex-col tw-gap-4">{renderWidgets(toolbarAttrs || {})}</div>
         </div>
     )

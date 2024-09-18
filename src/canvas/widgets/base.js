@@ -53,7 +53,7 @@ class Widget extends React.Component {
         }
 
 
-        this.layout = Layouts.PACK
+        this.layout = Layouts.FLEX
         this.boundingRect = {
             x: 0,
             y: 0,
@@ -66,8 +66,6 @@ class Widget extends React.Component {
             selected: false,
             widgetName: widgetName || 'widget', // this will later be converted to variable name
             enableRename: false, // will open the widgets editable div for renaming
-            resizing: false,
-            resizeCorner: "",
             dragEnabled: true,
 
             showDroppableStyle: { // shows the droppable indicator
@@ -103,8 +101,15 @@ class Widget extends React.Component {
                 },
                 layout: {
                     label: "Layout",
-                    tool: Tools.SELECT_DROPDOWN, // the tool to display, can be either HTML ELement or a constant string
-                    value: "flex",
+                    tool: Tools.LAYOUT_MANAGER, // the tool to display, can be either HTML ELement or a constant string
+                    value: {
+                        layout: "flex",
+                        direction: "vertical",
+                        grid: {
+                            rows: 1,
+                            cols: 1
+                        }
+                    },
                     options: [
                         { value: "flex", label: "Flex" },
                         { value: "grid", label: "Grid" },
@@ -141,25 +146,14 @@ class Widget extends React.Component {
         this.setWidgetName = this.setWidgetName.bind(this)
         this.setWidgetStyling = this.setWidgetStyling.bind(this)
 
-
-        // this.startResizing = this.startResizing.bind(this)
-        // this.handleResize = this.handleResize.bind(this)
-        // this.stopResizing = this.stopResizing.bind(this)
-
     }
 
     componentDidMount() {
         this.elementRef.current?.addEventListener("click", this.mousePress)
-
-        // this.canvas.addEventListener("mousemove", this.handleResize)
-        // this.canvas.addEventListener("mouseup", this.stopResizing)
     }
 
     componentWillUnmount() {
         this.elementRef.current?.removeEventListener("click", this.mousePress)
-
-        // this.canvas.addEventListener("mousemove", this.handleResize)
-        // this.canvas.addEventListener("mouseup", this.stopResizing)
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -287,11 +281,6 @@ class Widget extends React.Component {
 
     setPos(x, y) {
 
-        // if (this.state.resizing) {
-        //     // don't change position when resizing the widget
-        //     return
-        // }
-
         this.setState({
             pos: { x, y }
         })
@@ -410,63 +399,6 @@ class Widget extends React.Component {
         })
     }
 
-    // startResizing(corner, event) {
-    //     event.stopPropagation()
-    //     this.setState({ resizing: true, resizeCorner: corner })
-    // }
-
-    // handleResize(event) {
-    //     if (!this.state.resizing) return
-
-    //     const { resizeCorner, size, pos } = this.state
-    //     const deltaX = event.movementX
-    //     const deltaY = event.movementY
-
-    //     let newSize = { ...size }
-    //     let newPos = { ...pos }
-
-    //     const { width: minWidth, height: minHeight } = this.minSize
-    //     const { width: maxWidth, height: maxHeight } = this.maxSize
-    //     // console.log("resizing: ", deltaX, deltaY, event)
-
-    //     switch (resizeCorner) {
-    //         case "nw":
-    //             newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width - deltaX))
-    //             newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height - deltaY))
-    //             newPos.x += (newSize.width !== size.width) ? deltaX : 0
-    //             newPos.y += (newSize.height !== size.height) ? deltaY : 0
-    //             break
-    //         case "ne":
-    //             newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width + deltaX))
-    //             newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height - deltaY))
-    //             newPos.y += (newSize.height !== size.height) ? deltaY : 0
-    //             break
-    //         case "sw":
-    //             newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width - deltaX))
-    //             newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height + deltaY))
-    //             newPos.x += (newSize.width !== size.width) ? deltaX : 0
-    //             break
-    //         case "se":
-    //             newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width + deltaX))
-    //             newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height + deltaY))
-    //             break
-    //         default:
-    //             break
-    //     }
-
-    //     // this.setState({ size: newSize, pos: newPos })
-    //     this.updateState({
-    //         size: newSize,
-    //         pos: newPos
-    //     })
-    // }
-
-    // stopResizing() {
-    //     if (this.state.resizing) {
-    //         this.setState({ resizing: false })
-    //     }
-    // }
-
     openRenaming() {
         this.setState({
             selected: true,
@@ -500,12 +432,14 @@ class Widget extends React.Component {
         console.log("dragging event: ", event, dragElement)
 
         const container = dragElement.getAttribute("data-container")
-
+        // TODO: check if the drop is allowed
         if (container === "canvas"){
-
-            // this.canvas.getWidgetById
-
-            // this._children.push()
+        
+            this.props.onAddChildWidget(this.__id, dragElement.getAttribute("data-widget-id"))
+        
+        }else if (container === "sidebar"){
+            
+            this.props.onAddChildWidget(this.__id, null, true) //  if dragged from the sidebar create the widget first
 
         }
 
@@ -604,7 +538,6 @@ class Widget extends React.Component {
                                 className="tw-w-2 tw-h-2 tw-absolute tw--left-1 tw--top-1 tw-bg-blue-500"
                                 style={{ cursor: Cursor.NW_RESIZE }}
                                 onMouseDown={(e) => {
-                                    // this.startResizing("nw", e)
                                     this.props.onWidgetResizing("nw")
                                     this.setState({dragEnabled: false})
                                 }}
@@ -614,7 +547,6 @@ class Widget extends React.Component {
                                 className="tw-w-2 tw-h-2 tw-absolute tw--right-1 tw--top-1 tw-bg-blue-500"
                                 style={{ cursor: Cursor.SW_RESIZE }}
                                 onMouseDown={(e) => {
-                                    // this.startResizing("ne", e)
                                     this.props.onWidgetResizing("ne")
                                     this.setState({dragEnabled: false})
                                 }}
@@ -624,7 +556,6 @@ class Widget extends React.Component {
                                 className="tw-w-2 tw-h-2 tw-absolute tw--left-1 tw--bottom-1 tw-bg-blue-500"
                                 style={{ cursor: Cursor.SW_RESIZE }}
                                 onMouseDown={(e) => {
-                                    // this.startResizing("sw", e)
                                     this.props.onWidgetResizing("sw")
                                     this.setState({dragEnabled: false})
                                 }}
@@ -634,7 +565,6 @@ class Widget extends React.Component {
                                 className="tw-w-2 tw-h-2 tw-absolute tw--right-1 tw--bottom-1 tw-bg-blue-500"
                                 style={{ cursor: Cursor.SE_RESIZE }}
                                 onMouseDown={(e) => {
-                                    // this.startResizing("se", e)
                                     this.props.onWidgetResizing("se")
                                     this.setState({dragEnabled: false})
                                 }}
