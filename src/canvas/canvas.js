@@ -61,14 +61,15 @@ class Canvas extends React.Component {
         this.widgetRefs = {} // stores the actual refs to the widgets inside the canvas {id: ref, id2, ref2...}
 
         this.state = {
-            widgets: [], // stores the mapping to widgetRefs, stores id and WidgetType, later used for rendering [{id: , widgetType: WidgetClass}]
+            widgetResizing: "", // set this to "nw", "sw" etc based on the side when widgets resizing handles are selected
+            widgets: [], // stores the mapping to widgetRefs, stores id and WidgetType, later used for rendering [{id: , widgetType: WidgetClass, children: [], parent: ""}]
             zoom: 1,
             isPanning: false,
             currentTranslate: { x: 0, y: 0 },
             canvasSize:  { width: 500, height: 500 },
             
             contextMenuItems: [],
-            selectedWidgets: [],
+            selectedWidget: null,
             
             toolbarOpen: true,  
             toolbarAttrs: null
@@ -209,20 +210,17 @@ class Canvas extends React.Component {
             if (selectedWidget){
                 // if the widget is selected don't pan, instead move the widget
                 if (!selectedWidget._disableSelection){
-
-                    const selectedLength = this.state.selectedWidgets.length
-
                     // console.log("selected widget: ", selectedWidget)
 
-                    if (selectedLength === 0 || (selectedLength === 1 && selectedWidget.__id !== this.state.selectedWidgets[0].__id)){
-                        this.state.selectedWidgets[0]?.deSelect() // deselect the previous widget before adding the new one
-                        this.state.selectedWidgets[0]?.setZIndex(0)
+                    if (!this.state.selectedWidget || (selectedWidget.__id !== this.state.selectedWidget?.__id)){
+                        this.state.selectedWidget?.deSelect() // deselect the previous widget before adding the new one
+                        this.state.selectedWidget?.setZIndex(0)
 
                         selectedWidget.setZIndex(1000)
                         selectedWidget.select()
 
                         this.setState({
-                            selectedWidgets: [selectedWidget],
+                            selectedWidget: selectedWidget,
                             toolbarAttrs: selectedWidget.getToolbarAttrs()
                         })
 
@@ -240,7 +238,7 @@ class Canvas extends React.Component {
                 this.clearSelections()
                 this.currentMode = CanvasModes.PAN
                 this.setCursor(Cursor.GRAB)
-
+                console.log("clear selection")
             }
 
             this.setState({
@@ -253,14 +251,14 @@ class Canvas extends React.Component {
         }else if (event.button === 2){
             //right click
             
-            if (this.state.selectedWidgets.length > 0 && this.state.selectedWidgets[0].__id !== selectedWidget.__id){
+            if (this.state.selectedWidget && this.state.selectedWidget.__id !== selectedWidget.__id){
                 this.clearSelections()
             }
 
             if (selectedWidget){
 
                 this.setState({
-                    selectedWidget: [selectedWidget],
+                    selectedWidget: selectedWidget,
                     contextMenuItems: [
                         {
                             key: "rename",
@@ -284,12 +282,18 @@ class Canvas extends React.Component {
 
     mouseMoveEvent(event){
 
+        if (this.state.widgetResizing !== ""){
+            // if resizing is taking place don't do anything else
+            this.handleResize(event)
+            return
+        }
+
         // console.log("mode: ", this.currentMode, this.getActiveObjects())
         if (this.mousePressed && [CanvasModes.PAN, CanvasModes.MOVE_WIDGET].includes(this.currentMode)) {
             const deltaX = event.clientX - this.mousePos.x
             const deltaY = event.clientY - this.mousePos.y
             
-            if (this.state.selectedWidgets.length === 0){
+            if (!this.state.selectedWidget){
                 // if there aren't any selected widgets, then pan the canvas
                 this.setState(prevState => ({
                     currentTranslate: {
@@ -320,6 +324,10 @@ class Canvas extends React.Component {
         this.mousePressed = false
         this.currentMode = CanvasModes.DEFAULT
         this.setCursor(Cursor.DEFAULT)
+
+        if (this.state.widgetResizing) {
+            this.setState({ widgetResizing: "" })
+        }
     }
 
     wheelZoom(event){
@@ -327,6 +335,59 @@ class Canvas extends React.Component {
         let zoom = this.state.zoom * 0.999 ** delta
         
         this.setZoom(zoom, {x: event.offsetX, y: event.offsetY})
+    }
+
+    /**
+     * handles widgets resizing
+     * @param {MouseEvent} event - mouse move event 
+     * @returns 
+     */
+    handleResize = (event) => {
+        if (this.state.resizing === "") return
+
+        const widget = this.state.selectedWidget
+
+        if (!widget) return
+        const resizeCorner = this.state.widgetResizing
+        const size = widget.getSize()
+        const pos = widget.getPos()
+
+        const deltaX = event.movementX
+        const deltaY = event.movementY
+
+        let newSize = { ...size }
+        let newPos = { ...pos }
+
+        const { width: minWidth, height: minHeight } = widget.minSize
+        const { width: maxWidth, height: maxHeight } = widget.maxSize
+        // console.log("resizing: ", deltaX, deltaY, event)
+
+        switch (resizeCorner) {
+            case "nw":
+                newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width - deltaX))
+                newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height - deltaY))
+                newPos.x += (newSize.width !== size.width) ? deltaX : 0
+                newPos.y += (newSize.height !== size.height) ? deltaY : 0
+                break
+            case "ne":
+                newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width + deltaX))
+                newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height - deltaY))
+                newPos.y += (newSize.height !== size.height) ? deltaY : 0
+                break
+            case "sw":
+                newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width - deltaX))
+                newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height + deltaY))
+                newPos.x += (newSize.width !== size.width) ? deltaX : 0
+                break
+            case "se":
+                newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width + deltaX))
+                newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height + deltaY))
+                break
+            default:
+                break
+        }   
+
+        widget.setResize(newPos, newSize)
     }
 
     getCanvasContainerBoundingRect(){
@@ -411,6 +472,10 @@ class Canvas extends React.Component {
     }
 
     clearSelections(){
+
+        if (!this.state.selectedWidget)
+            return
+
         this.getActiveObjects().forEach(widget => {
             widget.current?.deSelect()
         })
@@ -419,7 +484,7 @@ class Canvas extends React.Component {
         // this.context.updateToolAttrs({})
         
         this.setState({
-            selectedWidgets: [],
+            selectedWidget: null,
             toolbarAttrs: null,
             // toolbarOpen: 
         })
@@ -462,7 +527,8 @@ class Canvas extends React.Component {
         // Store the ref in the instance variable
         this.widgetRefs[id] = widgetRef
 
-        const widgets = [...this.state.widgets, { id, widgetType: widgetComponentType }] // don't add the widget refs in the state
+        const widgets = [...this.state.widgets, { id, widgetType: widgetComponentType, children: [], parent: "" }] // don't add the widget refs in the state
+        
         // Update the state to include the new widget's type and ID
         this.setState({
             widgets: widgets
@@ -491,7 +557,7 @@ class Canvas extends React.Component {
     deleteSelectedWidgets(widgets=[]){
 
         
-        let activeWidgets = removeDuplicateObjects([...widgets, ...this.state.selectedWidgets], "__id")
+        let activeWidgets = removeDuplicateObjects([...widgets, this.state.selectedWidget], "__id")
         
         const widgetIds = activeWidgets.map(widget => widget.__id)
 
@@ -520,11 +586,6 @@ class Canvas extends React.Component {
     clearCanvas(){
 
         // NOTE: Don't remove from it using remove() function since, it already removed from the DOM tree when its removed from widgets
-        // for (let [key, value] of Object.entries(this.widgetRefs)){
-        //     console.log("removed: ", value, value.current?.getElement())
-
-        //     value.current?.remove()
-        // }
 
         this.widgetRefs = {}
         this.setState({
@@ -552,15 +613,15 @@ class Canvas extends React.Component {
 
     onActiveWidgetUpdate(widgetId){
 
-        if (this.state.selectedWidgets.length === 0 || widgetId !== this.state.selectedWidgets[0].__id)
+        if (!this.state.selectedWidget || widgetId !== this.state.selectedWidget.__id)
             return
 
-        console.log("updating...", this.state.toolbarAttrs, this.state.selectedWidgets.at(0).getToolbarAttrs())
+        // console.log("updating...", this.state.toolbarAttrs, this.state.selectedWidget.getToolbarAttrs())
 
         // console.log("attrs: ", this.state.selectedWidgets.at(0).getToolbarAttrs())
 
         this.setState({
-            toolbarAttrs: this.state.selectedWidgets.at(0).getToolbarAttrs()
+            toolbarAttrs: this.state.selectedWidget.getToolbarAttrs()
         })
 
     }
@@ -601,12 +662,15 @@ class Canvas extends React.Component {
     }
 
     renderWidget(widget){
-        const { id, widgetType: ComponentType } = widget
+        const { id, widgetType: ComponentType, children=[], parent } = widget
         // console.log("widet: ", this.widgetRefs, id)
-    
+        // TODO: need to pass the widget ref for child elements as well
         return <ComponentType key={id} id={id} ref={this.widgetRefs[id]} 
                                 canvasRef={this.canvasContainerRef} 
                                 onWidgetUpdate={this.onActiveWidgetUpdate}
+                                childWidgets={children}
+                                parent={parent}
+                                onWidgetResizing={(resizeSide) => this.setState({widgetResizing: resizeSide })}
                                 />
     }
 
@@ -631,7 +695,7 @@ class Canvas extends React.Component {
                                     onDrop={this.handleDropEvent}>
                     {/* <DragWidgetProvider> */}
                         <Dropdown trigger={['contextMenu']} mouseLeaveDelay={0} menu={{items: this.state.contextMenuItems, }}>
-                            <div className="dots-bg tw-w-full tw-h-full tw-outline-none tw-flex tw-relative tw-bg-[#f2f2f2] tw-overflow-hidden" 
+                            <div className="tw-w-full tw-h-full tw-outline-none tw-flex tw-relative tw-bg-[#f2f2f2] tw-overflow-hidden" 
                                     ref={this.canvasContainerRef}
                                     style={{
                                             transition: " transform 0.3s ease-in-out", 
@@ -664,7 +728,7 @@ class Canvas extends React.Component {
                 </DroppableWrapper>
 
                 <CanvasToolBar isOpen={this.state.toolbarOpen} 
-                                widgetType={this.state.selectedWidgets?.at(0)?.getWidgetType() || ""}
+                                widgetType={this.state.selectedWidget?.getWidgetType() || ""}
                                 attrs={this.state.toolbarAttrs}
                                 />
                 {/* </ActiveWidgetProvider> */}

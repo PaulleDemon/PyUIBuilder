@@ -142,24 +142,24 @@ class Widget extends React.Component {
         this.setWidgetStyling = this.setWidgetStyling.bind(this)
 
 
-        this.startResizing = this.startResizing.bind(this)
-        this.handleResize = this.handleResize.bind(this)
-        this.stopResizing = this.stopResizing.bind(this)
+        // this.startResizing = this.startResizing.bind(this)
+        // this.handleResize = this.handleResize.bind(this)
+        // this.stopResizing = this.stopResizing.bind(this)
 
     }
 
     componentDidMount() {
         this.elementRef.current?.addEventListener("click", this.mousePress)
 
-        this.canvas.addEventListener("mousemove", this.handleResize)
-        this.canvas.addEventListener("mouseup", this.stopResizing)
+        // this.canvas.addEventListener("mousemove", this.handleResize)
+        // this.canvas.addEventListener("mouseup", this.stopResizing)
     }
 
     componentWillUnmount() {
         this.elementRef.current?.removeEventListener("click", this.mousePress)
 
-        this.canvas.addEventListener("mousemove", this.handleResize)
-        this.canvas.addEventListener("mouseup", this.stopResizing)
+        // this.canvas.addEventListener("mousemove", this.handleResize)
+        // this.canvas.addEventListener("mouseup", this.stopResizing)
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -287,10 +287,10 @@ class Widget extends React.Component {
 
     setPos(x, y) {
 
-        if (this.state.resizing) {
-            // don't change position when resizing the widget
-            return
-        }
+        // if (this.state.resizing) {
+        //     // don't change position when resizing the widget
+        //     return
+        // }
 
         this.setState({
             pos: { x, y }
@@ -301,19 +301,6 @@ class Widget extends React.Component {
         // })
     }
 
-    setParent(parentId) {
-        this._parent = parentId
-    }
-
-    addChild(childId) {
-        this._children.push(childId)
-    }
-
-    removeChild(childId) {
-        this._children = this._children.filter(function (item) {
-            return item !== childId
-        })
-    }
 
     getPos() {
         return this.state.pos
@@ -368,11 +355,6 @@ class Widget extends React.Component {
         })
     }
 
-    startResizing(corner, event) {
-        event.stopPropagation()
-        this.setState({ resizing: true, resizeCorner: corner })
-    }
-
     setZIndex(zIndex) {
         this.setState({
             zIndex: zIndex
@@ -380,10 +362,6 @@ class Widget extends React.Component {
     }
 
     setWidgetName(name) {
-
-        // this.setState((prev) => ({
-        //     widgetName: name.length > 0 ? name : prev.widgetName
-        // }))
 
         this.updateState({
             widgetName: name.length > 0 ? name : this.state.widgetName
@@ -394,7 +372,6 @@ class Widget extends React.Component {
      * 
      * @param {string} key - The string in react Style format
      * @param {string} value - Value of the style
-     * @param {function():void} [callback] - optional callback, thats called after setting the internal state
      */
     setWidgetStyling(key, value) {
 
@@ -425,57 +402,70 @@ class Widget extends React.Component {
         })
     }
 
-    handleResize(event) {
-        if (!this.state.resizing) return
-
-        const { resizeCorner, size, pos } = this.state
-        const deltaX = event.movementX
-        const deltaY = event.movementY
-
-        let newSize = { ...size }
-        let newPos = { ...pos }
-
-        const { width: minWidth, height: minHeight } = this.minSize
-        const { width: maxWidth, height: maxHeight } = this.maxSize
-        // console.log("resizing: ", deltaX, deltaY, event)
-
-        switch (resizeCorner) {
-            case "nw":
-                newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width - deltaX))
-                newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height - deltaY))
-                newPos.x += (newSize.width !== size.width) ? deltaX : 0
-                newPos.y += (newSize.height !== size.height) ? deltaY : 0
-                break
-            case "ne":
-                newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width + deltaX))
-                newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height - deltaY))
-                newPos.y += (newSize.height !== size.height) ? deltaY : 0
-                break
-            case "sw":
-                newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width - deltaX))
-                newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height + deltaY))
-                newPos.x += (newSize.width !== size.width) ? deltaX : 0
-                break
-            case "se":
-                newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width + deltaX))
-                newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height + deltaY))
-                break
-            default:
-                break
-        }
-
-        // this.setState({ size: newSize, pos: newPos })
+    setResize(pos, size){
+        // useful when resizing the widget relative to the canvas, sets all pos, and size
         this.updateState({
-            size: newSize,
-            pos: newPos
+            size: size,
+            pos: pos
         })
     }
 
-    stopResizing() {
-        if (this.state.resizing) {
-            this.setState({ resizing: false })
-        }
-    }
+    // startResizing(corner, event) {
+    //     event.stopPropagation()
+    //     this.setState({ resizing: true, resizeCorner: corner })
+    // }
+
+    // handleResize(event) {
+    //     if (!this.state.resizing) return
+
+    //     const { resizeCorner, size, pos } = this.state
+    //     const deltaX = event.movementX
+    //     const deltaY = event.movementY
+
+    //     let newSize = { ...size }
+    //     let newPos = { ...pos }
+
+    //     const { width: minWidth, height: minHeight } = this.minSize
+    //     const { width: maxWidth, height: maxHeight } = this.maxSize
+    //     // console.log("resizing: ", deltaX, deltaY, event)
+
+    //     switch (resizeCorner) {
+    //         case "nw":
+    //             newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width - deltaX))
+    //             newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height - deltaY))
+    //             newPos.x += (newSize.width !== size.width) ? deltaX : 0
+    //             newPos.y += (newSize.height !== size.height) ? deltaY : 0
+    //             break
+    //         case "ne":
+    //             newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width + deltaX))
+    //             newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height - deltaY))
+    //             newPos.y += (newSize.height !== size.height) ? deltaY : 0
+    //             break
+    //         case "sw":
+    //             newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width - deltaX))
+    //             newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height + deltaY))
+    //             newPos.x += (newSize.width !== size.width) ? deltaX : 0
+    //             break
+    //         case "se":
+    //             newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width + deltaX))
+    //             newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height + deltaY))
+    //             break
+    //         default:
+    //             break
+    //     }
+
+    //     // this.setState({ size: newSize, pos: newPos })
+    //     this.updateState({
+    //         size: newSize,
+    //         pos: newPos
+    //     })
+    // }
+
+    // stopResizing() {
+    //     if (this.state.resizing) {
+    //         this.setState({ resizing: false })
+    //     }
+    // }
 
     openRenaming() {
         this.setState({
@@ -487,6 +477,22 @@ class Widget extends React.Component {
     closeRenaming() {
         this.setState({
             enableRename: false
+        })
+    }
+
+    setParent(parentId) {
+        this._parent = parentId
+    }
+
+    addChild(childWidget) {
+
+        childWidget.setParent(this.__id)
+        this._children.push(childWidget)
+    }
+
+    removeChild(childId) {
+        this._children = this._children.filter(function (item) {
+            return item !== childId
         })
     }
 
@@ -509,7 +515,7 @@ class Widget extends React.Component {
         // throw new NotImplementedError("render method has to be implemented")
         return (
             <div className="tw-w-full tw-h-full tw-rounded-md tw-bg-red-500" style={this.state.widgetStyling}>
-
+                {/* {this.props.children} */}
             </div>
         )
     }
@@ -598,7 +604,8 @@ class Widget extends React.Component {
                                 className="tw-w-2 tw-h-2 tw-absolute tw--left-1 tw--top-1 tw-bg-blue-500"
                                 style={{ cursor: Cursor.NW_RESIZE }}
                                 onMouseDown={(e) => {
-                                    this.startResizing("nw", e)
+                                    // this.startResizing("nw", e)
+                                    this.props.onWidgetResizing("nw")
                                     this.setState({dragEnabled: false})
                                 }}
                                 onMouseLeave={() => this.setState({dragEnabled: true})}
@@ -607,7 +614,8 @@ class Widget extends React.Component {
                                 className="tw-w-2 tw-h-2 tw-absolute tw--right-1 tw--top-1 tw-bg-blue-500"
                                 style={{ cursor: Cursor.SW_RESIZE }}
                                 onMouseDown={(e) => {
-                                    this.startResizing("ne", e)
+                                    // this.startResizing("ne", e)
+                                    this.props.onWidgetResizing("ne")
                                     this.setState({dragEnabled: false})
                                 }}
                                 onMouseLeave={() => this.setState({dragEnabled: true})}
@@ -616,7 +624,8 @@ class Widget extends React.Component {
                                 className="tw-w-2 tw-h-2 tw-absolute tw--left-1 tw--bottom-1 tw-bg-blue-500"
                                 style={{ cursor: Cursor.SW_RESIZE }}
                                 onMouseDown={(e) => {
-                                    this.startResizing("sw", e)
+                                    // this.startResizing("sw", e)
+                                    this.props.onWidgetResizing("sw")
                                     this.setState({dragEnabled: false})
                                 }}
                                 onMouseLeave={() => this.setState({dragEnabled: true})}
@@ -625,7 +634,8 @@ class Widget extends React.Component {
                                 className="tw-w-2 tw-h-2 tw-absolute tw--right-1 tw--bottom-1 tw-bg-blue-500"
                                 style={{ cursor: Cursor.SE_RESIZE }}
                                 onMouseDown={(e) => {
-                                    this.startResizing("se", e)
+                                    // this.startResizing("se", e)
+                                    this.props.onWidgetResizing("se")
                                     this.setState({dragEnabled: false})
                                 }}
                                 onMouseLeave={() => this.setState({dragEnabled: true})}
