@@ -23,6 +23,8 @@ import { ReactComponent as DotsBackground } from "../assets/background/dots.svg"
 import DroppableWrapper from "../components/draggable/droppable"
 import { ActiveWidgetContext, ActiveWidgetProvider, withActiveWidget } from "./activeWidgetContext"
 import { DragWidgetProvider } from "./widgets/draggableWidgetContext"
+import { PosType } from "./constants/layouts"
+import WidgetContainer from "./constants/containers"
 
 // const DotsBackground = require("../assets/background/dots.svg")
 
@@ -62,7 +64,7 @@ class Canvas extends React.Component {
 
         this.state = {
             widgetResizing: "", // set this to "nw", "sw" etc based on the side when widgets resizing handles are selected
-            widgets: [], // stores the mapping to widgetRefs, stores id and WidgetType, later used for rendering [{id: , widgetType: WidgetClass, children: [], parent: "", layoutType: "flex"}]
+            widgets: [], // stores the mapping to widgetRefs, stores id and WidgetType, later used for rendering [{id: , widgetType: WidgetClass, children: [], parent: "", initialData: {}}]
             zoom: 1,
             isPanning: false,
             currentTranslate: { x: 0, y: 0 },
@@ -173,13 +175,50 @@ class Canvas extends React.Component {
      * @returns {Widget}
      */
     getWidgetFromTarget(target) {
+        // TODO: improve search, currently O(n), but can be improved via this.state.widgets or something
+
+        let innerWidget = null
 
         for (let [key, ref] of Object.entries(this.widgetRefs)) {
-            console.log("ref: ", ref, key)
             if (ref.current.getElement().contains(target)) {
-                return ref.current
+                
+                if (!innerWidget) {
+                    innerWidget = ref.current;
+                } else if (innerWidget.getElement().contains(ref.current.getElement())) {
+                    // If the current widget is deeper than the existing innermost widget, update innerWidget
+                    innerWidget = ref.current;
+                }
             }
         }
+
+        return innerWidget
+        // for (let [key, ref] of Object.entries(this.widgetRefs)) {
+        //     console.log("ref: ", ref, key)
+        //     if (ref.current.getElement().contains(target)) {
+        //         return ref.current
+        //     }
+        // }
+
+        
+        // const returnTargetWidget = (widgets) => {
+        //     for (let x of widgets) {
+        //         const widget = this.widgetRefs[x.id]
+    
+        //         // Check if the widget contains the target
+        //         if (widget && widget.current.getElement().contains(target)) {
+        //             // If it has children, continue checking the children for the innermost match
+        //             const childWidget = returnTargetWidget(x.children)
+                    
+        //             // Return the innermost child widget if found, otherwise return the current widget
+        //             return childWidget || widget.current
+        //         }
+        //     }
+        //     // If no matching widget is found, return null
+        //     return null
+        // }
+
+
+        // return returnTargetWidget(this.state.widgets)
 
     }
 
@@ -204,6 +243,7 @@ class Canvas extends React.Component {
         this.mousePos = { x: event.clientX, y: event.clientY }
 
         let selectedWidget = this.getWidgetFromTarget(event.target)
+        // console.log("selected widget: ", selectedWidget)
         if (event.button === 0) {
             this.mousePressed = true
 
@@ -590,23 +630,28 @@ class Canvas extends React.Component {
      * @param {boolean} create - if create is set to true the widget will be created before adding to the child tree
      */
     handleAddWidgetChild = (parentWidgetId, dragElementID, create = false) => {
-
+        // TODO: creation of the child widget if its not created
         // widgets data structure { id, widgetType: widgetComponentType, children: [], parent: "" }
         const parentWidgetObj = this.findWidgetFromListById(parentWidgetId)
         let childWidgetObj = this.findWidgetFromListById(dragElementID)
 
-        console.log("WIdgets: ", parentWidgetObj, childWidgetObj)
+        // console.log("WIdgets: ", parentWidgetObj, childWidgetObj)
 
         if (parentWidgetObj && childWidgetObj) {
 
-            // remove child from current postion
+            const childWidget = this.widgetRefs[childWidgetObj.id]
+            // childWidget.current.setPosType(PosType.RELATIVE) // set state needs to rerender so serialize will return absolute always
+            const childData = childWidget.current.serialize() // save the data and pass it the updated child object
+
+            // remove child from current position
             let updatedWidgets = this.removeWidgetFromCurrentList(dragElementID)
 
             console.log("pre updated widgets: ", updatedWidgets)
 
             const updatedChildWidget = {
                 ...childWidgetObj,
-                parent: parentWidgetId
+                parent: parentWidgetId,
+                initialData: {...childData, positionType: PosType.NONE, zIndex: 0, widgetContainer: WidgetContainer.WIDGET} // makes sure that after dropping the position is set to non absolute value
             }
 
             // Create a new copy of the parent widget with the child added
@@ -637,10 +682,10 @@ class Canvas extends React.Component {
                 widgets: updatedWidgets
             }, () => {
               
-                this.widgetRefs[dragElementID] = React.createRef()
+                // this.widgetRefs[dragElementID] = React.createRef()
     
-                // Optionally, force React to update and re-render the refs
-                this.forceUpdate()
+                // // Optionally, force React to update and re-render the refs
+                // this.forceUpdate()
             })
 
         }
@@ -659,7 +704,15 @@ class Canvas extends React.Component {
         // Store the ref in the instance variable
         this.widgetRefs[id] = widgetRef
 
-        const widgets = [...this.state.widgets, { id, widgetType: widgetComponentType, children: [], parent: "", layoutType: "flex" }] // don't add the widget refs in the state
+        const newWidget = {
+            id,
+            widgetType: widgetComponentType,
+            children: [],
+            parent: "",
+            initialData: {} //  useful for serializing and deserializing (aka, saving and loading)
+        }
+
+        const widgets = [...this.state.widgets, newWidget] // don't add the widget refs in the state
 
         // Update the state to include the new widget's type and ID
         this.setState({
@@ -730,8 +783,9 @@ class Canvas extends React.Component {
 
         // FIXME: need to delete the child widgets
         // IDEA: find the widget first, check for the parent, if parent exist remove it from the parents children list
-
         // this.widgetRefs[widgetId]?.current.remove()
+        
+        //this.removeWidgetFromCurrentList(widgetID) <--- use this
         delete this.widgetRefs[widgetId]
 
         const widgets = this.state.widgets.filter(widget => widget.id !== widgetId)
@@ -787,66 +841,97 @@ class Canvas extends React.Component {
             })
         } else if (container === "canvas") {
 
-            const widgetObj = this.getWidgetById(draggedElement.getAttribute("data-widget-id"))
+            let widgetId = draggedElement.getAttribute("data-widget-id")
+            let widgetContainer = draggedElement.getAttribute("data-container")
+
+            
+            const widgetObj = this.getWidgetById(widgetId)
             // console.log("WidgetObj: ", widgetObj)
-            widgetObj.current.setPos(finalPosition.x, finalPosition.y)
+            if (widgetContainer === WidgetContainer.CANVAS){
+                
+                widgetObj.current.setPos(finalPosition.x, finalPosition.y)
+
+            }else if (widgetContainer === WidgetContainer.WIDGET){
+
+                // FIXME: move the widget out of the widget
+                // if the widget was inside another widget move it outside 
+                let childWidgetObj = this.findWidgetFromListById(widgetObj.id)
+                let parentWidgetObj = this.findWidgetFromListById(childWidgetObj.parent)
+
+                const childData = widgetObj.current.serialize() // save the data and pass it the updated child object
+
+                // remove child from current position
+    
+                console.log("pre updated widgets: ", updatedWidgets)
+    
+                const updatedChildWidget = {
+                    ...childWidgetObj,
+                    parent: "",
+                    initialData: {...childData, 
+                                    positionType: PosType.ABSOLUTE, // makes sure that after dropping the position is set to absolute value
+                                    zIndex: 0, 
+                                    widgetContainer: WidgetContainer.CANVAS
+                                } 
+                }
+
+                let updatedWidgets = this.removeWidgetFromCurrentList(widgetObj.id)
+
+    
+                // Create a new copy of the parent widget with the child added
+                const updatedParentWidget = {
+                    ...parentWidgetObj,
+                    children: parentWidgetObj.children.filter(child => child.id !== childWidgetObj.id)
+                }
+    
+    
+                updatedWidgets = updatedWidgets.map(widget => {
+                    if (widget.id === parentWidgetObj.id) {
+                        return updatedParentWidget // Update the parent widget with the child removed
+                    } else {
+                        return widget // Leave other widgets unchanged
+                    }
+                })
+
+                this.setState({
+                    widgets: updatedWidgets
+                })
+
+            }
         }
 
     }
 
-    getLayoutStyleForWidget = (widget) => {
-        const { layoutType } = widget // e.g., 'grid', 'flex', 'absolute'
-
-        switch (layoutType) {
-            case 'grid':
-                return { display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }
-            case 'flex':
-                return { display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }
-            case 'absolute':
-                return { position: 'absolute', left: widget.left, top: widget.top } // Custom positioning
-            default:
-                return {}
-        }
-    }
+ 
 
     renderWidget = (widget) => {
 
-        // FIXME: the child elements ref is not correct when drag and dropped into another
-        const { id, widgetType: ComponentType, children = [], parent } = widget
+        // FIXME: the child elements are being recreated instead of using the same object
+        const { id, widgetType: ComponentType, children = [], parent, initialData={} } = widget
 
-        console.log("rendering: ", widget, id)
 
-        // Layout management for children inside the parent
-        const renderChildren = (childWidgets) => {
-            console.log("Found the child : ", childWidgets)
-            return childWidgets.map((child) => {
+        const renderChildren = (childrenData) => {
+            // recursively render the child elements
+            return childrenData.map((child) => {
                 const childWidget = this.findWidgetFromListById(child.id)
                 // console.log("Found the child : ", childWidget)
                 if (childWidget) {
-                    console.log("rendering the child", childWidget)
                     return this.renderWidget(childWidget) // Recursively render child widgets
                 }
                 return null
             })
         }
 
-        // Example of handling layout within the parent widget
-        const layoutStyle = this.getLayoutStyleForWidget(widget)
-
-        console.log("widget ref id: ", this.widgetRefs[id], this.widgetRefs)
 
         return (
             <ComponentType
                 key={id}
                 id={id}
                 ref={this.widgetRefs[id]}
+                initialData={initialData}
                 canvasRef={this.canvasContainerRef}
                 onWidgetUpdate={this.onActiveWidgetUpdate}
-                childWidgets={children} // Pass the list of children (IDs)
-                parent={parent}
                 onAddChildWidget={this.handleAddWidgetChild}
                 onWidgetResizing={(resizeSide) => this.setState({ widgetResizing: resizeSide })}
-                style={layoutStyle} // Apply layout style (for position, size, etc.)
             >
                 {/* Render children inside the parent with layout applied */}
                 {renderChildren(children)}

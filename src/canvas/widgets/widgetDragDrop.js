@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react"
+import { memo, useEffect, useRef, useState } from "react"
 import { useDragWidgetContext } from "./draggableWidgetContext"
 import { useDragContext } from "../../components/draggable/draggableContext"
 
@@ -29,9 +29,12 @@ const WidgetDraggable = memo(({ widgetRef, enableDrag=true, dragElementType="wid
     })
 
     const handleDragStart = (e) => {
+        e.stopPropagation()
         setIsDragging(true)
 
         onDragStart(widgetRef?.current || null)
+
+        console.log("Drag start: ", widgetRef.current)
 
         // Create custom drag image with full opacity, this will ensure the image isn't taken from part of the canvas
         const dragImage = widgetRef?.current.cloneNode(true)
@@ -58,6 +61,11 @@ const WidgetDraggable = memo(({ widgetRef, enableDrag=true, dragElementType="wid
         const dragEleType = draggedElement.getAttribute("data-draggable-type")
 
         // console.log("Drag entering...", overElement === e.currentTarget)
+        // FIXME:  the outer widget shouldn't be swallowed by inner widget
+        if (draggedElement === widgetRef.current){
+            // prevent drop on itself, since the widget is invisible when dragging, if dropped on itself, it may consume itself
+            return 
+        }
 
         setOverElement(e.currentTarget)
 
@@ -86,6 +94,10 @@ const WidgetDraggable = memo(({ widgetRef, enableDrag=true, dragElementType="wid
     }
 
     const handleDragOver = (e) => {
+        if (draggedElement === widgetRef.current){
+            // prevent drop on itself, since the widget is invisible when dragging, if dropped on itself, it may consume itself
+            return 
+        }
         // console.log("Drag over: ", e.dataTransfer.getData("text/plain"), e.dataTransfer)
         const dragEleType = draggedElement.getAttribute("data-draggable-type")
 
@@ -98,7 +110,21 @@ const WidgetDraggable = memo(({ widgetRef, enableDrag=true, dragElementType="wid
     const handleDropEvent = (e) => {
         e.preventDefault()
         e.stopPropagation()
-        // console.log("Dropped")
+        console.log("Dropped: ", draggedElement, props.children)
+
+        if (draggedElement === widgetRef.current){
+            // prevent drop on itself, since the widget is invisible when dragging, if dropped on itself, it may consume itself
+            return 
+        }
+
+        let currentElement = e.currentTarget
+        while (currentElement) {
+            if (currentElement === draggedElement) {
+                console.log("Dropped into a descendant element, ignoring drop")
+                return // Exit early to prevent the drop
+            }
+            currentElement = currentElement.parentElement // Traverse up to check ancestors
+        }
 
         setShowDroppable({
             allow: false,
@@ -130,7 +156,7 @@ const WidgetDraggable = memo(({ widgetRef, enableDrag=true, dragElementType="wid
     }
 
     return (
-        <div className={`${props.className} tw-w-fit tw-h-fit tw-bg-blue`}
+        <div className={`${props.className || ""} tw-w-fit tw-h-fit tw-bg-blue`}
             onDragOver={handleDragOver}
             onDrop={handleDropEvent}
             onDragEnter={handleDragEnter}
@@ -138,7 +164,7 @@ const WidgetDraggable = memo(({ widgetRef, enableDrag=true, dragElementType="wid
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             draggable={enableDrag}
-            style={{ opacity: isDragging ? 0 : 1}} // hide the initial position when dragging
+            style={{ opacity: isDragging ? 0.3 : 1}} // hide the initial position when dragging
         >   
             {props.children}
             

@@ -5,7 +5,7 @@ import { ColorPicker, Input, InputNumber, Select } from "antd"
 import { capitalize } from "../utils/common"
 import Tools from "./constants/tools.js"
 import { useActiveWidget } from "./activeWidgetContext.js"
-import Layouts from "./constants/layouts.js"
+import { Layouts } from "./constants/layouts.js"
 
 
 // FIXME: Maximum recursion error
