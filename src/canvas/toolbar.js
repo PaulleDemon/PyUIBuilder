@@ -24,6 +24,7 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
     const [toolbarOpen, setToolbarOpen] = useState(isOpen)
     const [toolbarAttrs, setToolbarAttrs] = useState(attrs)
 
+
     useEffect(() => {
         setToolbarOpen(isOpen)
     }, [isOpen])
@@ -34,7 +35,6 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
 
 
     const handleChange = (value, callback) => {
-        console.log("changed...")
         if (callback) {
             callback(value)
         }
@@ -55,20 +55,32 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
                     value={val.value?.layout || ""}
                     placeholder={`${val.label}`}
                     size="medium"
-                    onChange={(value) => handleChange(value, val.onChange)}
+                    onChange={(value) => handleChange({ ...val.value, layout: value }, val.onChange)}
                 />
 
                 <div className="tw-flex tw-flex-col tw-gap-1">
                     <span className="tw-text-sm">Direction</span>
                     <Select
                         options={[
-                            { value: "vertical", label: "Vertical" },
-                            { value: "horizontal", label: "Horizontal" },
+                            { value: "column", label: "Vertical" },
+                            { value: "row", label: "Horizontal" },
                         ]}
                         showSearch
-                        value={val.value?.direction || ""}
+                        value={val.value?.direction || "row"}
                         placeholder={`${val.label}`}
-                        onChange={(value) => handleChange(value, val.onChange)}
+                        onChange={(value) => handleChange({ ...val.value, direction: value }, val.onChange)}
+                    />
+                </div>
+                <div className="tw-flex tw-flex-col">
+                    <span className="tw-text-sm">Gap</span>
+                    <InputNumber
+                        max={500}
+                        min={1}
+                        value={val.value?.gap || 10}
+                        size="small"
+                        onChange={(value) => {
+                            handleChange({ ...val.value, gap: value }, val.onChange)
+                        }}
                     />
                 </div>
                 <div className="tw-flex tw-flex-col">
@@ -81,7 +93,13 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
                                 min={1}
                                 value={val.value?.grid.rows || 1}
                                 size="small"
-                                onChange={(value) => handleChange(value, val.onChange)}
+                                onChange={(value) => {
+                                    let newGrid = {
+                                        rows: value,
+                                        cols: val.value?.grid.cols
+                                    }
+                                    handleChange({ ...val.value, grid: newGrid }, val.onChange)
+                                }}
                             />
                         </div>
                         <div className="tw-flex tw-flex-col">
@@ -91,7 +109,13 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
                                 min={1}
                                 value={val.value?.grid.cols || 1}
                                 size="small"
-                                onChange={(value) => handleChange(value, val.onChange)}
+                                onChange={(value) => {
+                                    let newGrid = {
+                                        rows: val.value?.grid.cols,
+                                        cols: value
+                                    }
+                                    handleChange({ ...val.value, grid: newGrid }, val.onChange)
+                                }}
                             />
                         </div>
                     </div>
@@ -104,6 +128,7 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
 
 
     const renderWidgets = (obj, parentKey = "") => {
+        // FIXME: The color widget is not being updated on selection change
         return Object.entries(obj).map(([key, val], i) => {
             const keyName = parentKey ? `${parentKey}.${key}` : key
 

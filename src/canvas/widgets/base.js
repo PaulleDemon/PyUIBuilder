@@ -90,7 +90,7 @@ class Widget extends React.Component {
                     backgroundColor: {
                         label: "Background Color",
                         tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
-                        value: "",
+                        value: "#fff",
                         onChange: (value) => {
                             this.setWidgetStyling("backgroundColor", value)
                             this.setAttrValue("styling.backgroundColor", value)
@@ -108,11 +108,12 @@ class Widget extends React.Component {
                     tool: Tools.LAYOUT_MANAGER, // the tool to display, can be either HTML ELement or a constant string
                     value: {
                         layout: "flex",
-                        direction: "vertical",
+                        direction: "row",
                         grid: {
                             rows: 1,
                             cols: 1
-                        }
+                        },
+                        gap: 10,
                     },
                     toolProps: {
                         options: [
@@ -121,7 +122,10 @@ class Widget extends React.Component {
                             { value: "place", label: "Place" },
                         ],
                     },
-                    onChange: (value) => this.setWidgetStyling("backgroundColor", value)
+                    onChange: (value) => {
+                        // this.setAttrValue("layout", value)
+                        this.setLayout(value)
+                    }
                 },
                 events: {
                     event1: {
@@ -134,6 +138,8 @@ class Widget extends React.Component {
 
         this.mousePress = this.mousePress.bind(this)
         this.getElement = this.getElement.bind(this)
+
+        this.getId = this.getId.bind(this)
 
         this.getPos = this.getPos.bind(this)
         this.getSize = this.getSize.bind(this)
@@ -158,7 +164,11 @@ class Widget extends React.Component {
     componentDidMount() {
         this.elementRef.current?.addEventListener("click", this.mousePress)
 
-        this.load(this.props.initialData || {})
+        this.setLayout(this.state.attrs.layout.value)
+        this.setWidgetStyling('backgroundColor', this.state.attrs.styling?.backgroundColor.value || "#fff")
+    
+        this.load(this.props.initialData || {}) // load the initial data
+
 
     }
 
@@ -207,6 +217,7 @@ class Widget extends React.Component {
     getToolbarAttrs(){
 
         return ({
+                id: this.__id,
                 widgetName: {
                     label: "Widget Name",
                     tool: Tools.INPUT, // the tool to display, can be either HTML ELement or a constant string
@@ -257,6 +268,10 @@ class Widget extends React.Component {
 
     getAttributes() {
         return this.state.attrs
+    }
+
+    getId(){
+        return this.__id
     }
 
     mousePress(event) {
@@ -423,6 +438,26 @@ class Widget extends React.Component {
         })
     }
 
+    setLayout(value){
+
+        const {layout, direction, grid={rows: 1, cols: 1}, gap=10} = value
+
+        const widgetStyle = {
+            ...this.state.widgetStyling,
+            display: layout,
+            flexDirection: direction,
+            gap: `${gap}px`,
+            flexWrap: "wrap"
+            // TODO: add grid rows and cols
+        }
+
+        this.setAttrValue("layout", value)
+        this.updateState({
+            widgetStyling: widgetStyle
+        })
+
+    }
+
     /**
      * 
      * @param {string} key - The string in react Style format
@@ -523,6 +558,20 @@ class Widget extends React.Component {
         for (let [key, value] of Object.entries(data.attrs|{}))
             this.setAttrValue(key, value)
 
+        if (data.attrs){
+            if ('layout' in data.attrs){
+                this.setLayout(data.attrs.layout.value || {})
+            }
+
+            if ('backgroundColor' in data.attrs){
+                this.setWidgetStyling('backgroundColor', data.attrs.styling.backgroundColor)
+            }
+
+            if ('foregroundColor' in data.attrs){
+                this.setWidgetStyling('foregroundColor', data.attrs.styling.backgroundColor)
+            }
+        
+        }
         delete data.attrs // think of immutable way to modify
 
         /**
@@ -537,10 +586,10 @@ class Widget extends React.Component {
 
     // FIXME: children outside the bounding box
     renderContent() {
-        // console.log("Children: ", this.props.children)
         // throw new NotImplementedError("render method has to be implemented")
+        
         return (
-            <div className="tw-w-full tw-h-full tw-p-2 tw-rounded-md tw-bg-red-500" style={this.state.widgetStyling}>
+            <div className="tw-w-full tw-h-full tw-p-2 tw-rounded-md" style={this.state.widgetStyling}>
                 {this.props.children}
             </div>
         )

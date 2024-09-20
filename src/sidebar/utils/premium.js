@@ -18,7 +18,7 @@ function Premium({ children, className = "" }) {
         setPremiumModalOpen(false)
     }
 
-
+    // FIXME: the pricing section is not responsive
     return (
         <div onClick={onClick} className={`${className}`}>
             {children}

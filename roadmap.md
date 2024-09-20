@@ -9,6 +9,7 @@ Any feature that has 👑 beside it, is meant only for [premium users](./readme.
 - [ ] Allow swappable layout - (swappy/react-dnd-kit)
 - [ ] UI fixes and enhancement 
 - [ ] Add text editor to help with event handlers
+- [ ] Duplicate widgets
 
 ### 1.5.0
 - [ ] Add canvas support (try fabricjs)
