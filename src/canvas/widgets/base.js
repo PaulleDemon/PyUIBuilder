@@ -520,6 +520,18 @@ class Widget extends React.Component {
         })
     }
 
+    enableDrag = () => {
+        this.setState({
+            dragEnabled: true
+        })
+    }
+
+    disableDrag = () => {
+        this.setState({
+            dragEnabled: false
+        })
+    }
+
     handleDrop = (event, dragElement) => {
         console.log("dragging event: ", event, dragElement)
 
@@ -606,7 +618,7 @@ class Widget extends React.Component {
             height: `${this.state.size.height}px`,
         }
 
-        // console.log("selected: ", this.state.selected)
+        // console.log("selected: ", this.state.dragEnabled)
         return (
             <WidgetDraggable widgetRef={this.elementRef} 
                                 enableDrag={this.state.dragEnabled}
@@ -636,7 +648,8 @@ class Widget extends React.Component {
                         data-container={this.state.widgetContainer} // indicates how the canvas should handle dragging, one is sidebar other is canvas
                     >
 
-                    <div className="tw-relative tw-w-full tw-h-full tw-top-0 tw-left-0">
+                    <div className="tw-relative tw-w-full tw-h-full tw-top-0 tw-left-0"
+                        >
                         {this.renderContent()}
 
                         {

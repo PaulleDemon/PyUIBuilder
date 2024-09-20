@@ -253,7 +253,7 @@ class Canvas extends React.Component {
                 console.log("selected widget: ", selectedWidget.getId(), selectedWidget.getElement())
                 // if the widget is selected don't pan, instead move the widget
                 if (!selectedWidget._disableSelection) {
-                    // console.log("selected widget: ", selectedWidget)
+                    console.log("selected widget: ", selectedWidget.getId(), this.state.selectedWidget?.getId())
 
                     if (!this.state.selectedWidget || (selectedWidget.getId() !== this.state.selectedWidget?.getId())) {
                         this.state.selectedWidget?.deSelect() // deselect the previous widget before adding the new one
@@ -261,7 +261,7 @@ class Canvas extends React.Component {
 
                         selectedWidget.setZIndex(1000)
                         selectedWidget.select()
-
+                        console.log("widget selected")
                         this.setState({
                             selectedWidget: selectedWidget,
                             toolbarAttrs: selectedWidget.getToolbarAttrs()
@@ -366,6 +366,12 @@ class Canvas extends React.Component {
 
         if (this.state.widgetResizing) {
             this.setState({ widgetResizing: "" })
+        }
+
+        for (let [key, widget] of Object.entries(this.widgetRefs)){
+            // since the mouseUp event is not triggered inside the widget once its outside, 
+            // we'll need a global mouse up event to re-enable drag
+            widget.current.enableDrag()
         }
     }
 
@@ -639,7 +645,6 @@ class Canvas extends React.Component {
      */
     handleAddWidgetChild = (parentWidgetId, dragElementID, create = false) => {
 
-        // FIXME: creation of nested child widgets
         // TODO: creation of the child widget if its not created
         // widgets data structure { id, widgetType: widgetComponentType, children: [], parent: "" }
         const parentWidgetObj = this.findWidgetFromListById(parentWidgetId)
