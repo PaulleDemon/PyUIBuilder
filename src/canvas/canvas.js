@@ -178,15 +178,16 @@ class Canvas extends React.Component {
         // TODO: improve search, currently O(n), but can be improved via this.state.widgets or something
 
         let innerWidget = null
-
+        // FIXME: target selection not accurate when there is inner child involved
         for (let [key, ref] of Object.entries(this.widgetRefs)) {
+            console.log("key: ", key, innerWidget)
             if (ref.current.getElement().contains(target)) {
 
                 if (!innerWidget) {
-                    innerWidget = ref.current;
+                    innerWidget = ref.current
                 } else if (innerWidget.getElement().contains(ref.current.getElement())) {
                     // If the current widget is deeper than the existing innermost widget, update innerWidget
-                    innerWidget = ref.current;
+                    innerWidget = ref.current
                 }
             }
         }
@@ -247,7 +248,9 @@ class Canvas extends React.Component {
         if (event.button === 0) {
             this.mousePressed = true
 
+            // FIXME: the inner widgets are not selected properly
             if (selectedWidget) {
+                console.log("selected widget: ", selectedWidget.getId(), selectedWidget.getElement())
                 // if the widget is selected don't pan, instead move the widget
                 if (!selectedWidget._disableSelection) {
                     // console.log("selected widget: ", selectedWidget)
@@ -263,9 +266,6 @@ class Canvas extends React.Component {
                             selectedWidget: selectedWidget,
                             toolbarAttrs: selectedWidget.getToolbarAttrs()
                         })
-                        // this.context.updateActiveWidget(selectedWidget.__id)
-                        // this.context.updateToolAttrs(selectedWidget.getToolbarAttrs())
-                        // this.props.updateActiveWidget(selectedWidget)
                     }
                     this.currentMode = CanvasModes.MOVE_WIDGET
                 }
@@ -382,6 +382,7 @@ class Canvas extends React.Component {
      * @returns 
      */
     handleResize = (event) => {
+        // FIXME: problem when resizing child element inside the child widget
         if (this.state.resizing === "") return
 
         const widget = this.state.selectedWidget

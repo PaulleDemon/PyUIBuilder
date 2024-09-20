@@ -83,6 +83,11 @@ class Widget extends React.Component {
 
             widgetStyling: {
                 // use for widget's inner styling
+                backgroundColor: "#fff",
+                display: "flex",
+                flexDirection: "row",
+                gap: 10,
+                flexWrap: "wrap"
             },
 
             attrs: {
@@ -164,6 +169,8 @@ class Widget extends React.Component {
     componentDidMount() {
         this.elementRef.current?.addEventListener("click", this.mousePress)
 
+        // FIXME: initial layout is not set properly
+        console.log("prior layout: ", this.state.attrs.layout.value)
         this.setLayout(this.state.attrs.layout.value)
         this.setWidgetStyling('backgroundColor', this.state.attrs.styling?.backgroundColor.value || "#fff")
     
@@ -555,24 +562,12 @@ class Widget extends React.Component {
      */
     load = (data) => {
 
+        if (Object.keys(data).length === 0) return // no data to load
+
         for (let [key, value] of Object.entries(data.attrs|{}))
             this.setAttrValue(key, value)
 
-        if (data.attrs){
-            if ('layout' in data.attrs){
-                this.setLayout(data.attrs.layout.value || {})
-            }
-
-            if ('backgroundColor' in data.attrs){
-                this.setWidgetStyling('backgroundColor', data.attrs.styling.backgroundColor)
-            }
-
-            if ('foregroundColor' in data.attrs){
-                this.setWidgetStyling('foregroundColor', data.attrs.styling.backgroundColor)
-            }
-        
-        }
-        delete data.attrs // think of immutable way to modify
+        delete data.attrs
 
         /**
          * const obj = { a: 1, b: 2, c: 3 }
@@ -587,9 +582,8 @@ class Widget extends React.Component {
     // FIXME: children outside the bounding box
     renderContent() {
         // throw new NotImplementedError("render method has to be implemented")
-        
         return (
-            <div className="tw-w-full tw-h-full tw-p-2 tw-rounded-md" style={this.state.widgetStyling}>
+            <div className="tw-w-full tw-h-full tw-p-2 tw-content-start tw-rounded-md" style={this.state.widgetStyling}>
                 {this.props.children}
             </div>
         )
@@ -612,7 +606,6 @@ class Widget extends React.Component {
             height: `${this.state.size.height}px`,
         }
 
-        // console.log("Drag enabled: ", this.state.dragEnabled)
         // console.log("selected: ", this.state.selected)
         return (
             <WidgetDraggable widgetRef={this.elementRef} 
@@ -644,6 +637,7 @@ class Widget extends React.Component {
                     >
 
                     <div className="tw-relative tw-w-full tw-h-full tw-top-0 tw-left-0">
+                        {this.renderContent()}
 
                         {
                             // show drop style on drag hover
@@ -659,7 +653,7 @@ class Widget extends React.Component {
                                                     height: "calc(100% + 10px)",
                                                 }
                                             }
-                                                    >
+                                        >
                                 </div>
                         }
                     
@@ -679,44 +673,51 @@ class Widget extends React.Component {
                                     className="tw-w-2 tw-h-2 tw-absolute tw--left-1 tw--top-1 tw-bg-blue-500"
                                     style={{ cursor: Cursor.NW_RESIZE }}
                                     onMouseDown={(e) => {
+                                        e.stopPropagation()
+                                        e.preventDefault()
                                         this.props.onWidgetResizing("nw")
                                         this.setState({dragEnabled: false})
                                     }}
-                                    onMouseLeave={() => this.setState({dragEnabled: true})}
+                                    onMouseUp={() => this.setState({dragEnabled: true})}
                                 />
                                 <div
                                     className="tw-w-2 tw-h-2 tw-absolute tw--right-1 tw--top-1 tw-bg-blue-500"
                                     style={{ cursor: Cursor.SW_RESIZE }}
                                     onMouseDown={(e) => {
+                                        e.stopPropagation()
+                                        e.preventDefault()
                                         this.props.onWidgetResizing("ne")
                                         this.setState({dragEnabled: false})
                                     }}
-                                    onMouseLeave={() => this.setState({dragEnabled: true})}
+                                    onMouseUp={() => this.setState({dragEnabled: true})}
                                 />
                                 <div
                                     className="tw-w-2 tw-h-2 tw-absolute tw--left-1 tw--bottom-1 tw-bg-blue-500"
                                     style={{ cursor: Cursor.SW_RESIZE }}
                                     onMouseDown={(e) => {
+                                        e.stopPropagation()
+                                        e.preventDefault()
                                         this.props.onWidgetResizing("sw")
                                         this.setState({dragEnabled: false})
                                     }}
-                                    onMouseLeave={() => this.setState({dragEnabled: true})}
+                                    onMouseUp={() => this.setState({dragEnabled: true})}
                                 />
                                 <div
                                     className="tw-w-2 tw-h-2 tw-absolute tw--right-1 tw--bottom-1 tw-bg-blue-500"
                                     style={{ cursor: Cursor.SE_RESIZE }}
                                     onMouseDown={(e) => {
+                                        e.stopPropagation()
+                                        e.preventDefault()
                                         this.props.onWidgetResizing("se")
                                         this.setState({dragEnabled: false})
                                     }}
-                                    onMouseLeave={() => this.setState({dragEnabled: true})}
+                                    onMouseUp={() => this.setState({dragEnabled: true})}
                                 />
 
                             </div>
 
                         </div>
 
-                        {this.renderContent()}
 
                     </div>
                 </div>

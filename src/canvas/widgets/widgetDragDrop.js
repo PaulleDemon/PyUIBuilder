@@ -16,7 +16,7 @@ const WidgetDraggable = memo(({ widgetRef, enableDrag=true, dragElementType="wid
                                 onDragEnter, onDragLeave, onDrop, 
                                 droppableTags = ["widget"], ...props }) => {
 
-
+    // FIXME: It's not possible to move the widget ~10px because, its considered as self drop, so fix it
     // const { draggedElement, onDragStart, onDragEnd } = useDragWidgetContext()
     const { draggedElement, onDragStart, onDragEnd, overElement, setOverElement } = useDragContext()
 
