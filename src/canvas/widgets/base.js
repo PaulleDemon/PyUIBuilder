@@ -13,6 +13,7 @@ import { ActiveWidgetContext } from "../activeWidgetContext"
 import { DragWidgetProvider } from "./draggableWidgetContext"
 import WidgetDraggable from "./widgetDragDrop"
 import WidgetContainer from "../constants/containers"
+import { DragContext } from "../../components/draggable/draggableContext"
 
 
 
@@ -48,14 +49,15 @@ class Widget extends React.Component {
 
         this.icon = "" // antd icon name representing this widget
 
-        this.elementRef = React.createRef()
+        this.elementRef = React.createRef() // this is the outer ref for draggable area
+        this.swappableAreaRef = React.createRef() // helps identify if the users intent is to swap or drop inside the widget
+        this.innerAreaRef = React.createRef() // this is the inner area where swap is prevented and only drop is accepted
 
         this.functions = {
             "load": { "args1": "number", "args2": "string" }
         }
 
-
-        this.layout = Layouts.FLEX
+        this.droppableTags = ["widget"] // This indicates if the draggable can be dropped on this widget
         this.boundingRect = {
             x: 0,
             y: 0,
@@ -68,6 +70,8 @@ class Widget extends React.Component {
             selected: false,
             widgetName: widgetName || 'widget', // this will later be converted to variable name
             enableRename: false, // will open the widgets editable div for renaming
+            
+            isDragging: false, //  tells if the widget is currently being dragged
             dragEnabled: true,
 
             widgetContainer: WidgetContainer.CANVAS, // what is the parent of the widget
@@ -532,22 +536,6 @@ class Widget extends React.Component {
         })
     }
 
-    handleDrop = (event, dragElement) => {
-        console.log("dragging event: ", event, dragElement)
-
-        const container = dragElement.getAttribute("data-container")
-        // TODO: check if the drop is allowed
-        if (container === "canvas"){
-        
-            this.props.onAddChildWidget(this.__id, dragElement.getAttribute("data-widget-id"))
-        
-        }else if (container === "sidebar"){
-            
-            this.props.onAddChildWidget(this.__id, null, true) //  if dragged from the sidebar create the widget first
-
-        }
-
-    }
 
     /**
      * 
@@ -591,7 +579,190 @@ class Widget extends React.Component {
 
     }
 
-    // FIXME: children outside the bounding box
+    /**
+     * 
+     * @depreciated - This function is depreciated in favour of handleDropEvent()
+     */
+    handleDrop = (event, dragElement) => {
+        // THIS function is depreciated in favour of handleDropEvent()
+        console.log("dragging event: ", event, dragElement)
+        const container = dragElement.getAttribute("data-container")
+        // TODO: check if the drop is allowed
+        if (container === "canvas"){
+        
+            this.props.onAddChildWidget(this.__id, dragElement.getAttribute("data-widget-id"))
+        
+        }else if (container === "sidebar"){
+            
+            this.props.onAddChildWidget(this.__id, null, true) //  if dragged from the sidebar create the widget first
+
+        }
+
+    }
+
+    handleDragStart = (e, callback) => {
+        e.stopPropagation()
+        this.setState({isDragging: true})
+
+        callback(this.elementRef?.current || null)
+
+        console.log("Drag start: ", this.elementRef)
+
+        // Create custom drag image with full opacity, this will ensure the image isn't taken from part of the canvas
+        const dragImage = this.elementRef?.current.cloneNode(true)
+        dragImage.style.opacity = '1' // Ensure full opacity
+        dragImage.style.position = 'absolute'
+        dragImage.style.top = '-9999px' // Move it out of view
+
+        document.body.appendChild(dragImage)
+        const rect = this.elementRef?.current.getBoundingClientRect()
+        const offsetX = e.clientX - rect.left
+        const offsetY = e.clientY - rect.top
+
+        // Set the custom drag image with correct offset to avoid snapping to the top-left corner
+        e.dataTransfer.setDragImage(dragImage, offsetX, offsetY)
+
+        // Remove the custom drag image after some time to avoid leaving it in the DOM
+        setTimeout(() => {
+            document.body.removeChild(dragImage)
+        }, 0)
+    }
+
+    handleDragEnter = (e, draggedElement, setOverElement) => {
+
+        const dragEleType = draggedElement.getAttribute("data-draggable-type")
+
+        console.log("Drag entering...", dragEleType, draggedElement, this.droppableTags)
+        // FIXME:  the outer widget shouldn't be swallowed by inner widget
+        if (draggedElement === this.elementRef.current){
+            // prevent drop on itself, since the widget is invisible when dragging, if dropped on itself, it may consume itself
+            return 
+        }
+
+        setOverElement(e.currentTarget) // provide context to the provider
+
+        let showDrop = {
+            allow: true, 
+            show: true
+        }
+
+        if (this.droppableTags.length === 0 || this.droppableTags.includes(dragEleType)) {
+            showDrop = {
+                allow: true,
+                show: true
+            }
+
+        } else {
+            showDrop = {
+                allow: false,
+                show: true
+            }
+        }
+
+        this.setState({
+            showDroppableStyle: showDrop
+        })
+       
+    }
+
+    handleDragOver = (e, draggedElement) => {
+        if (draggedElement === this.elementRef.current){
+            // prevent drop on itself, since the widget is invisible when dragging, if dropped on itself, it may consume itself
+            return 
+        }
+
+        // console.log("Drag over: ", e.dataTransfer.getData("text/plain"), e.dataTransfer)
+        const dragEleType = draggedElement.getAttribute("data-draggable-type")
+
+        if (this.droppableTags.length === 0 || this.droppableTags.includes(dragEleType)) {
+            e.preventDefault() // NOTE: this is necessary to allow drop to take place
+        }
+
+    }
+
+    handleDropEvent = (e, draggedElement) => {
+        e.preventDefault()
+        e.stopPropagation()
+        // FIXME: sometimes the elements shoDroppableStyle is not gone, when dropping on the same widget
+        this.setState({
+            showDroppableStyle: {
+                        allow: false, 
+                        show: false
+                    }
+        }, () => {
+            console.log("droppable cleared: ", this.elementRef.current, this.state.showDroppableStyle)
+        })
+
+
+        const dragEleType = draggedElement.getAttribute("data-draggable-type")
+
+        if (this.droppableTags.length > 0 && !this.droppableTags.includes(dragEleType)) {
+            return // prevent drop if the draggable element doesn't match 
+        }
+
+        if (draggedElement === this.elementRef.current){
+            // prevent drop on itself, since the widget is invisible when dragging, if dropped on itself, it may consume itself
+            return 
+        }
+
+        let currentElement = e.currentTarget
+
+        while (currentElement) {
+            if (currentElement === draggedElement) {
+                console.log("Dropped into a descendant element, ignoring drop")
+                return // Exit early to prevent the drop
+            }
+            currentElement = currentElement.parentElement // Traverse up to check ancestors
+        }
+
+        const container = draggedElement.getAttribute("data-container")
+
+        const thisContainer = this.elementRef.current.getAttribute("data-container")
+        // console.log("Dropped as swappable: ", e.target, this.swappableAreaRef.current.contains(e.target))
+        // If swaparea is true, then it swaps instead of adding it as a child, also make sure that the parent widget(this widget) is on the widget and not on the canvas
+        const swapArea = (this.swappableAreaRef.current.contains(e.target) && !this.innerAreaRef.current.contains(e.target) && thisContainer === WidgetContainer.WIDGET) 
+
+        // TODO: check if the drop is allowed
+        if ([WidgetContainer.CANVAS, WidgetContainer.WIDGET].includes(container)){
+            // console.log("Dropped on meee: ", swapArea, this.swappableAreaRef.current.contains(e.target), thisContainer)
+            
+            this.props.onAddChildWidget({parentWidgetId: this.__id, 
+                                        dragElementID: draggedElement.getAttribute("data-widget-id"),
+                                        swap: swapArea || false
+                                        })
+            
+        }else if (container === WidgetContainer.SIDEBAR){
+            
+            // console.log("Dropped on Sidebar: ", this.__id)
+            this.props.onAddChildWidget({parentWidgetId: this.__id, create: true}) //  if dragged from the sidebar create the widget first
+
+        }
+
+    }
+
+
+    handleDragLeave = (e, draggedElement) => {
+
+        // console.log("Left: ", e.currentTarget, e.relatedTarget, draggedElement)
+
+        if (!e.currentTarget.contains(draggedElement)) {
+            this.setState({
+                        showDroppableStyle: {
+                            allow: false, 
+                            show: false
+                        }
+                    })
+
+        }
+    }
+
+    handleDragEnd = (callback) => {
+        callback()
+        this.setState({isDragging: false})
+    }
+
+
+    // FIXME: children outside the bounding box, add tw-overflow-hidden
     renderContent() {
         // throw new NotImplementedError("render method has to be implemented")
         return (
@@ -616,125 +787,165 @@ class Widget extends React.Component {
             left: `${this.state.pos.x}px`,
             width: `${this.state.size.width}px`,
             height: `${this.state.size.height}px`,
+            opacity: this.state.isDragging ? 0.3 : 1
         }
 
         // console.log("selected: ", this.state.dragEnabled)
         return (
-            <WidgetDraggable widgetRef={this.elementRef} 
-                                enableDrag={this.state.dragEnabled}
-                                onDrop={this.handleDrop}
-                                onDragEnter={({dragElement, showDrop}) => {
-                                    this.setState({
-                                        showDroppableStyle: showDrop
-                                    })
-                                    }
-                                }
-                                onDragLeave={ () => {
-                                        this.setState({
-                                            showDroppableStyle: {
-                                                allow: false, 
-                                                show: false
-                                            }
-                                        })
-                                    }
-                                }
-                                >
 
-                <div data-widget-id={this.__id} 
-                        ref={this.elementRef} 
-                        className="tw-absolute tw-shadow-xl tw-w-fit tw-h-fit"
-                        style={outerStyle}
-                        data-draggable-type={this.getWidgetType()} // helps with droppable 
-                        data-container={this.state.widgetContainer} // indicates how the canvas should handle dragging, one is sidebar other is canvas
-                    >
+            <DragContext.Consumer>
 
-                    <div className="tw-relative tw-w-full tw-h-full tw-top-0 tw-left-0"
-                        >
-                        {this.renderContent()}
+                {
+                    ({draggedElement, onDragStart, onDragEnd, setOverElement}) => (
 
-                        {
-                            // show drop style on drag hover
-                            this.state.showDroppableStyle.show &&
-                                <div className={`${this.state.showDroppableStyle.allow ? "tw-border-blue-600" : "tw-border-red-600"} 
-                                                    tw-absolute tw-top-[-5px] tw-left-[-5px] tw-w-full tw-h-full tw-z-[2]
-                                                    tw-border-2 tw-border-dashed  tw-rounded-lg tw-pointer-events-none
+                        <div data-widget-id={this.__id} 
+                                ref={this.elementRef} 
+                                className="tw-shadow-xl tw-w-fit tw-h-fit"
+                                style={outerStyle}
+                                data-draggable-type={this.getWidgetType()} // helps with droppable 
+                                data-container={this.state.widgetContainer} // indicates how the canvas should handle dragging, one is sidebar other is canvas
+                                
+                                draggable={this.state.dragEnabled}
+                                
+                                onDragOver={(e) => this.handleDragOver(e, draggedElement)}
+                                onDrop={(e) => this.handleDropEvent(e, draggedElement)}
 
-                                                    `}
-                                        style={
-                                                {
-                                                    width: "calc(100% + 10px)",
-                                                    height: "calc(100% + 10px)",
-                                                }
-                                            }
-                                        >
+                                onDragEnter={(e) => this.handleDragEnter(e, draggedElement, setOverElement)}
+                                onDragLeave={(e) => this.handleDragLeave(e, draggedElement)}
+
+                                onDragStart={(e) => this.handleDragStart(e, onDragStart)}
+                                onDragEnd={(e) => this.handleDragEnd(onDragEnd)}
+                            >
+                            {/* FIXME: Swappable when the parent layout is flex/grid and gap is more, this trick won't work, add bg color to check */}
+                            {/* FIXME: Swappable, when the parent layout is gap is 0, it doesn't work well */}
+                            <div className="tw-relative tw-w-full tw-h-full tw-top-0 tw-left-0"
+                                    >
+                                <div className={`tw-absolute tw-top-[-5px] tw-left-[-5px]  
+                                                    tw-border-1 tw-opacity-0 tw-border-solid tw-border-black
+                                                    tw-w-full tw-h-full
+                                                    tw-scale-[1.1] tw-opacity-1 tw-z-[-1] `}
+                                                    style={{
+                                                        width: "calc(100% + 10px)",
+                                                        height: "calc(100% + 10px)",
+                                                    }}
+                                                ref={this.swappableAreaRef}
+                                                    
+                                                >
+                                    {/* helps with swappable: if the mouse is in this area while hovering/dropping, then swap */}
+                                </div> 
+                                <div className="tw-relative tw-w-full tw-h-full" ref={this.innerAreaRef}>
+                                    {this.renderContent()}
                                 </div>
-                        }
-                    
-                        <div className={`tw-absolute tw-bg-transparent tw-scale-[1.1] tw-opacity-100 
-                                        tw-w-full tw-h-full tw-top-0 
-                                        ${this.state.selected ? 'tw-border-2 tw-border-solid tw-border-blue-500' : 'tw-hidden'}`}>
+                                {
+                                    // show drop style on drag hover
+                                    this.state.showDroppableStyle.show &&
+                                        <div className={`${this.state.showDroppableStyle.allow ? "tw-border-blue-600" : "tw-border-red-600"} 
+                                                            tw-absolute tw-top-[-5px] tw-left-[-5px] tw-w-full tw-h-full tw-z-[2]
+                                                            tw-border-2 tw-border-dashed  tw-rounded-lg tw-pointer-events-none
 
-                            <div className="tw-relative tw-w-full tw-h-full">
-                                <EditableDiv value={this.state.widgetName} onChange={this.setWidgetName}
-                                    maxLength={40}
-                                    openEdit={this.state.enableRename}
-                                    className="tw-text-sm tw-w-fit tw-max-w-[160px] tw-text-clip tw-min-w-[150px] 
-                                                            tw-overflow-hidden tw-absolute tw--top-6 tw-h-6"
-                                />
+                                                            `}
+                                                style={{
+                                                            width: "calc(100% + 10px)",
+                                                            height: "calc(100% + 10px)",
+                                                        }}
+                                                >
+                                        </div>
+                                }
+                            
+                                <div className={`tw-absolute tw-bg-transparent tw-top-[-10px] tw-left-[-10px] tw-opacity-100 
+                                                tw-w-full tw-h-full
+                                                ${this.state.selected ? 'tw-border-2 tw-border-solid tw-border-blue-500' : 'tw-hidden'}`}
+                                                style={{
+                                                    width: "calc(100% + 20px)",
+                                                    height: "calc(100% + 20px)",
+                                                }}
+                                                >
 
-                                <div
-                                    className="tw-w-2 tw-h-2 tw-absolute tw--left-1 tw--top-1 tw-bg-blue-500"
-                                    style={{ cursor: Cursor.NW_RESIZE }}
-                                    onMouseDown={(e) => {
-                                        e.stopPropagation()
-                                        e.preventDefault()
-                                        this.props.onWidgetResizing("nw")
-                                        this.setState({dragEnabled: false})
-                                    }}
-                                    onMouseUp={() => this.setState({dragEnabled: true})}
-                                />
-                                <div
-                                    className="tw-w-2 tw-h-2 tw-absolute tw--right-1 tw--top-1 tw-bg-blue-500"
-                                    style={{ cursor: Cursor.SW_RESIZE }}
-                                    onMouseDown={(e) => {
-                                        e.stopPropagation()
-                                        e.preventDefault()
-                                        this.props.onWidgetResizing("ne")
-                                        this.setState({dragEnabled: false})
-                                    }}
-                                    onMouseUp={() => this.setState({dragEnabled: true})}
-                                />
-                                <div
-                                    className="tw-w-2 tw-h-2 tw-absolute tw--left-1 tw--bottom-1 tw-bg-blue-500"
-                                    style={{ cursor: Cursor.SW_RESIZE }}
-                                    onMouseDown={(e) => {
-                                        e.stopPropagation()
-                                        e.preventDefault()
-                                        this.props.onWidgetResizing("sw")
-                                        this.setState({dragEnabled: false})
-                                    }}
-                                    onMouseUp={() => this.setState({dragEnabled: true})}
-                                />
-                                <div
-                                    className="tw-w-2 tw-h-2 tw-absolute tw--right-1 tw--bottom-1 tw-bg-blue-500"
-                                    style={{ cursor: Cursor.SE_RESIZE }}
-                                    onMouseDown={(e) => {
-                                        e.stopPropagation()
-                                        e.preventDefault()
-                                        this.props.onWidgetResizing("se")
-                                        this.setState({dragEnabled: false})
-                                    }}
-                                    onMouseUp={() => this.setState({dragEnabled: true})}
-                                />
+                                    <div className="tw-relative tw-w-full tw-h-full">
+                                        <EditableDiv value={this.state.widgetName} onChange={this.setWidgetName}
+                                            maxLength={40}
+                                            openEdit={this.state.enableRename}
+                                            className="tw-text-sm tw-w-fit tw-max-w-[160px] tw-text-clip tw-min-w-[150px] 
+                                                                    tw-overflow-hidden tw-absolute tw--top-6 tw-h-6"
+                                        />
+
+                                        <div
+                                            className="tw-w-2 tw-h-2 tw-absolute tw--left-1 tw--top-1 tw-bg-blue-500"
+                                            style={{ cursor: Cursor.NW_RESIZE }}
+                                            onMouseDown={(e) => {
+                                                e.stopPropagation()
+                                                e.preventDefault()
+                                                this.props.onWidgetResizing("nw")
+                                                this.setState({dragEnabled: false})
+                                            }}
+                                            onMouseUp={() => this.setState({dragEnabled: true})}
+                                        />
+                                        <div
+                                            className="tw-w-2 tw-h-2 tw-absolute tw--right-1 tw--top-1 tw-bg-blue-500"
+                                            style={{ cursor: Cursor.SW_RESIZE }}
+                                            onMouseDown={(e) => {
+                                                e.stopPropagation()
+                                                e.preventDefault()
+                                                this.props.onWidgetResizing("ne")
+                                                this.setState({dragEnabled: false})
+                                            }}
+                                            onMouseUp={() => this.setState({dragEnabled: true})}
+                                        />
+                                        <div
+                                            className="tw-w-2 tw-h-2 tw-absolute tw--left-1 tw--bottom-1 tw-bg-blue-500"
+                                            style={{ cursor: Cursor.SW_RESIZE }}
+                                            onMouseDown={(e) => {
+                                                e.stopPropagation()
+                                                e.preventDefault()
+                                                this.props.onWidgetResizing("sw")
+                                                this.setState({dragEnabled: false})
+                                            }}
+                                            onMouseUp={() => this.setState({dragEnabled: true})}
+                                        />
+                                        <div
+                                            className="tw-w-2 tw-h-2 tw-absolute tw--right-1 tw--bottom-1 tw-bg-blue-500"
+                                            style={{ cursor: Cursor.SE_RESIZE }}
+                                            onMouseDown={(e) => {
+                                                e.stopPropagation()
+                                                e.preventDefault()
+                                                this.props.onWidgetResizing("se")
+                                                this.setState({dragEnabled: false})
+                                            }}
+                                            onMouseUp={() => this.setState({dragEnabled: true})}
+                                        />
+
+                                    </div>
+
+                                </div>
+
 
                             </div>
-
                         </div>
+                    )
+                }
 
+            </DragContext.Consumer>
+            // <WidgetDraggable widgetRef={this.elementRef} 
+            //                     enableDrag={this.state.dragEnabled}
+            //                     onDrop={this.handleDrop}
+            //                     onDragEnter={({dragElement, showDrop}) => {
+            //                         this.setState({
+            //                             showDroppableStyle: showDrop
+            //                         })
+            //                         }
+            //                     }
+            //                     onDragLeave={ () => {
+            //                             this.setState({
+            //                                 showDroppableStyle: {
+            //                                     allow: false, 
+            //                                     show: false
+            //                                 }
+            //                             })
+            //                         }
+            //                     }
 
-                    </div>
-                </div>
-            </WidgetDraggable>
+            //                     >
+            // </WidgetDraggable>
         )
 
     }

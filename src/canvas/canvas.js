@@ -368,7 +368,7 @@ class Canvas extends React.Component {
             this.setState({ widgetResizing: "" })
         }
 
-        for (let [key, widget] of Object.entries(this.widgetRefs)){
+        for (let [key, widget] of Object.entries(this.widgetRefs)) {
             // since the mouseUp event is not triggered inside the widget once its outside, 
             // we'll need a global mouse up event to re-enable drag
             widget.current.enableDrag()
@@ -643,46 +643,76 @@ class Canvas extends React.Component {
      * @param {object} dragElement 
      * @param {boolean} create - if create is set to true the widget will be created before adding to the child tree
      */
-    handleAddWidgetChild = (parentWidgetId, dragElementID, create = false) => {
+    handleAddWidgetChild = ({ parentWidgetId, dragElementID, create = false, swap = false }) => {
 
         // TODO: creation of the child widget if its not created
         // widgets data structure { id, widgetType: widgetComponentType, children: [], parent: "" }
-        const parentWidgetObj = this.findWidgetFromListById(parentWidgetId)
-        let childWidgetObj = this.findWidgetFromListById(dragElementID)
+        const dropWidgetObj = this.findWidgetFromListById(parentWidgetId)
+        // Find the dragged widget object
+        let dragWidgetObj = this.findWidgetFromListById(dragElementID)
 
-        if (parentWidgetObj && childWidgetObj) {
+        if (dropWidgetObj && dragWidgetObj) {
+            const dragWidget = this.widgetRefs[dragWidgetObj.id]
+            const dragData = dragWidget.current.serialize()
 
-            const childWidget = this.widgetRefs[childWidgetObj.id]
-            const childData = childWidget.current.serialize()
 
-            // Update the child widget's properties (position type, zIndex, etc.)
-            const updatedChildWidget = {
-                ...childWidgetObj,
-                parent: parentWidgetId,
-                initialData: {
-                    ...childData,
-                    positionType: PosType.NONE,
-                    zIndex: 0,
-                    widgetContainer: WidgetContainer.WIDGET
+            if (swap) {
+                // If swapping, we need to find the common parent
+                const grandParentWidgetObj = this.findWidgetFromListById(dropWidgetObj.parent)
+                console.log("parent widget: ", grandParentWidgetObj, dropWidgetObj, this.state.widgets)
+                if (grandParentWidgetObj) {
+                    // Find the indices of the dragged and drop widgets in the grandparent's children array
+                    const dragIndex = grandParentWidgetObj.children.findIndex(child => child.id === dragElementID)
+                    const dropIndex = grandParentWidgetObj.children.findIndex(child => child.id === parentWidgetId)
+
+                    if (dragIndex !== -1 && dropIndex !== -1) {
+                        // Swap their positions
+                        let childrenCopy = [...grandParentWidgetObj.children]
+                        const temp = childrenCopy[dragIndex]
+                        childrenCopy[dragIndex] = childrenCopy[dropIndex]
+                        childrenCopy[dropIndex] = temp
+
+                        // Update the grandparent with the swapped children
+                        const updatedGrandParentWidget = {
+                            ...grandParentWidgetObj,
+                            children: childrenCopy
+                        }
+
+                        // Update the state with the new widget hierarchy
+                        this.setState((prevState) => ({
+                            widgets: this.updateWidgetRecursively(prevState.widgets, updatedGrandParentWidget)
+                        }))
+                    }
                 }
+            } else {
+                // Non-swap mode: Add the dragged widget as a child of the drop widget
+                let updatedWidgets = this.removeWidgetFromCurrentList(dragElementID)
+
+                const updatedDragWidget = {
+                    ...dragWidgetObj,
+                    parent: dropWidgetObj.id, // Keep the parent reference
+                    initialData: {
+                        ...dragData,
+                        positionType: PosType.NONE,
+                        zIndex: 0,
+                        widgetContainer: WidgetContainer.WIDGET
+                    }
+                }
+
+                const updatedDropWidget = {
+                    ...dropWidgetObj,
+                    children: [...dropWidgetObj.children, updatedDragWidget]
+                }
+
+
+                // Recursively update the widget structure
+                updatedWidgets = this.updateWidgetRecursively(updatedWidgets, updatedDropWidget, updatedDragWidget)
+
+                // Update the state with the new widget hierarchy
+                this.setState({
+                    widgets: updatedWidgets
+                })
             }
-
-            // Remove the child from its previous location
-            let updatedWidgets = this.removeWidgetFromCurrentList(dragElementID)
-
-            // Add the child widget to the new parent's children
-            const updatedParentWidget = {
-                ...parentWidgetObj,
-                children: [...parentWidgetObj.children, updatedChildWidget]
-            }
-
-            // Recursively update the widget structure with the new parent and child
-            updatedWidgets = this.updateWidgetRecursively(updatedWidgets, updatedParentWidget, updatedChildWidget)
-
-            // Update the state with the new widget hierarchy
-            this.setState({
-                widgets: updatedWidgets
-            })
         }
 
     }

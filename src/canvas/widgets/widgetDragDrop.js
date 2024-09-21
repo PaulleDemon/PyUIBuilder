@@ -13,7 +13,7 @@ import { useDragContext } from "../../components/draggable/draggableContext"
  * 
  */
 const WidgetDraggable = memo(({ widgetRef, enableDrag=true, dragElementType="widget", 
-                                onDragEnter, onDragLeave, onDrop, 
+                                onDragEnter, onDragLeave, onDrop, style={},
                                 droppableTags = ["widget"], ...props }) => {
 
     // FIXME: It's not possible to move the widget ~10px because, its considered as self drop, so fix it
@@ -112,10 +112,19 @@ const WidgetDraggable = memo(({ widgetRef, enableDrag=true, dragElementType="wid
         e.stopPropagation()
         console.log("Dropped: ", draggedElement, props.children)
 
-        if (draggedElement === widgetRef.current){
-            // prevent drop on itself, since the widget is invisible when dragging, if dropped on itself, it may consume itself
-            return 
+        setShowDroppable({
+            allow: false,
+            show: false
+        })
+
+        if (onDrop) {
+            onDrop(e, draggedElement)
         }
+
+        // if (draggedElement === widgetRef.current){
+        //     // prevent drop on itself, since the widget is invisible when dragging, if dropped on itself, it may consume itself
+        //     return 
+        // }
 
         let currentElement = e.currentTarget
         while (currentElement) {
@@ -126,14 +135,6 @@ const WidgetDraggable = memo(({ widgetRef, enableDrag=true, dragElementType="wid
             currentElement = currentElement.parentElement // Traverse up to check ancestors
         }
 
-        setShowDroppable({
-            allow: false,
-            show: false
-        })
-
-        if (onDrop) {
-            onDrop(e, draggedElement)
-        }
     }
 
 
@@ -155,8 +156,9 @@ const WidgetDraggable = memo(({ widgetRef, enableDrag=true, dragElementType="wid
         setIsDragging(false)
     }
 
+    // TODO: FIXME, currently the draggable div doesn't move with the child, instead only child div moves, simulating childrens movement, add color and check
     return (
-        <div className={`${props.className || ""} tw-w-fit tw-h-fit tw-bg-blue`}
+        <div className={`${props.className || ""}`}
             onDragOver={handleDragOver}
             onDrop={handleDropEvent}
             onDragEnter={handleDragEnter}
@@ -164,10 +166,9 @@ const WidgetDraggable = memo(({ widgetRef, enableDrag=true, dragElementType="wid
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             draggable={enableDrag}
-            style={{ opacity: isDragging ? 0.3 : 1}} // hide the initial position when dragging
+            style={{ opacity: isDragging ? 0.3 : 1, ...style}} // hide the initial position when dragging
         >   
             {props.children}
-            
         </div>
     )
 
