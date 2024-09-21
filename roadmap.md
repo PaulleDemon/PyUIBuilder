@@ -7,6 +7,7 @@ Any feature that has 👑 beside it, is meant only for [premium users](./readme.
 
 ### 1.2.0
 - [ ] UI fixes and enhancement 
+- [ ] Tree view for elements on the canvas
 - [ ] Add text editor to support event handlers
 - [ ] Rewrite DND for better feedback - (swappy/react-dnd-kit/ GSAP draggable)
 - [ ] Duplicate widgets

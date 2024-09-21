@@ -602,11 +602,8 @@ class Widget extends React.Component {
 
     handleDragStart = (e, callback) => {
         e.stopPropagation()
-        this.setState({isDragging: true})
 
         callback(this.elementRef?.current || null)
-
-        console.log("Drag start: ", this.elementRef)
 
         // Create custom drag image with full opacity, this will ensure the image isn't taken from part of the canvas
         const dragImage = this.elementRef?.current.cloneNode(true)
@@ -616,16 +613,31 @@ class Widget extends React.Component {
 
         document.body.appendChild(dragImage)
         const rect = this.elementRef?.current.getBoundingClientRect()
-        const offsetX = e.clientX - rect.left
-        const offsetY = e.clientY - rect.top
+        // snap to mouse pos
+        // const offsetX = e.clientX - rect.left
+        // const offsetY = e.clientY - rect.top
+
+        // snap to middle
+        const offsetX = rect.width / 2
+        const offsetY = rect.height / 2
 
         // Set the custom drag image with correct offset to avoid snapping to the top-left corner
         e.dataTransfer.setDragImage(dragImage, offsetX, offsetY)
+
 
         // Remove the custom drag image after some time to avoid leaving it in the DOM
         setTimeout(() => {
             document.body.removeChild(dragImage)
         }, 0)
+
+        setTimeout(() => {
+            // NOTE: this line will prevent problem's such as self-drop or dropping inside its own children
+            this.elementRef.current.style.pointerEvents = "none"
+
+        }, 1)
+
+        this.setState({isDragging: true})
+
     }
 
     handleDragEnter = (e, draggedElement, setOverElement) => {
@@ -700,20 +712,20 @@ class Widget extends React.Component {
             return // prevent drop if the draggable element doesn't match 
         }
 
-        if (draggedElement === this.elementRef.current){
-            // prevent drop on itself, since the widget is invisible when dragging, if dropped on itself, it may consume itself
-            return 
-        }
+        // if (draggedElement === this.elementRef.current){
+        //     // prevent drop on itself, since the widget is invisible when dragging, if dropped on itself, it may consume itself
+        //     return 
+        // }
 
-        let currentElement = e.currentTarget
-
-        while (currentElement) {
-            if (currentElement === draggedElement) {
-                console.log("Dropped into a descendant element, ignoring drop")
-                return // Exit early to prevent the drop
-            }
-            currentElement = currentElement.parentElement // Traverse up to check ancestors
-        }
+        // let currentElement = e.currentTarget
+        // while (currentElement) {
+        //     if (currentElement === draggedElement) {
+        //         // if the parent is dropped accidentally into the child don't allow drop
+        //         console.log("Dropped into a descendant element, ignoring drop")
+        //         return // Exit early to prevent the drop
+        //     }
+        //     currentElement = currentElement.parentElement // Traverse up to check ancestors
+        // }
 
         const container = draggedElement.getAttribute("data-container")
 
@@ -759,6 +771,7 @@ class Widget extends React.Component {
     handleDragEnd = (callback) => {
         callback()
         this.setState({isDragging: false})
+        this.elementRef.current.style.pointerEvents = "auto"
     }
 
 
@@ -787,14 +800,13 @@ class Widget extends React.Component {
             left: `${this.state.pos.x}px`,
             width: `${this.state.size.width}px`,
             height: `${this.state.size.height}px`,
-            opacity: this.state.isDragging ? 0.3 : 1
+            opacity: this.state.isDragging ? 0.3 : 1,
         }
 
         // console.log("selected: ", this.state.dragEnabled)
         return (
 
             <DragContext.Consumer>
-
                 {
                     ({draggedElement, onDragStart, onDragEnd, setOverElement}) => (
 
@@ -820,7 +832,7 @@ class Widget extends React.Component {
                             {/* FIXME: Swappable, when the parent layout is gap is 0, it doesn't work well */}
                             <div className="tw-relative tw-w-full tw-h-full tw-top-0 tw-left-0"
                                     >
-                                <div className={`tw-absolute tw-top-[-5px] tw-left-[-5px]  
+                                <div className={`tw-absolute tw-top-[-5px] tw-left-[-5px] 
                                                     tw-border-1 tw-opacity-0 tw-border-solid tw-border-black
                                                     tw-w-full tw-h-full
                                                     tw-scale-[1.1] tw-opacity-1 tw-z-[-1] `}

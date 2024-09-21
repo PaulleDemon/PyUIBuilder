@@ -24,13 +24,12 @@ export function DraggableWidgetCard({ name, img, url, innerRef}){
 
     }, [url])
 
-    useEffect(() => {
-    }, [])
-
 
     return (
         // <Draggable className="tw-cursor-pointer" id={name}>
-            <DraggableWrapper data-container={"sidebar"} dragElementType={"widget"} className="tw-cursor-pointer tw-w-fit tw-h-fit">
+            <DraggableWrapper data-container={"sidebar"} 
+                                dragElementType={"widget"} 
+                                className="tw-cursor-pointer tw-w-fit tw-h-fit">
                 
                 <div ref={innerRef} className="tw-select-none  tw-h-[200px] tw-w-[230px] tw-flex tw-flex-col 
                                                 tw-rounded-md tw-overflow-hidden 

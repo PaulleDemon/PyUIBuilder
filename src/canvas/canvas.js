@@ -388,7 +388,6 @@ class Canvas extends React.Component {
      * @returns 
      */
     handleResize = (event) => {
-        // FIXME: problem when resizing child element inside the child widget
         if (this.state.resizing === "") return
 
         const widget = this.state.selectedWidget
@@ -659,7 +658,7 @@ class Canvas extends React.Component {
             if (swap) {
                 // If swapping, we need to find the common parent
                 const grandParentWidgetObj = this.findWidgetFromListById(dropWidgetObj.parent)
-                console.log("parent widget: ", grandParentWidgetObj, dropWidgetObj, this.state.widgets)
+                // console.log("parent widget: ", grandParentWidgetObj, dropWidgetObj, this.state.widgets)
                 if (grandParentWidgetObj) {
                     // Find the indices of the dragged and drop widgets in the grandparent's children array
                     const dragIndex = grandParentWidgetObj.children.findIndex(child => child.id === dragElementID)
@@ -846,21 +845,28 @@ class Canvas extends React.Component {
 
         e.preventDefault()
 
-
         const container = draggedElement.getAttribute("data-container")
-        console.log("Handle drop: ", container)
-        // console.log("Dropped on canvas",)
-
-        // const canvasContainerRect = this.getCanvasContainerBoundingRect()
         const canvasRect = this.canvasRef.current.getBoundingClientRect()
+        
+        const draggedElementRect = draggedElement.getBoundingClientRect()
+        const elementWidth = draggedElementRect.width
+        const elementHeight = draggedElementRect.height
+
         const { clientX, clientY } = e
 
+        // const finalPosition = {
+        //     x: (clientX - canvasRect.left) / this.state.zoom,
+        //     y: (clientY - canvasRect.top) / this.state.zoom,
+        // }
+        
+        // snaps to center
         const finalPosition = {
-            x: (clientX - canvasRect.left) / this.state.zoom,
-            y: (clientY - canvasRect.top) / this.state.zoom,
+            x: (clientX - canvasRect.left) / this.state.zoom - (elementWidth / 2) / this.state.zoom,
+            y: (clientY - canvasRect.top) / this.state.zoom - (elementHeight / 2) / this.state.zoom,
         }
-
+        
         if (container === WidgetContainer.SIDEBAR) {
+            // TODO: handle drop from sidebar
             // if the widget is being dropped from the sidebar, use the info to create the widget first
             this.createWidget(Widget, ({ id, widgetRef }) => {
                 widgetRef.current.setPos(finalPosition.x, finalPosition.y)
@@ -877,8 +883,6 @@ class Canvas extends React.Component {
                 widgetObj.current.setPos(finalPosition.x, finalPosition.y)
 
             } else if (container === WidgetContainer.WIDGET) {
-
-                // FIXME: move the widget out of the widget
 
                 // if the widget was inside another widget move it outside 
                 let childWidgetObj = this.findWidgetFromListById(widgetObj.current.getId())
@@ -934,7 +938,6 @@ class Canvas extends React.Component {
 
     renderWidget = (widget) => {
 
-        // FIXME: the child elements are being recreated instead of using the same object
         const { id, widgetType: ComponentType, children = [], parent, initialData = {} } = widget
 
 

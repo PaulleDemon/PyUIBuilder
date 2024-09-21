@@ -21,7 +21,8 @@ function WidgetsContainer({onWidgetsUpdate}){
             {
                 name: "TopLevel",
                 img: ButtonWidget,
-                link: "https://github.com"
+                link: "https://github.com", 
+                // widgetType: Widget
             },
             {
                 name: "Frame",
