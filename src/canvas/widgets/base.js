@@ -2,7 +2,7 @@ import React from "react"
 import { NotImplementedError } from "../../utils/errors"
 
 import Tools from "../constants/tools"
-import { Layouts, PosType} from "../constants/layouts"
+import { Layouts, PosType } from "../constants/layouts"
 import Cursor from "../constants/cursor"
 import { toSnakeCase } from "../utils/utils"
 import EditableDiv from "../../components/editableDiv"
@@ -40,8 +40,8 @@ class Widget extends React.Component {
         this._disableResize = false
         this._disableSelection = false
 
-        this.minSize = { width: 50, height: 50 } // disable resizing below this number
-        this.maxSize = { width: 500, height: 500 } // disable resizing above this number
+        this.minSize = { width: 10, height: 10 } // disable resizing below this number
+        this.maxSize = { width: 2000, height: 2000 } // disable resizing above this number
 
         this.cursor = Cursor.POINTER
 
@@ -68,14 +68,14 @@ class Widget extends React.Component {
             selected: false,
             widgetName: widgetName || 'widget', // this will later be converted to variable name
             enableRename: false, // will open the widgets editable div for renaming
-            
+
             isDragging: false, //  tells if the widget is currently being dragged
             dragEnabled: true,
 
             widgetContainer: WidgetContainer.CANVAS, // what is the parent of the widget
 
             showDroppableStyle: { // shows the droppable indicator
-                allow: false, 
+                allow: false,
                 show: false,
             },
 
@@ -103,11 +103,7 @@ class Widget extends React.Component {
                             this.setAttrValue("styling.backgroundColor", value)
                         }
                     },
-                    foregroundColor: {
-                        label: "Foreground Color",
-                        tool: Tools.COLOR_PICKER,
-                        value: "#000",
-                    },
+                    
                     label: "Styling"
                 },
                 layout: {
@@ -153,6 +149,8 @@ class Widget extends React.Component {
         this.getWidgetType = this.getWidgetType.bind(this)
         this.getBoundingRect = this.getBoundingRect.bind(this)
 
+        this.getAttrValue = this.getAttrValue.bind(this)
+
         this.getToolbarAttrs = this.getToolbarAttrs.bind(this)
 
         // this.openRenaming = this.openRenaming.bind(this)
@@ -173,7 +171,7 @@ class Widget extends React.Component {
         console.log("prior layout: ", this.state.attrs.layout.value)
         this.setLayout(this.state.attrs.layout.value)
         this.setWidgetStyling('backgroundColor', this.state.attrs.styling?.backgroundColor.value || "#fff")
-    
+
         this.load(this.props.initialData || {}) // load the initial data
 
 
@@ -210,37 +208,37 @@ class Widget extends React.Component {
         }
     }
 
-    getToolbarAttrs(){
+    getToolbarAttrs() {
 
         return ({
-                id: this.__id,
-                widgetName: {
-                    label: "Widget Name",
-                    tool: Tools.INPUT, // the tool to display, can be either HTML ELement or a constant string
-                    toolProps: {placeholder: "Widget name", maxLength: 40}, 
-                    value: this.state.widgetName,
-                    onChange: (value) => this.setWidgetName(value)
+            id: this.__id,
+            widgetName: {
+                label: "Widget Name",
+                tool: Tools.INPUT, // the tool to display, can be either HTML ELement or a constant string
+                toolProps: { placeholder: "Widget name", maxLength: 40 },
+                value: this.state.widgetName,
+                onChange: (value) => this.setWidgetName(value)
+            },
+            size: {
+                label: "Size",
+                display: "horizontal",
+                width: {
+                    label: "Width",
+                    tool: Tools.NUMBER_INPUT, // the tool to display, can be either HTML ELement or a constant string
+                    toolProps: { placeholder: "width", max: this.maxSize.width, min: this.minSize.width },
+                    value: this.state.size.width || 100,
+                    onChange: (value) => this.setWidgetSize(value, null)
                 },
-                size: {
-                    label: "Size",
-                    display: "horizontal",
-                    width: {
-                        label: "Width",
-                        tool: Tools.NUMBER_INPUT, // the tool to display, can be either HTML ELement or a constant string
-                        toolProps: {placeholder: "width", max: this.maxSize.width, min: this.minSize.width}, 
-                        value: this.state.size.width || 100,
-                        onChange: (value) => this.setWidgetSize(value, null)
-                    },
-                    height: {
-                        label: "Height",
-                        tool: Tools.NUMBER_INPUT,
-                        toolProps: {placeholder: "height", max: this.maxSize.height, min: this.minSize.height}, 
-                        value: this.state.size.height || 100,
-                        onChange: (value) => this.setWidgetSize(null, value)
-                    },
+                height: {
+                    label: "Height",
+                    tool: Tools.NUMBER_INPUT,
+                    toolProps: { placeholder: "height", max: this.maxSize.height, min: this.minSize.height },
+                    value: this.state.size.height || 100,
+                    onChange: (value) => this.setWidgetSize(null, value)
                 },
-                
-                ...this.state.attrs,
+            },
+
+            ...this.state.attrs,
 
         })
     }
@@ -266,7 +264,7 @@ class Widget extends React.Component {
         return this.state.attrs
     }
 
-    getId(){
+    getId() {
         return this.__id
     }
 
@@ -287,9 +285,9 @@ class Widget extends React.Component {
         return this.state.selected
     }
 
-    setPosType(positionType){
+    setPosType(positionType) {
 
-        if (!Object.values(PosType).includes(positionType)){
+        if (!Object.values(PosType).includes(positionType)) {
             throw Error(`The Position type can only be among: ${Object.values(PosType).join(", ")}`)
         }
 
@@ -366,15 +364,37 @@ class Widget extends React.Component {
         // Traverse the state and update the nested value immutably
         let newAttrs = { ...this.state.attrs }
         let nestedObject = newAttrs
-        
+
         keys.forEach(key => {
             nestedObject[key] = { ...nestedObject[key] } // Ensure immutability
             nestedObject = nestedObject[key]
         })
-        
+
         nestedObject[lastKey].value = value
 
-        this.updateState({attrs: newAttrs})
+        this.updateState({ attrs: newAttrs })
+    }
+
+    /**
+     * Given the key as a path, retrieves the value for the widget attribute
+     * @param {string} path - path to the key, eg: styling.backgroundColor
+     * @returns {any} - the value at the given path
+     */
+    getAttrValue(path) {
+        const keys = path.split('.')
+
+        // Traverse the state and get the nested value
+        let nestedObject = this.state.attrs
+
+        for (const key of keys) {
+            if (nestedObject[key] !== undefined) {
+                nestedObject = nestedObject[key]
+            } else {
+                return undefined  // Return undefined if the key doesn't exist
+            }
+        }
+
+        return nestedObject?.value  // Return the value (assuming it has a 'value' field)
     }
 
     /**
@@ -386,7 +406,7 @@ class Widget extends React.Component {
 
         const serializeValues = (obj, currentPath = "") => {
             const result = {}
-        
+
             for (let key in obj) {
 
                 if (ATTRS_KEYS.includes(key)) continue // don't serialize these as separate keys
@@ -395,7 +415,7 @@ class Widget extends React.Component {
                     // If the key contains a value property
                     if (obj[key].hasOwnProperty('value')) {
                         const path = currentPath ? `${currentPath}.${key}` : key;
-        
+
                         // If the value is an object, retain the entire value object
                         if (typeof obj[key].value === 'object' && obj[key].value !== null) {
                             result[path] = obj[key].value
@@ -407,7 +427,7 @@ class Widget extends React.Component {
                     Object.assign(result, serializeValues(obj[key], currentPath ? `${currentPath}.${key}` : key))
                 }
             }
-        
+
             return result
         }
 
@@ -427,9 +447,9 @@ class Widget extends React.Component {
         })
     }
 
-    setLayout(value){
+    setLayout(value) {
         // FIXME: when the parent layout is place, the child widgets should have position absolute
-        const {layout, direction, grid={rows: 1, cols: 1}, gap=10} = value
+        const { layout, direction, grid = { rows: 1, cols: 1 }, gap = 10 } = value
 
         const widgetStyle = {
             ...this.state.widgetStyling,
@@ -481,7 +501,7 @@ class Widget extends React.Component {
         })
     }
 
-    setResize(pos, size){
+    setResize(pos, size) {
         // useful when resizing the widget relative to the canvas, sets all pos, and size
         this.updateState({
             size: size,
@@ -542,7 +562,7 @@ class Widget extends React.Component {
 
         if (Object.keys(data).length === 0) return // no data to load
 
-        for (let [key, value] of Object.entries(data.attrs|{}))
+        for (let [key, value] of Object.entries(data.attrs | {}))
             this.setAttrValue(key, value)
 
         delete data.attrs
@@ -566,12 +586,12 @@ class Widget extends React.Component {
         // console.log("dragging event: ", event, dragElement)
         const container = dragElement.getAttribute("data-container")
         // TODO: check if the drop is allowed
-        if (container === "canvas"){
-        
+        if (container === "canvas") {
+
             this.props.onAddChildWidget(this.__id, dragElement.getAttribute("data-widget-id"))
-        
-        }else if (container === "sidebar"){
-            
+
+        } else if (container === "sidebar") {
+
             this.props.onAddChildWidget(this.__id, null, true) //  if dragged from the sidebar create the widget first
 
         }
@@ -611,7 +631,7 @@ class Widget extends React.Component {
         // NOTE: this line will prevent problem's such as self-drop or dropping inside its own children
         setTimeout(this.disablePointerEvents, 1)
 
-        this.setState({isDragging: true})
+        this.setState({ isDragging: true })
 
     }
 
@@ -621,22 +641,22 @@ class Widget extends React.Component {
 
         // console.log("Drag entering...", dragEleType, draggedElement, this.droppableTags)
         // FIXME:  the outer widget shouldn't be swallowed by inner widget
-        if (draggedElement === this.elementRef.current){
+        if (draggedElement === this.elementRef.current) {
             // prevent drop on itself, since the widget is invisible when dragging, if dropped on itself, it may consume itself
-            return 
+            return
         }
 
         setOverElement(e.currentTarget) // provide context to the provider
 
         let showDrop = {
-            allow: true, 
+            allow: true,
             show: true
         }
 
-        const allowDrop = (this.droppableTags && (Object.keys(this.droppableTags).length === 0 || 
-                            (this.droppableTags.include?.length > 0 && this.droppableTags.include?.includes(dragEleType)) || 
-                            (this.droppableTags.exclude?.length > 0 && !this.droppableTags.exclude?.includes(dragEleType))
-                        ))
+        const allowDrop = (this.droppableTags && (Object.keys(this.droppableTags).length === 0 ||
+            (this.droppableTags.include?.length > 0 && this.droppableTags.include?.includes(dragEleType)) ||
+            (this.droppableTags.exclude?.length > 0 && !this.droppableTags.exclude?.includes(dragEleType))
+        ))
 
         if (allowDrop) {
             showDrop = {
@@ -654,22 +674,22 @@ class Widget extends React.Component {
         this.setState({
             showDroppableStyle: showDrop
         })
-       
+
     }
 
     handleDragOver = (e, draggedElement) => {
-        if (draggedElement === this.elementRef.current){
+        if (draggedElement === this.elementRef.current) {
             // prevent drop on itself, since the widget is invisible when dragging, if dropped on itself, it may consume itself
-            return 
+            return
         }
 
         // console.log("Drag over: ", e.dataTransfer.getData("text/plain"), e.dataTransfer)
         const dragEleType = draggedElement.getAttribute("data-draggable-type")
 
-        const allowDrop = (this.droppableTags && (Object.keys(this.droppableTags).length === 0 || 
-                            (this.droppableTags.include?.length > 0 && this.droppableTags.include?.includes(dragEleType)) || 
-                            (this.droppableTags.exclude?.length > 0 && !this.droppableTags.exclude?.includes(dragEleType))
-                        ))
+        const allowDrop = (this.droppableTags && (Object.keys(this.droppableTags).length === 0 ||
+            (this.droppableTags.include?.length > 0 && this.droppableTags.include?.includes(dragEleType)) ||
+            (this.droppableTags.exclude?.length > 0 && !this.droppableTags.exclude?.includes(dragEleType))
+        ))
 
         if (allowDrop) {
             e.preventDefault() // NOTE: this is necessary to allow drop to take place
@@ -677,15 +697,15 @@ class Widget extends React.Component {
 
     }
 
-    handleDropEvent = (e, draggedElement, widgetClass=null) => {
+    handleDropEvent = (e, draggedElement, widgetClass = null) => {
         e.preventDefault()
         e.stopPropagation()
         // FIXME: sometimes the elements showDroppableStyle is not gone, when dropping on the same widget
         this.setState({
             showDroppableStyle: {
-                        allow: false, 
-                        show: false
-                    }
+                allow: false,
+                show: false
+            }
         }, () => {
             console.log("droppable cleared: ", this.elementRef.current, this.state.showDroppableStyle)
         })
@@ -693,51 +713,52 @@ class Widget extends React.Component {
 
         const dragEleType = draggedElement.getAttribute("data-draggable-type")
 
-        const allowDrop = (this.droppableTags && (Object.keys(this.droppableTags).length === 0 || 
-                            (this.droppableTags.include?.length > 0 && this.droppableTags.include?.includes(dragEleType)) || 
-                            (this.droppableTags.exclude?.length > 0 && !this.droppableTags.exclude?.includes(dragEleType))
-                        ))
+        const allowDrop = (this.droppableTags && (Object.keys(this.droppableTags).length === 0 ||
+            (this.droppableTags.include?.length > 0 && this.droppableTags.include?.includes(dragEleType)) ||
+            (this.droppableTags.exclude?.length > 0 && !this.droppableTags.exclude?.includes(dragEleType))
+        ))
 
-        if (allowDrop) {
+        if (!allowDrop) {
             return // prevent drop if the draggable element doesn't match 
         }
 
-        // if (draggedElement === this.elementRef.current){
-        //     // prevent drop on itself, since the widget is invisible when dragging, if dropped on itself, it may consume itself
-        //     return 
-        // }
+        if (draggedElement === this.elementRef.current){
+            // prevent drop on itself, since the widget is invisible when dragging, if dropped on itself, it may consume itself
+            return 
+        }
 
-        // let currentElement = e.currentTarget
-        // while (currentElement) {
-        //     if (currentElement === draggedElement) {
-        //         // if the parent is dropped accidentally into the child don't allow drop
-        //         console.log("Dropped into a descendant element, ignoring drop")
-        //         return // Exit early to prevent the drop
-        //     }
-        //     currentElement = currentElement.parentElement // Traverse up to check ancestors
-        // }
+        let currentElement = e.currentTarget
+        while (currentElement) {
+            if (currentElement === draggedElement) {
+                // if the parent is dropped accidentally into the child don't allow drop
+                // console.log("Dropped into a descendant element, ignoring drop")
+                return // Exit early to prevent the drop
+            }
+            currentElement = currentElement.parentElement // Traverse up to check ancestors
+        }
 
         const container = draggedElement.getAttribute("data-container")
 
         const thisContainer = this.elementRef.current.getAttribute("data-container")
         // console.log("Dropped as swappable: ", e.target, this.swappableAreaRef.current.contains(e.target))
         // If swaparea is true, then it swaps instead of adding it as a child, also make sure that the parent widget(this widget) is on the widget and not on the canvas
-        const swapArea = (this.swappableAreaRef.current.contains(e.target) && !this.innerAreaRef.current.contains(e.target) && thisContainer === WidgetContainer.WIDGET) 
+        const swapArea = (this.swappableAreaRef.current.contains(e.target) && !this.innerAreaRef.current.contains(e.target) && thisContainer === WidgetContainer.WIDGET)
 
         // TODO: check if the drop is allowed
-        if ([WidgetContainer.CANVAS, WidgetContainer.WIDGET].includes(container)){
+        if ([WidgetContainer.CANVAS, WidgetContainer.WIDGET].includes(container)) {
             // console.log("Dropped on meee: ", swapArea, this.swappableAreaRef.current.contains(e.target), thisContainer)
-            
-            this.props.onAddChildWidget({parentWidgetId: this.__id, 
-                                        dragElementID: draggedElement.getAttribute("data-widget-id"),
-                                        swap: swapArea || false
-                                        })
-            
-        }else if (container === WidgetContainer.SIDEBAR){
-            
+
+            this.props.onAddChildWidget({
+                parentWidgetId: this.__id,
+                dragElementID: draggedElement.getAttribute("data-widget-id"),
+                swap: swapArea || false
+            })
+
+        } else if (container === WidgetContainer.SIDEBAR) {
+
             // console.log("Dropped on Sidebar: ", this.__id)
-            this.props.onCreateWidgetRequest(widgetClass, ({id, widgetRef}) => {
-                this.props.onAddChildWidget({parentWidgetId: this.__id, dragElementID: id}) //  if dragged from the sidebar create the widget first
+            this.props.onCreateWidgetRequest(widgetClass, ({ id, widgetRef }) => {
+                this.props.onAddChildWidget({ parentWidgetId: this.__id, dragElementID: id }) //  if dragged from the sidebar create the widget first
             })
 
         }
@@ -751,23 +772,23 @@ class Widget extends React.Component {
 
         if (!e.currentTarget.contains(draggedElement)) {
             this.setState({
-                        showDroppableStyle: {
-                            allow: false, 
-                            show: false
-                        }
-                    })
+                showDroppableStyle: {
+                    allow: false,
+                    show: false
+                }
+            })
 
         }
     }
 
     handleDragEnd = (callback) => {
         callback()
-        this.setState({isDragging: false})
+        this.setState({ isDragging: false })
         this.enablePointerEvents()
     }
 
     disablePointerEvents = () => {
-        
+
         if (this.elementRef.current)
             this.elementRef.current.style.pointerEvents = "none"
     }
@@ -781,7 +802,7 @@ class Widget extends React.Component {
      * Note: you must implement this method in subclass, if you want children make sure to pass
      * {this.props.children}, to modify the style add this.state.widgetStyling
     */
-   renderContent() {
+    renderContent() {
         // throw new NotImplementedError("render method has to be implemented")
         return (
             <div className="tw-w-full tw-h-full tw-p-2 tw-content-start tw-rounded-md tw-overflow-hidden" style={this.state.widgetStyling}>
@@ -807,75 +828,75 @@ class Widget extends React.Component {
             height: `${this.state.size.height}px`,
             opacity: this.state.isDragging ? 0.3 : 1,
         }
-
+        // FIXME: if the parent container has tw-overflow-none, then the resizable indicator are also hidden
         return (
 
             <DragContext.Consumer>
                 {
-                    ({draggedElement, widgetClass, onDragStart, onDragEnd, setOverElement}) => (
+                    ({ draggedElement, widgetClass, onDragStart, onDragEnd, setOverElement }) => (
 
-                        <div data-widget-id={this.__id} 
-                                ref={this.elementRef} 
-                                className="tw-shadow-xl tw-w-fit tw-h-fit"
-                                style={outerStyle}
-                                data-draggable-type={this.getWidgetType()} // helps with droppable 
-                                data-container={this.state.widgetContainer} // indicates how the canvas should handle dragging, one is sidebar other is canvas
-                                
-                                draggable={this.state.dragEnabled}
-                                
-                                onDragOver={(e) => this.handleDragOver(e, draggedElement)}
-                                onDrop={(e) => this.handleDropEvent(e, draggedElement, widgetClass)}
+                        <div data-widget-id={this.__id}
+                            ref={this.elementRef}
+                            className="tw-shadow-xl tw-w-fit tw-h-fit"
+                            style={outerStyle}
+                            data-draggable-type={this.getWidgetType()} // helps with droppable 
+                            data-container={this.state.widgetContainer} // indicates how the canvas should handle dragging, one is sidebar other is canvas
 
-                                onDragEnter={(e) => this.handleDragEnter(e, draggedElement, setOverElement)}
-                                onDragLeave={(e) => this.handleDragLeave(e, draggedElement)}
+                            draggable={this.state.dragEnabled}
 
-                                onDragStart={(e) => this.handleDragStart(e, onDragStart)}
-                                onDragEnd={(e) => this.handleDragEnd(onDragEnd)}
-                            >
+                            onDragOver={(e) => this.handleDragOver(e, draggedElement)}
+                            onDrop={(e) => this.handleDropEvent(e, draggedElement, widgetClass)}
+
+                            onDragEnter={(e) => this.handleDragEnter(e, draggedElement, setOverElement)}
+                            onDragLeave={(e) => this.handleDragLeave(e, draggedElement)}
+
+                            onDragStart={(e) => this.handleDragStart(e, onDragStart)}
+                            onDragEnd={(e) => this.handleDragEnd(onDragEnd)}
+                        >
                             {/* FIXME: Swappable when the parent layout is flex/grid and gap is more, this trick won't work, add bg color to check */}
                             {/* FIXME: Swappable, when the parent layout is gap is 0, it doesn't work well */}
                             <div className="tw-relative tw-w-full tw-h-full tw-top-0 tw-left-0"
-                                    >
+                            >
                                 <div className={`tw-absolute tw-top-[-5px] tw-left-[-5px] 
                                                     tw-border-1 tw-opacity-0 tw-border-solid tw-border-black
                                                     tw-w-full tw-h-full
                                                     tw-scale-[1.1] tw-opacity-1 tw-z-[-1] `}
-                                                    style={{
-                                                        width: "calc(100% + 10px)",
-                                                        height: "calc(100% + 10px)",
-                                                    }}
-                                                ref={this.swappableAreaRef}
-                                                    
-                                                >
+                                    style={{
+                                        width: "calc(100% + 10px)",
+                                        height: "calc(100% + 10px)",
+                                    }}
+                                    ref={this.swappableAreaRef}
+
+                                >
                                     {/* helps with swappable: if the mouse is in this area while hovering/dropping, then swap */}
-                                </div> 
+                                </div>
                                 <div className="tw-relative tw-w-full tw-h-full" ref={this.innerAreaRef}>
                                     {this.renderContent()}
                                 </div>
                                 {
                                     // show drop style on drag hover
                                     this.state.showDroppableStyle.show &&
-                                        <div className={`${this.state.showDroppableStyle.allow ? "tw-border-blue-600" : "tw-border-red-600"} 
+                                    <div className={`${this.state.showDroppableStyle.allow ? "tw-border-blue-600" : "tw-border-red-600"} 
                                                             tw-absolute tw-top-[-5px] tw-left-[-5px] tw-w-full tw-h-full tw-z-[2]
                                                             tw-border-2 tw-border-dashed  tw-rounded-lg tw-pointer-events-none
 
                                                             `}
-                                                style={{
-                                                            width: "calc(100% + 10px)",
-                                                            height: "calc(100% + 10px)",
-                                                        }}
-                                                >
-                                        </div>
+                                        style={{
+                                            width: "calc(100% + 10px)",
+                                            height: "calc(100% + 10px)",
+                                        }}
+                                    >
+                                    </div>
                                 }
-                            
+
                                 <div className={`tw-absolute tw-bg-transparent tw-top-[-10px] tw-left-[-10px] tw-opacity-100 
                                                 tw-w-full tw-h-full tw-z-[-1]
                                                 ${this.state.selected ? 'tw-border-2 tw-border-solid tw-border-blue-500' : 'tw-hidden'}`}
-                                                style={{
-                                                    width: "calc(100% + 20px)",
-                                                    height: "calc(100% + 20px)",
-                                                }}
-                                                >
+                                    style={{
+                                        width: "calc(100% + 20px)",
+                                        height: "calc(100% + 20px)",
+                                    }}
+                                >
 
                                     <div className={`"tw-relative tw-w-full  tw-h-full"`}> {/* ${this.state.isDragging ? "tw-pointer-events-none" : "tw-pointer-events-auto"} */}
                                         <EditableDiv value={this.state.widgetName} onChange={this.setWidgetName}
@@ -892,9 +913,9 @@ class Widget extends React.Component {
                                                 e.stopPropagation()
                                                 e.preventDefault()
                                                 this.props.onWidgetResizing("nw")
-                                                this.setState({dragEnabled: false})
+                                                this.setState({ dragEnabled: false })
                                             }}
-                                            onMouseUp={() => this.setState({dragEnabled: true})}
+                                            onMouseUp={() => this.setState({ dragEnabled: true })}
                                         />
                                         <div
                                             className="tw-w-2 tw-h-2 tw-absolute tw--right-1 tw--top-1 tw-bg-blue-500"
@@ -903,9 +924,9 @@ class Widget extends React.Component {
                                                 e.stopPropagation()
                                                 e.preventDefault()
                                                 this.props.onWidgetResizing("ne")
-                                                this.setState({dragEnabled: false})
+                                                this.setState({ dragEnabled: false })
                                             }}
-                                            onMouseUp={() => this.setState({dragEnabled: true})}
+                                            onMouseUp={() => this.setState({ dragEnabled: true })}
                                         />
                                         <div
                                             className="tw-w-2 tw-h-2 tw-absolute tw--left-1 tw--bottom-1 tw-bg-blue-500"
@@ -914,9 +935,9 @@ class Widget extends React.Component {
                                                 e.stopPropagation()
                                                 e.preventDefault()
                                                 this.props.onWidgetResizing("sw")
-                                                this.setState({dragEnabled: false})
+                                                this.setState({ dragEnabled: false })
                                             }}
-                                            onMouseUp={() => this.setState({dragEnabled: true})}
+                                            onMouseUp={() => this.setState({ dragEnabled: true })}
                                         />
                                         <div
                                             className="tw-w-2 tw-h-2 tw-absolute tw--right-1 tw--bottom-1 tw-bg-blue-500"
@@ -925,9 +946,9 @@ class Widget extends React.Component {
                                                 e.stopPropagation()
                                                 e.preventDefault()
                                                 this.props.onWidgetResizing("se")
-                                                this.setState({dragEnabled: false})
+                                                this.setState({ dragEnabled: false })
                                             }}
-                                            onMouseUp={() => this.setState({dragEnabled: true})}
+                                            onMouseUp={() => this.setState({ dragEnabled: true })}
                                         />
 
                                     </div>

@@ -2,9 +2,9 @@ import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
 
 
-class MainWindow extends Widget{
+class TopLevel extends Widget{
 
-    static widgetType = "main_window"
+    static widgetType = "toplevel"
 
     constructor(props) {
         super(props)
@@ -12,17 +12,18 @@ class MainWindow extends Widget{
         this.droppableTags = {
             exclude: ["image", "video", "media", "main_window", "toplevel"]
         }
+        this.maxSize = { width: 2000, height: 2000 } // disables resizing above this number
 
         this.state = {
             ...this.state,
-            size: { width: 700, height: 400 },
+            size: { width: 450, height: 200 },
             attrs: {
                 ...this.state.attrs,
                 title: {
                     label: "Window Title",
                     tool: Tools.INPUT, // the tool to display, can be either HTML ELement or a constant string
                     toolProps: {placeholder: "Window title", maxLength: 40}, 
-                    value: "Main Window",
+                    value: "Top level",
                     onChange: (value) => this.setAttrValue("title", value)
                 }
 
@@ -95,4 +96,4 @@ class MainWindow extends Widget{
 }
 
 
-export default MainWindow
+export default TopLevel

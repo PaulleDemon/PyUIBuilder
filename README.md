@@ -60,6 +60,11 @@ The discount's will be available for limited time only on pre-orders.
 | **Price**                                                         | -                 | ~~$129~~ $29 (save 77.52% for limited time on pre-order) | ~~180~~ $49 (Save 72.78% for a limited time on pre-orders) |
 | Pre-order now!                                                    |                   | [Get license]()                                          | [Get license]()                                            |
 
+## Newsletter
+
+Join the free newsletter to know about upcoming updates, learn how I built this tool and more about open-source.
+
+[Join free newsletter](https://paulfreeman.substack.com/subscribe?utm_source=Github-Pybuilder)
 
 ## FAQ
 

@@ -2,28 +2,43 @@ import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
 
 
-class MainWindow extends Widget{
+class Button extends Widget{
 
-    static widgetType = "main_window"
+    static widgetType = "button"
 
     constructor(props) {
         super(props)
 
+        // TODO: disable drop
+
         this.droppableTags = {
+            // TODO: exclude all
             exclude: ["image", "video", "media", "main_window", "toplevel"]
         }
 
         this.state = {
             ...this.state,
-            size: { width: 700, height: 400 },
+            size: { width: 80, height: 40 },
             attrs: {
                 ...this.state.attrs,
-                title: {
-                    label: "Window Title",
+                styling: {
+                    ...this.state.attrs.styling,
+                    foregroundColor: {
+                        label: "Foreground Color",
+                        tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
+                        value: "#000",
+                        onChange: (value) => {
+                            this.setWidgetStyling("color", value)
+                            this.setAttrValue("styling.foregroundColor", value)
+                        }
+                    }
+                },
+                buttonLabel: {
+                    label: "Button Label",
                     tool: Tools.INPUT, // the tool to display, can be either HTML ELement or a constant string
-                    toolProps: {placeholder: "Window title", maxLength: 40}, 
-                    value: "Main Window",
-                    onChange: (value) => this.setAttrValue("title", value)
+                    toolProps: {placeholder: "Button label", maxLength: 100}, 
+                    value: "Button",
+                    onChange: (value) => this.setAttrValue("buttonLabel", value)
                 }
 
             }
@@ -45,7 +60,7 @@ class MainWindow extends Widget{
                 value: this.state.widgetName,
                 onChange: (value) => this.setWidgetName(value)
             },
-            title: this.state.attrs.title,
+            buttonLabel: this.state.attrs.buttonLabel,
             size: {
                 label: "Size",
                 display: "horizontal",
@@ -72,21 +87,12 @@ class MainWindow extends Widget{
 
     renderContent(){
         return (
-            <div className="tw-w-flex tw-flex-col tw-w-full tw-h-full tw-rounded-md tw-overflow-hidden">
-                <div className="tw-flex tw-w-full tw-h-[25px] tw-bg-[#c7c7c7] tw-p-1
-                                tw-overflow-hidden tw-shadow-xl tw-place-items-center">
-                    <div className="tw-text-sm">{this.getAttrValue("title")}</div>
-                    <div className="tw-ml-auto tw-flex tw-gap-1  tw-place-items-center">
-                        <div className="tw-bg-yellow-400 tw-rounded-full tw-w-[15px] tw-h-[15px]">
-                        </div>
-                        <div className="tw-bg-blue-400 tw-rounded-full tw-w-[15px] tw-h-[15px]">
-                        </div>
-                        <div className="tw-bg-red-400 tw-rounded-full tw-w-[15px] tw-h-[15px]">
-                        </div>
+            <div className="tw-w-flex tw-flex-col tw-w-full tw-h-full tw-rounded-md tw-border tw-border-solid tw-overflow-hidden">
+                <div className="tw-p-2 tw-w-full tw-h-full tw-content-start " style={this.state.widgetStyling}>
+                    {/* {this.props.children} */}
+                    <div className="tw-text-sm" style={{color: this.getAttrValue("styling.foregroundColor")}}>
+                        {this.getAttrValue("buttonLabel")}
                     </div>
-                </div>
-                <div className="tw-p-2 tw-w-full tw-h-full tw-content-start" style={this.state.widgetStyling}>
-                    {this.props.children}
                 </div>
             </div>
         )
@@ -95,4 +101,4 @@ class MainWindow extends Widget{
 }
 
 
-export default MainWindow
+export default Button
