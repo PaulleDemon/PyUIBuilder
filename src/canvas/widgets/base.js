@@ -187,7 +187,7 @@ class Widget extends React.Component {
 
     updateState = (newState, callback) => {
 
-        // FIXME: maximum recursion error when updating size
+        // FIXME: maximum recursion error when updating size, color etc
         this.setState(newState, () => {
 
             const { onWidgetUpdate } = this.props
@@ -368,23 +368,22 @@ class Widget extends React.Component {
      * @param {any} value 
      */
     setAttrValue(path, value) {
-        this.setState((prevState) => {
-            // Split the path to access the nested property (e.g., "styling.backgroundColor")
-            const keys = path.split('.')
-            const lastKey = keys.pop()
 
-            // Traverse the state and update the nested value immutably
-            let newAttrs = { ...prevState.attrs }
-            let nestedObject = newAttrs
+        const keys = path.split('.')
+        const lastKey = keys.pop()
 
-            keys.forEach(key => {
-                nestedObject[key] = { ...nestedObject[key] } // Ensure immutability
-                nestedObject = nestedObject[key]
-            })
-            nestedObject[lastKey].value = value
-
-            return { attrs: newAttrs }
+        // Traverse the state and update the nested value immutably
+        let newAttrs = { ...this.state.attrs }
+        let nestedObject = newAttrs
+        
+        keys.forEach(key => {
+            nestedObject[key] = { ...nestedObject[key] } // Ensure immutability
+            nestedObject = nestedObject[key]
         })
+        
+        nestedObject[lastKey].value = value
+
+        this.updateState({attrs: newAttrs})
     }
 
     /**
@@ -677,7 +676,7 @@ class Widget extends React.Component {
 
     }
 
-    handleDropEvent = (e, draggedElement) => {
+    handleDropEvent = (e, draggedElement, widgetClass=null) => {
         e.preventDefault()
         e.stopPropagation()
         // FIXME: sometimes the elements showDroppableStyle is not gone, when dropping on the same widget
@@ -731,7 +730,9 @@ class Widget extends React.Component {
         }else if (container === WidgetContainer.SIDEBAR){
             
             // console.log("Dropped on Sidebar: ", this.__id)
-            this.props.onAddChildWidget({parentWidgetId: this.__id, create: true}) //  if dragged from the sidebar create the widget first
+            this.props.onCreateWidgetRequest(widgetClass, ({id, widgetRef}) => {
+                this.props.onAddChildWidget({parentWidgetId: this.__id, dragElementID: id}) //  if dragged from the sidebar create the widget first
+            })
 
         }
 
@@ -802,7 +803,7 @@ class Widget extends React.Component {
 
             <DragContext.Consumer>
                 {
-                    ({draggedElement, onDragStart, onDragEnd, setOverElement}) => (
+                    ({draggedElement, widgetClass, onDragStart, onDragEnd, setOverElement}) => (
 
                         <div data-widget-id={this.__id} 
                                 ref={this.elementRef} 
@@ -814,7 +815,7 @@ class Widget extends React.Component {
                                 draggable={this.state.dragEnabled}
                                 
                                 onDragOver={(e) => this.handleDragOver(e, draggedElement)}
-                                onDrop={(e) => this.handleDropEvent(e, draggedElement)}
+                                onDrop={(e) => this.handleDropEvent(e, draggedElement, widgetClass)}
 
                                 onDragEnter={(e) => this.handleDragEnter(e, draggedElement, setOverElement)}
                                 onDragLeave={(e) => this.handleDragLeave(e, draggedElement)}

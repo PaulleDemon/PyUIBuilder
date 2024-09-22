@@ -25,6 +25,7 @@ import { ActiveWidgetContext, ActiveWidgetProvider, withActiveWidget } from "./a
 import { DragWidgetProvider } from "./widgets/draggableWidgetContext"
 import { PosType } from "./constants/layouts"
 import WidgetContainer from "./constants/containers"
+import { isSubClassOfWidget } from "../utils/widget"
 
 // const DotsBackground = require("../assets/background/dots.svg")
 
@@ -105,6 +106,8 @@ class Canvas extends React.Component {
         this.removeWidget = this.removeWidget.bind(this)
         this.clearSelections = this.clearSelections.bind(this)
         this.clearCanvas = this.clearCanvas.bind(this)
+
+        this.createWidget = this.createWidget.bind(this)
 
         // this.updateCanvasDimensions = this.updateCanvasDimensions.bind(this) 
     }
@@ -625,18 +628,19 @@ class Canvas extends React.Component {
      * @param {object} dragElement 
      * @param {boolean} create - if create is set to true the widget will be created before adding to the child tree
      */
-    handleAddWidgetChild = ({ parentWidgetId, dragElementID, create = false, swap = false }) => {
-
+    handleAddWidgetChild = ({ parentWidgetId, dragElementID, swap = false }) => {
+    
         // TODO: creation of the child widget if its not created
         // widgets data structure { id, widgetType: widgetComponentType, children: [], parent: "" }
         const dropWidgetObj = this.findWidgetFromListById(parentWidgetId)
         // Find the dragged widget object
         let dragWidgetObj = this.findWidgetFromListById(dragElementID)
 
+        console.log("Drag widget obj: ", dragWidgetObj)
+
         if (dropWidgetObj && dragWidgetObj) {
             const dragWidget = this.widgetRefs[dragWidgetObj.id]
             const dragData = dragWidget.current.serialize()
-
 
             if (swap) {
                 // If swapping, we need to find the common parent
@@ -704,6 +708,11 @@ class Canvas extends React.Component {
      * @param {Widget} widgetComponentType - don't pass <Widget /> instead pass Widget object/class
      */
     createWidget(widgetComponentType, callback) {
+
+        if (!isSubClassOfWidget(widgetComponentType)){
+            throw new Error("widgetComponentType must be a subclass of Widget class")
+        }
+
         const widgetRef = React.createRef()
 
         const id = `${widgetComponentType.widgetType}_${UID()}`
@@ -933,6 +942,7 @@ class Canvas extends React.Component {
                 canvasRef={this.canvasContainerRef}
                 onWidgetUpdate={this.onActiveWidgetUpdate}
                 onAddChildWidget={this.handleAddWidgetChild}
+                onCreateWidgetRequest={this.createWidget} // create widget when dropped from sidebar
                 onWidgetResizing={(resizeSide) => this.setState({ widgetResizing: resizeSide })}
             >
                 {/* Render children inside the parent with layout applied */}
