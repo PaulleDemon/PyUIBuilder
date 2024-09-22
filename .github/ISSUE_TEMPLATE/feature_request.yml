@@ -1,7 +1,7 @@
 name: New Feature request
 description: Have an idea for new feature? well tell us
 title: "[FEATURE REQUEST]: "
-labels: ["feature request"]
+labels: ["enhancement"]
 assignees: 
   - PaulleDemon
 body:
