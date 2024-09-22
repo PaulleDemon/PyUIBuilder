@@ -1,6 +1,11 @@
 import { useEffect, useRef, useMemo, useState } from "react";
 
-import { CloseCircleFilled } from "@ant-design/icons";
+import { CloseCircleFilled, CrownFilled, GithubFilled, ShareAltOutlined } from "@ant-design/icons";
+
+import KO_FI from "../assets/logo/ko-fi.png"
+import Premium from "./utils/premium";
+import Share from "./utils/share";
+
 
 
 function Sidebar({tabs}){
@@ -44,8 +49,8 @@ function Sidebar({tabs}){
 
     return (
         <div className={`tw-relative tw-duration-[0.3s] tw-transition-all
-                        tw-max-w-[400px] tw-flex tw-h-full tw-z-10
-                        ${sidebarOpen ? "tw-bg-white tw-min-w-[400px] tw-w-[400px] tw-shadow-lg": 
+                        tw-max-w-[350px] tw-flex tw-h-full tw-z-10 tw-shadow-xl
+                        ${sidebarOpen ? "tw-bg-white tw-min-w-[350px] tw-w-[350px] tw-shadow-lg": 
                             "tw-bg-primaryBg tw-min-w-[80px] tw-w-[80px]"}
                         `} 
                         ref={sideBarRef} 
@@ -77,6 +82,25 @@ function Sidebar({tabs}){
                         )
                     })
                 }
+
+                <div className="tw-flex tw-flex-col tw-place-content-items tw-place-items-center tw-gap-3 tw-mt-auto">
+                    <Premium className="tw-text-2xl tw-bg-purple-700 tw-text-center 
+                                    tw-w-[35px] tw-h-[35px] tw-rounded-md 
+                                    tw-cursor-pointer tw-text-white 
+                                    tw-transition-all
+                                    hover:tw-scale-[1.2]">
+                        <CrownFilled />
+                    </Premium>
+                    <Share className="tw-cursor-pointer tw-text-xl">
+                        <ShareAltOutlined />
+                    </Share>
+                    <a href="https://github.com/PaulleDemon/tkbuilder" className="tw-text-2xl tw-cursor-pointer tw-text-black">
+                        <GithubFilled />
+                    </a>
+                    <a href="https://ko-fi.com/artpaul" className="tw-cursor-pointer ">
+                        <img src={KO_FI} alt="ko-fi" className="tw-w-[30px] tw-h-[30px]"/>
+                    </a>
+                </div>
             </div>
 
             <div className="tw-w-full tw-h-full tw-bg-inherit tw-flex tw-flex-col tw-overflow-x-hidden" ref={sideBarExtraRef}>

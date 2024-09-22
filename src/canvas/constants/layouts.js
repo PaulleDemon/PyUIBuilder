@@ -1,7 +1,12 @@
-const Layouts = {
-    PACK: "flex",
+export const Layouts = {
+    FLEX: "flex",
     GRID: "grid",
     PLACE: "absolute"
 }
 
-export default Layouts
+
+export const PosType = {
+    ABSOLUTE: "absolute",
+    RELATIVE: "relative",
+    NONE: "unset"
+}

@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useRef } from "react"
-import Draggable from "./utils/draggable"
+import Draggable from "./utils/draggableDnd"
 
 import { FileImageOutlined, GithubOutlined, GitlabOutlined, LinkOutlined,
             AudioOutlined, VideoCameraOutlined,
             FileTextOutlined} from "@ant-design/icons"
+import DraggableWrapper from "./draggable/draggable"
+import { useDragContext } from "./draggable/draggableContext"
 
 
-export function DraggableWidgetCard({ name, img, url, innerRef}){
+export function SidebarWidgetCard({ name, img, url, widgetClass, innerRef}){
 
     const urlIcon = useMemo(() => {
         if (url){
@@ -23,26 +25,32 @@ export function DraggableWidgetCard({ name, img, url, innerRef}){
 
     }, [url])
 
-    useEffect(() => {
-    }, [])
-
 
     return (
-        <Draggable className="tw-cursor-pointer" id={name}>
-            <div ref={innerRef} className="tw-select-none tw-h-[240px] tw-w-[280px] tw-flex tw-flex-col tw-rounded-md tw-overflow-hidden 
-                            tw-gap-2 tw-text-gray-600 tw-bg-[#ffffff44] tw-border-solid tw-border-[1px] tw-border-[#888] ">
-                <div className="tw-h-[200px] tw-w-full tw-overflow-hidden">
-                    <img src={img} alt={name} className="tw-object-contain tw-h-full tw-w-full tw-select-none" />
-                </div>
-                <span className="tw-text-xl">{name}</span>
-                <div className="tw-flex tw-text-lg  tw-justify-between tw-px-4">
+        // <Draggable className="tw-cursor-pointer" id={name}>
+            <DraggableWrapper data-container={"sidebar"} 
+                                dragElementType={"widget"} 
+                                dragWidgetClass={widgetClass}
+                                className="tw-cursor-pointer tw-w-fit tw-h-fit">
+                
+                <div ref={innerRef} className="tw-select-none  tw-h-[200px] tw-w-[230px] tw-flex tw-flex-col 
+                                                tw-rounded-md tw-overflow-hidden 
+                                                tw-gap-2 tw-text-gray-600 tw-bg-[#ffffff44] tw-border-solid tw-border-[1px]
+                                                tw-border-[#888] ">
+                    <div className="tw-h-[200px] tw-pointer-events-none tw-w-full tw-overflow-hidden">
+                        <img src={img} alt={name} className="tw-object-contain tw-h-full tw-w-full tw-select-none" />
+                    </div>
+                    <span className="tw-text-xl tw-text-center">{name}</span>
+                    <div className="tw-flex tw-text-lg tw-place tw-px-4">
 
-                    <a href={url} className="tw-text-black" target="_blank" rel="noopener noreferrer">
-                        {urlIcon}
-                    </a>
+                        <a href={url} className="tw-text-black" target="_blank" rel="noopener noreferrer">
+                            {urlIcon}
+                        </a>
+                    </div>
+                    
                 </div>
-            </div>
-        </Draggable>
+            </DraggableWrapper>
+        // </Draggable> 
     )
 
 }
@@ -80,7 +88,7 @@ export function DraggableAssetCard({file}){
 
     return (
         <Draggable className="tw-cursor-pointer">
-            <div className="tw-w-full tw-h-[240px] tw-flex tw-flex-col tw-rounded-md tw-overflow-hidden 
+            <div className="tw-w-full tw-h-[240px] tw-p-1 tw-flex tw-flex-col tw-rounded-md tw-overflow-hidden 
                             tw-gap-2 tw-text-gray-600 tw-bg-[#ffffff44] tw-border-solid tw-border-[1px] tw-border-[#888] ">
                 <div className="tw-h-[200px] tw-w-full tw-flex tw-place-content-center tw-p-1 tw-text-3xl tw-overflow-hidden">
                     { file.fileType === "image" &&
@@ -105,7 +113,7 @@ export function DraggableAssetCard({file}){
                     }
 
                 </div>
-                <span className="tw-text-lg">{file.name}</span>
+                <span className="tw-text-base">{file.name}</span>
             </div>
         </Draggable>
     )

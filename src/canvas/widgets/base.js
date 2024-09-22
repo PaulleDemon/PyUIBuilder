@@ -2,10 +2,20 @@ import React from "react"
 import { NotImplementedError } from "../../utils/errors"
 
 import Tools from "../constants/tools"
-import Layouts from "../constants/layouts"
+import { Layouts, PosType} from "../constants/layouts"
 import Cursor from "../constants/cursor"
 import { toSnakeCase } from "../utils/utils"
 import EditableDiv from "../../components/editableDiv"
+
+import { ActiveWidgetContext } from "../activeWidgetContext"
+import { DragWidgetProvider } from "./draggableWidgetContext"
+import WidgetDraggable from "./widgetDragDrop"
+import WidgetContainer from "../constants/containers"
+import { DragContext } from "../../components/draggable/draggableContext"
+
+
+
+const ATTRS_KEYS = ['value', 'label', 'tool', 'onChange', 'toolProps'] // these are attrs keywords, don't use these keywords as keys while defining the attrs property
 
 
 /**
@@ -14,6 +24,8 @@ import EditableDiv from "../../components/editableDiv"
 class Widget extends React.Component {
 
     static widgetType = "widget"
+
+    // static contextType = ActiveWidgetContext
 
     constructor(props) {
         super(props)
@@ -28,9 +40,6 @@ class Widget extends React.Component {
         this._disableResize = false
         this._disableSelection = false
 
-        this._parent = "" // id of the parent widget, default empty string
-        this._children = [] // id's of all the child widgets
-
         this.minSize = { width: 50, height: 50 } // disable resizing below this number
         this.maxSize = { width: 500, height: 500 } // disable resizing above this number
 
@@ -38,14 +47,15 @@ class Widget extends React.Component {
 
         this.icon = "" // antd icon name representing this widget
 
-        this.elementRef = React.createRef()
+        this.elementRef = React.createRef() // this is the outer ref for draggable area
+        this.swappableAreaRef = React.createRef() // helps identify if the users intent is to swap or drop inside the widget
+        this.innerAreaRef = React.createRef() // this is the inner area where swap is prevented and only drop is accepted
 
         this.functions = {
             "load": { "args1": "number", "args2": "string" }
         }
 
-
-        this.layout = Layouts.PACK
+        this.droppableTags = ["widget"] // This indicates if the draggable can be dropped on this widget
         this.boundingRect = {
             x: 0,
             y: 0,
@@ -58,15 +68,28 @@ class Widget extends React.Component {
             selected: false,
             widgetName: widgetName || 'widget', // this will later be converted to variable name
             enableRename: false, // will open the widgets editable div for renaming
-            resizing: false,
-            resizeCorner: "",
+            
+            isDragging: false, //  tells if the widget is currently being dragged
+            dragEnabled: true,
+
+            widgetContainer: WidgetContainer.CANVAS, // what is the parent of the widget
+
+            showDroppableStyle: { // shows the droppable indicator
+                allow: false, 
+                show: false,
+            },
 
             pos: { x: 0, y: 0 },
             size: { width: 100, height: 100 },
-            position: "absolute",
+            positionType: PosType.ABSOLUTE,
 
             widgetStyling: {
                 // use for widget's inner styling
+                backgroundColor: "#fff",
+                display: "flex",
+                flexDirection: "row",
+                gap: 10,
+                flexWrap: "wrap"
             },
 
             attrs: {
@@ -74,26 +97,42 @@ class Widget extends React.Component {
                     backgroundColor: {
                         label: "Background Color",
                         tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
-                        value: "",
-                        onChange: (value) => this.setWidgetStyling("backgroundColor", value)
+                        value: "#fff",
+                        onChange: (value) => {
+                            this.setWidgetStyling("backgroundColor", value)
+                            this.setAttrValue("styling.backgroundColor", value)
+                        }
                     },
                     foregroundColor: {
                         label: "Foreground Color",
                         tool: Tools.COLOR_PICKER,
-                        value: "",
+                        value: "#000",
                     },
                     label: "Styling"
                 },
                 layout: {
                     label: "Layout",
-                    tool: Tools.SELECT_DROPDOWN, // the tool to display, can be either HTML ELement or a constant string
-                    value: "flex",
-                    options: [
-                        { value: "flex", label: "Flex" },
-                        { value: "grid", label: "Grid" },
-                        { value: "place", label: "Place" },
-                    ],
-                    onChange: (value) => this.setWidgetStyling("backgroundColor", value)
+                    tool: Tools.LAYOUT_MANAGER, // the tool to display, can be either HTML ELement or a constant string
+                    value: {
+                        layout: "flex",
+                        direction: "row",
+                        grid: {
+                            rows: 1,
+                            cols: 1
+                        },
+                        gap: 10,
+                    },
+                    toolProps: {
+                        options: [
+                            { value: "flex", label: "Flex" },
+                            { value: "grid", label: "Grid" },
+                            { value: "place", label: "Place" },
+                        ],
+                    },
+                    onChange: (value) => {
+                        // this.setAttrValue("layout", value)
+                        this.setLayout(value)
+                    }
                 },
                 events: {
                     event1: {
@@ -106,6 +145,8 @@ class Widget extends React.Component {
 
         this.mousePress = this.mousePress.bind(this)
         this.getElement = this.getElement.bind(this)
+
+        this.getId = this.getId.bind(this)
 
         this.getPos = this.getPos.bind(this)
         this.getSize = this.getSize.bind(this)
@@ -123,35 +164,44 @@ class Widget extends React.Component {
         this.setAttrValue = this.setAttrValue.bind(this)
         this.setWidgetName = this.setWidgetName.bind(this)
         this.setWidgetStyling = this.setWidgetStyling.bind(this)
-
-
-        this.startResizing = this.startResizing.bind(this)
-        this.handleResize = this.handleResize.bind(this)
-        this.stopResizing = this.stopResizing.bind(this)
+        this.setPosType = this.setPosType.bind(this)
 
     }
 
     componentDidMount() {
         this.elementRef.current?.addEventListener("click", this.mousePress)
 
-        this.canvas.addEventListener("mousemove", this.handleResize)
-        this.canvas.addEventListener("mouseup", this.stopResizing)
+        // FIXME: initial layout is not set properly
+        console.log("prior layout: ", this.state.attrs.layout.value)
+        this.setLayout(this.state.attrs.layout.value)
+        this.setWidgetStyling('backgroundColor', this.state.attrs.styling?.backgroundColor.value || "#fff")
+    
+        this.load(this.props.initialData || {}) // load the initial data
+
+
     }
 
     componentWillUnmount() {
         this.elementRef.current?.removeEventListener("click", this.mousePress)
-
-        this.canvas.addEventListener("mousemove", this.handleResize)
-        this.canvas.addEventListener("mouseup", this.stopResizing)
     }
 
     updateState = (newState, callback) => {
+
+        // FIXME: maximum recursion error when updating size, color etc
         this.setState(newState, () => {
+
             const { onWidgetUpdate } = this.props
             if (onWidgetUpdate) {
                 onWidgetUpdate(this.__id)
             }
+
+            // const { activeWidgetId, updateToolAttrs } = this.context
+
+            // if (activeWidgetId === this.__id)
+            //     updateToolAttrs(this.getToolbarAttrs())
+
             if (callback) callback()
+
         })
     }
 
@@ -166,6 +216,7 @@ class Widget extends React.Component {
     getToolbarAttrs(){
 
         return ({
+                id: this.__id,
                 widgetName: {
                     label: "Widget Name",
                     tool: Tools.INPUT, // the tool to display, can be either HTML ELement or a constant string
@@ -174,7 +225,7 @@ class Widget extends React.Component {
                     onChange: (value) => this.setWidgetName(value)
                 },
                 size: {
-                    label: "Sizing",
+                    label: "Size",
                     display: "horizontal",
                     width: {
                         label: "Width",
@@ -218,26 +269,13 @@ class Widget extends React.Component {
         return this.state.attrs
     }
 
-    /**
-     * removes the element/widget
-     */
-    remove() {
-        this.canvas.removeWidget(this.__id)
+    getId(){
+        return this.__id
     }
 
     mousePress(event) {
         // event.preventDefault()
         if (!this._disableSelection) {
-
-            // const widgetSelected = new CustomEvent("selection:created", {
-            //     detail: {
-            //         event,
-            //         id: this.__id,
-            //         element: this
-            //     },
-            //     // bubbles: true // Allow the event to bubble up the DOM tree
-            // })
-            // this.canvas.dispatchEvent(widgetSelected)
         }
     }
 
@@ -258,34 +296,29 @@ class Widget extends React.Component {
         return this.state.selected
     }
 
+    setPosType(positionType){
+
+        if (!Object.values(PosType).includes(positionType)){
+            throw Error(`The Position type can only be among: ${Object.values(PosType).join(", ")}`)
+        }
+
+        this.setState({
+            positionType: positionType
+        })
+
+    }
+
     setPos(x, y) {
 
-        if (this.state.resizing) {
-            // don't change position when resizing the widget
-            return
-        }
-        // this.setState({
-        //     pos: { x, y }
-        // })
-
-        this.updateState({
+        this.setState({
             pos: { x, y }
         })
+
+        // this.updateState({
+        //     pos: { x, y }
+        // })
     }
 
-    setParent(parentId) {
-        this._parent = parentId
-    }
-
-    addChild(childId) {
-        this._children.push(childId)
-    }
-
-    removeChild(childId) {
-        this._children = this._children.filter(function (item) {
-            return item !== childId
-        })
-    }
 
     getPos() {
         return this.state.pos
@@ -303,38 +336,6 @@ class Widget extends React.Component {
         return this.state.size
     }
 
-    getScaleAwareDimensions() {
-        // Get the bounding rectangle
-        const rect = this.elementRef.current.getBoundingClientRect()
-
-        // Get the computed style of the element
-        const style = window.getComputedStyle(this.elementRef.current)
-
-        // Get the transform matrix
-        const transform = style.transform
-
-        // Extract scale factors from the matrix
-        let scaleX = 1
-        let scaleY = 1
-
-        if (transform && transform !== 'none') {
-            // For 2D transforms (a, c, b, d)
-            const matrix = transform.match(/^matrix\(([^,]+),[^,]+,([^,]+),[^,]+,[^,]+,[^,]+\)$/);
-
-            if (matrix) {
-                scaleX = parseFloat(matrix[1])
-                scaleY = parseFloat(matrix[2])
-            }
-        }
-
-        // Return scaled width and height
-        return {
-            width: rect.width / scaleX,
-            height: rect.height / scaleY
-        }
-    }
-
-
     getWidgetFunctions() {
         return this.functions
     }
@@ -347,34 +348,79 @@ class Widget extends React.Component {
         return this.elementRef.current
     }
 
+    getLayoutStyleForWidget = () => {
+
+        switch (this.state.attrs.layout) {
+            case 'grid':
+                return { display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }
+            case 'flex':
+                return { display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }
+            case 'absolute':
+                return { position: 'absolute', left: "0", top: "0" } // Custom positioning
+            default:
+                return {}
+        }
+    }
+
     /**
      * Given the key as a path, sets the value for the widget attribute
      * @param {string} path - path to the key, eg: styling.backgroundColor
      * @param {any} value 
      */
     setAttrValue(path, value) {
-        this.setState((prevState) => {
-            // Split the path to access the nested property (e.g., "styling.backgroundColor")
-            const keys = path.split('.')
-            const lastKey = keys.pop()
 
-            // Traverse the state and update the nested value immutably
-            let newAttrs = { ...prevState.attrs }
-            let nestedObject = newAttrs
+        const keys = path.split('.')
+        const lastKey = keys.pop()
 
-            keys.forEach(key => {
-                nestedObject[key] = { ...nestedObject[key] } // Ensure immutability
-                nestedObject = nestedObject[key]
-            })
-            nestedObject[lastKey].value = value
-
-            return { attrs: newAttrs }
+        // Traverse the state and update the nested value immutably
+        let newAttrs = { ...this.state.attrs }
+        let nestedObject = newAttrs
+        
+        keys.forEach(key => {
+            nestedObject[key] = { ...nestedObject[key] } // Ensure immutability
+            nestedObject = nestedObject[key]
         })
+        
+        nestedObject[lastKey].value = value
+
+        this.updateState({attrs: newAttrs})
     }
 
-    startResizing(corner, event) {
-        event.stopPropagation()
-        this.setState({ resizing: true, resizeCorner: corner })
+    /**
+     * returns the path from the serialized attrs values, 
+     * this is a helper function to remove any non-serializable data associated with attrs
+     * eg: {"styling.backgroundColor": "#ffff", "layout": {layout: "flex", direction: "", grid: }}
+     */
+    serializeAttrsValues = () => {
+
+        const serializeValues = (obj, currentPath = "") => {
+            const result = {}
+        
+            for (let key in obj) {
+
+                if (ATTRS_KEYS.includes(key)) continue // don't serialize these as separate keys
+
+                if (typeof obj[key] === 'object' && obj[key] !== null) {
+                    // If the key contains a value property
+                    if (obj[key].hasOwnProperty('value')) {
+                        const path = currentPath ? `${currentPath}.${key}` : key;
+        
+                        // If the value is an object, retain the entire value object
+                        if (typeof obj[key].value === 'object' && obj[key].value !== null) {
+                            result[path] = obj[key].value
+                        } else {
+                            result[`${path}`] = obj[key].value
+                        }
+                    }
+                    // Continue recursion for nested objects
+                    Object.assign(result, serializeValues(obj[key], currentPath ? `${currentPath}.${key}` : key))
+                }
+            }
+        
+            return result
+        }
+
+        return serializeValues(this.state.attrs)
     }
 
     setZIndex(zIndex) {
@@ -385,22 +431,37 @@ class Widget extends React.Component {
 
     setWidgetName(name) {
 
-        // this.setState((prev) => ({
-        //     widgetName: name.length > 0 ? name : prev.widgetName
-        // }))
-
         this.updateState({
             widgetName: name.length > 0 ? name : this.state.widgetName
         })
+    }
+
+    setLayout(value){
+        // FIXME: when the parent layout is place, the child widgets should have position absolute
+        const {layout, direction, grid={rows: 1, cols: 1}, gap=10} = value
+
+        const widgetStyle = {
+            ...this.state.widgetStyling,
+            display: layout,
+            flexDirection: direction,
+            gap: `${gap}px`,
+            flexWrap: "wrap"
+            // TODO: add grid rows and cols
+        }
+
+        this.setAttrValue("layout", value)
+        this.updateState({
+            widgetStyling: widgetStyle
+        })
+
     }
 
     /**
      * 
      * @param {string} key - The string in react Style format
      * @param {string} value - Value of the style
-     * @param {function():void} [callback] - optional callback, thats called after setting the internal state
      */
-    setWidgetStyling(key, value, callback) {
+    setWidgetStyling(key, value) {
 
         const widgetStyle = {
             ...this.state.widgetStyling,
@@ -409,9 +470,6 @@ class Widget extends React.Component {
 
         this.setState({
             widgetStyling: widgetStyle
-        }, () => {
-            if (callback)
-                callback(widgetStyle)
         })
 
     }
@@ -420,81 +478,24 @@ class Widget extends React.Component {
      * 
      * @param {number|null} width 
      * @param {number|null} height 
-     * @param {function():void} [callback] - optional callback, thats called after setting the internal state
      */
-    setWidgetSize(width, height, callback) {
+    setWidgetSize(width, height) {
 
         const newSize = {
             width: Math.max(this.minSize.width, Math.min(width || this.state.size.width, this.maxSize.width)),
             height: Math.max(this.minSize.height, Math.min(height || this.state.size.height, this.maxSize.height)),
         }
-
-        this.setState({
-            size: newSize
-        }, () => {
-            if (callback) {
-                callback(newSize)
-            }
-        })
-
         this.updateState({
             size: newSize
-        }, () => {
-            if (callback)
-                callback(newSize)
         })
     }
 
-    handleResize(event) {
-        if (!this.state.resizing) return
-
-        const { resizeCorner, size, pos } = this.state
-        const deltaX = event.movementX
-        const deltaY = event.movementY
-
-        let newSize = { ...size }
-        let newPos = { ...pos }
-
-        const { width: minWidth, height: minHeight } = this.minSize
-        const { width: maxWidth, height: maxHeight } = this.maxSize
-        // console.log("resizing: ", deltaX, deltaY, event)
-
-        switch (resizeCorner) {
-            case "nw":
-                newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width - deltaX))
-                newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height - deltaY))
-                newPos.x += (newSize.width !== size.width) ? deltaX : 0
-                newPos.y += (newSize.height !== size.height) ? deltaY : 0
-                break
-            case "ne":
-                newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width + deltaX))
-                newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height - deltaY))
-                newPos.y += (newSize.height !== size.height) ? deltaY : 0
-                break
-            case "sw":
-                newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width - deltaX))
-                newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height + deltaY))
-                newPos.x += (newSize.width !== size.width) ? deltaX : 0
-                break
-            case "se":
-                newSize.width = Math.max(minWidth, Math.min(maxWidth, newSize.width + deltaX))
-                newSize.height = Math.max(minHeight, Math.min(maxHeight, newSize.height + deltaY))
-                break
-            default:
-                break
-        }
-
-        // this.setState({ size: newSize, pos: newPos })
+    setResize(pos, size){
+        // useful when resizing the widget relative to the canvas, sets all pos, and size
         this.updateState({
-            size: newSize,
-            pos: newPos
+            size: size,
+            pos: pos
         })
-    }
-
-    stopResizing() {
-        if (this.state.resizing) {
-            this.setState({ resizing: false })
-        }
     }
 
     openRenaming() {
@@ -510,15 +511,272 @@ class Widget extends React.Component {
         })
     }
 
-    handleDragStart = (event) => {
-        console.log("dragging event: ", event)
+    enableDrag = () => {
+        this.setState({
+            dragEnabled: true
+        })
     }
 
+    disableDrag = () => {
+        this.setState({
+            dragEnabled: false
+        })
+    }
+
+
+    /**
+     * 
+     * serialize data for saving
+     */
+    serialize = () => {
+        // NOTE: when serializing make sure, you are only passing serializable objects not functions or other
+        return ({
+            zIndex: this.state.zIndex,
+            widgetName: this.state.widgetName,
+            pos: this.state.pos,
+            size: this.state.size,
+            widgetContainer: this.state.widgetContainer,
+            widgetStyling: this.state.widgetStyling,
+            positionType: this.state.positionType,
+            attrs: this.serializeAttrsValues() // makes sure that functions are not serialized
+        })
+
+    }
+
+    /**
+     * loads the data 
+     * @param {object} data 
+     */
+    load = (data) => {
+
+        if (Object.keys(data).length === 0) return // no data to load
+
+        for (let [key, value] of Object.entries(data.attrs|{}))
+            this.setAttrValue(key, value)
+
+        delete data.attrs
+
+        /**
+         * const obj = { a: 1, b: 2, c: 3 }
+         * const { b, ...newObj } = obj
+         * console.log(newObj) // { a: 1, c: 3 }
+         */
+
+        this.setState(data)
+
+    }
+
+    /**
+     * 
+     * @depreciated - This function is depreciated in favour of handleDropEvent()
+     */
+    handleDrop = (event, dragElement) => {
+        // THIS function is depreciated in favour of handleDropEvent()
+        // console.log("dragging event: ", event, dragElement)
+        const container = dragElement.getAttribute("data-container")
+        // TODO: check if the drop is allowed
+        if (container === "canvas"){
+        
+            this.props.onAddChildWidget(this.__id, dragElement.getAttribute("data-widget-id"))
+        
+        }else if (container === "sidebar"){
+            
+            this.props.onAddChildWidget(this.__id, null, true) //  if dragged from the sidebar create the widget first
+
+        }
+
+    }
+
+    handleDragStart = (e, callback) => {
+        e.stopPropagation()
+
+        callback(this.elementRef?.current || null)
+
+        // Create custom drag image with full opacity, this will ensure the image isn't taken from part of the canvas
+        const dragImage = this.elementRef?.current.cloneNode(true)
+        dragImage.style.opacity = '1' // Ensure full opacity
+        dragImage.style.position = 'absolute'
+        dragImage.style.top = '-9999px' // Move it out of view
+
+        document.body.appendChild(dragImage)
+        const rect = this.elementRef?.current.getBoundingClientRect()
+        // snap to mouse pos
+        // const offsetX = e.clientX - rect.left
+        // const offsetY = e.clientY - rect.top
+
+        // snap to middle
+        const offsetX = rect.width / 2
+        const offsetY = rect.height / 2
+
+        // Set the custom drag image with correct offset to avoid snapping to the top-left corner
+        e.dataTransfer.setDragImage(dragImage, offsetX, offsetY)
+
+
+        // Remove the custom drag image after some time to avoid leaving it in the DOM
+        setTimeout(() => {
+            document.body.removeChild(dragImage)
+        }, 0)
+
+        // NOTE: this line will prevent problem's such as self-drop or dropping inside its own children
+        setTimeout(this.disablePointerEvents, 1)
+
+        this.setState({isDragging: true})
+
+    }
+
+    handleDragEnter = (e, draggedElement, setOverElement) => {
+
+        const dragEleType = draggedElement.getAttribute("data-draggable-type")
+
+        // console.log("Drag entering...", dragEleType, draggedElement, this.droppableTags)
+        // FIXME:  the outer widget shouldn't be swallowed by inner widget
+        if (draggedElement === this.elementRef.current){
+            // prevent drop on itself, since the widget is invisible when dragging, if dropped on itself, it may consume itself
+            return 
+        }
+
+        setOverElement(e.currentTarget) // provide context to the provider
+
+        let showDrop = {
+            allow: true, 
+            show: true
+        }
+
+        if (this.droppableTags.length === 0 || this.droppableTags.includes(dragEleType)) {
+            showDrop = {
+                allow: true,
+                show: true
+            }
+
+        } else {
+            showDrop = {
+                allow: false,
+                show: true
+            }
+        }
+
+        this.setState({
+            showDroppableStyle: showDrop
+        })
+       
+    }
+
+    handleDragOver = (e, draggedElement) => {
+        if (draggedElement === this.elementRef.current){
+            // prevent drop on itself, since the widget is invisible when dragging, if dropped on itself, it may consume itself
+            return 
+        }
+
+        // console.log("Drag over: ", e.dataTransfer.getData("text/plain"), e.dataTransfer)
+        const dragEleType = draggedElement.getAttribute("data-draggable-type")
+
+        if (this.droppableTags.length === 0 || this.droppableTags.includes(dragEleType)) {
+            e.preventDefault() // NOTE: this is necessary to allow drop to take place
+        }
+
+    }
+
+    handleDropEvent = (e, draggedElement, widgetClass=null) => {
+        e.preventDefault()
+        e.stopPropagation()
+        // FIXME: sometimes the elements showDroppableStyle is not gone, when dropping on the same widget
+        this.setState({
+            showDroppableStyle: {
+                        allow: false, 
+                        show: false
+                    }
+        }, () => {
+            console.log("droppable cleared: ", this.elementRef.current, this.state.showDroppableStyle)
+        })
+
+
+        const dragEleType = draggedElement.getAttribute("data-draggable-type")
+
+        if (this.droppableTags.length > 0 && !this.droppableTags.includes(dragEleType)) {
+            return // prevent drop if the draggable element doesn't match 
+        }
+
+        // if (draggedElement === this.elementRef.current){
+        //     // prevent drop on itself, since the widget is invisible when dragging, if dropped on itself, it may consume itself
+        //     return 
+        // }
+
+        // let currentElement = e.currentTarget
+        // while (currentElement) {
+        //     if (currentElement === draggedElement) {
+        //         // if the parent is dropped accidentally into the child don't allow drop
+        //         console.log("Dropped into a descendant element, ignoring drop")
+        //         return // Exit early to prevent the drop
+        //     }
+        //     currentElement = currentElement.parentElement // Traverse up to check ancestors
+        // }
+
+        const container = draggedElement.getAttribute("data-container")
+
+        const thisContainer = this.elementRef.current.getAttribute("data-container")
+        // console.log("Dropped as swappable: ", e.target, this.swappableAreaRef.current.contains(e.target))
+        // If swaparea is true, then it swaps instead of adding it as a child, also make sure that the parent widget(this widget) is on the widget and not on the canvas
+        const swapArea = (this.swappableAreaRef.current.contains(e.target) && !this.innerAreaRef.current.contains(e.target) && thisContainer === WidgetContainer.WIDGET) 
+
+        // TODO: check if the drop is allowed
+        if ([WidgetContainer.CANVAS, WidgetContainer.WIDGET].includes(container)){
+            // console.log("Dropped on meee: ", swapArea, this.swappableAreaRef.current.contains(e.target), thisContainer)
+            
+            this.props.onAddChildWidget({parentWidgetId: this.__id, 
+                                        dragElementID: draggedElement.getAttribute("data-widget-id"),
+                                        swap: swapArea || false
+                                        })
+            
+        }else if (container === WidgetContainer.SIDEBAR){
+            
+            // console.log("Dropped on Sidebar: ", this.__id)
+            this.props.onCreateWidgetRequest(widgetClass, ({id, widgetRef}) => {
+                this.props.onAddChildWidget({parentWidgetId: this.__id, dragElementID: id}) //  if dragged from the sidebar create the widget first
+            })
+
+        }
+
+    }
+
+
+    handleDragLeave = (e, draggedElement) => {
+
+        // console.log("Left: ", e.currentTarget, e.relatedTarget, draggedElement)
+
+        if (!e.currentTarget.contains(draggedElement)) {
+            this.setState({
+                        showDroppableStyle: {
+                            allow: false, 
+                            show: false
+                        }
+                    })
+
+        }
+    }
+
+    handleDragEnd = (callback) => {
+        callback()
+        this.setState({isDragging: false})
+        this.enablePointerEvents()
+    }
+
+    disablePointerEvents = () => {
+        
+        if (this.elementRef.current)
+            this.elementRef.current.style.pointerEvents = "none"
+    }
+
+    enablePointerEvents = () => {
+        if (this.elementRef.current)
+            this.elementRef.current.style.pointerEvents = "auto"
+    }
+
+    // FIXME: children outside the bounding box, add tw-overflow-hidden
     renderContent() {
         // throw new NotImplementedError("render method has to be implemented")
         return (
-            <div className="tw-w-full tw-h-full tw-rounded-md tw-bg-red-500" style={this.state.widgetStyling}>
-
+            <div className="tw-w-full tw-h-full tw-p-2 tw-content-start tw-rounded-md" style={this.state.widgetStyling}>
+                {this.props.children}
             </div>
         )
     }
@@ -530,73 +788,171 @@ class Widget extends React.Component {
      */
     render() {
 
-        const widgetStyle = this.state.widgetStyling
-
-
         let outerStyle = {
             cursor: this.cursor,
             zIndex: this.state.zIndex,
-            position: "absolute", //  don't change this if it has to be movable on the canvas
+            position: this.state.positionType, //  don't change this if it has to be movable on the canvas
             top: `${this.state.pos.y}px`,
             left: `${this.state.pos.x}px`,
             width: `${this.state.size.width}px`,
             height: `${this.state.size.height}px`,
+            opacity: this.state.isDragging ? 0.3 : 1,
         }
 
-        let selectionStyle = {
-            x: "-5px",
-            y: "-5px",
-            width: this.boundingRect.width + 5,
-            height: this.boundingRect.height + 5
-        }
-
-        // console.log("selected: ", this.state.selected)
         return (
 
-            <div data-id={this.__id} ref={this.elementRef} className="tw-absolute tw-shadow-xl tw-w-fit tw-h-fit"
-                style={outerStyle}
-            >
+            <DragContext.Consumer>
+                {
+                    ({draggedElement, widgetClass, onDragStart, onDragEnd, setOverElement}) => (
 
-                {this.renderContent()}
-                <div className={`tw-absolute tw-bg-transparent tw-scale-[1.1] tw-opacity-100 
-                                tw-w-full tw-h-full tw-top-0  
-                                ${this.state.selected ? 'tw-border-2 tw-border-solid tw-border-blue-500' : 'tw-hidden'}`}>
+                        <div data-widget-id={this.__id} 
+                                ref={this.elementRef} 
+                                className="tw-shadow-xl tw-w-fit tw-h-fit"
+                                style={outerStyle}
+                                data-draggable-type={this.getWidgetType()} // helps with droppable 
+                                data-container={this.state.widgetContainer} // indicates how the canvas should handle dragging, one is sidebar other is canvas
+                                
+                                draggable={this.state.dragEnabled}
+                                
+                                onDragOver={(e) => this.handleDragOver(e, draggedElement)}
+                                onDrop={(e) => this.handleDropEvent(e, draggedElement, widgetClass)}
 
-                    <div className="tw-relative tw-w-full tw-h-full">
-                        <EditableDiv value={this.state.widgetName} onChange={this.setWidgetName}
-                            maxLength={40}
-                            openEdit={this.state.enableRename}
-                            className="tw-text-sm tw-w-fit tw-max-w-[160px] tw-text-clip tw-min-w-[150px] 
-                                                    tw-overflow-hidden tw-absolute tw--top-6 tw-h-6"
-                        />
+                                onDragEnter={(e) => this.handleDragEnter(e, draggedElement, setOverElement)}
+                                onDragLeave={(e) => this.handleDragLeave(e, draggedElement)}
 
-                        <div
-                            className="tw-w-2 tw-h-2 tw-absolute tw--left-1 tw--top-1 tw-bg-blue-500"
-                            style={{ cursor: Cursor.NW_RESIZE }}
-                            onMouseDown={(e) => this.startResizing("nw", e)}
-                        />
-                        <div
-                            className="tw-w-2 tw-h-2 tw-absolute tw--right-1 tw--top-1 tw-bg-blue-500"
-                            style={{ cursor: Cursor.SW_RESIZE }}
-                            onMouseDown={(e) => this.startResizing("ne", e)}
-                        />
-                        <div
-                            className="tw-w-2 tw-h-2 tw-absolute tw--left-1 tw--bottom-1 tw-bg-blue-500"
-                            style={{ cursor: Cursor.SW_RESIZE }}
-                            onMouseDown={(e) => this.startResizing("sw", e)}
-                        />
-                        <div
-                            className="tw-w-2 tw-h-2 tw-absolute tw--right-1 tw--bottom-1 tw-bg-blue-500"
-                            style={{ cursor: Cursor.SE_RESIZE }}
-                            onMouseDown={(e) => this.startResizing("se", e)}
-                        />
+                                onDragStart={(e) => this.handleDragStart(e, onDragStart)}
+                                onDragEnd={(e) => this.handleDragEnd(onDragEnd)}
+                            >
+                            {/* FIXME: Swappable when the parent layout is flex/grid and gap is more, this trick won't work, add bg color to check */}
+                            {/* FIXME: Swappable, when the parent layout is gap is 0, it doesn't work well */}
+                            <div className="tw-relative tw-w-full tw-h-full tw-top-0 tw-left-0"
+                                    >
+                                <div className={`tw-absolute tw-top-[-5px] tw-left-[-5px] 
+                                                    tw-border-1 tw-opacity-0 tw-border-solid tw-border-black
+                                                    tw-w-full tw-h-full
+                                                    tw-scale-[1.1] tw-opacity-1 tw-z-[-1] `}
+                                                    style={{
+                                                        width: "calc(100% + 10px)",
+                                                        height: "calc(100% + 10px)",
+                                                    }}
+                                                ref={this.swappableAreaRef}
+                                                    
+                                                >
+                                    {/* helps with swappable: if the mouse is in this area while hovering/dropping, then swap */}
+                                </div> 
+                                <div className="tw-relative tw-w-full tw-h-full" ref={this.innerAreaRef}>
+                                    {this.renderContent()}
+                                </div>
+                                {
+                                    // show drop style on drag hover
+                                    this.state.showDroppableStyle.show &&
+                                        <div className={`${this.state.showDroppableStyle.allow ? "tw-border-blue-600" : "tw-border-red-600"} 
+                                                            tw-absolute tw-top-[-5px] tw-left-[-5px] tw-w-full tw-h-full tw-z-[2]
+                                                            tw-border-2 tw-border-dashed  tw-rounded-lg tw-pointer-events-none
 
-                    </div>
+                                                            `}
+                                                style={{
+                                                            width: "calc(100% + 10px)",
+                                                            height: "calc(100% + 10px)",
+                                                        }}
+                                                >
+                                        </div>
+                                }
+                            
+                                <div className={`tw-absolute tw-bg-transparent tw-top-[-10px] tw-left-[-10px] tw-opacity-100 
+                                                tw-w-full tw-h-full tw-z-[-1]
+                                                ${this.state.selected ? 'tw-border-2 tw-border-solid tw-border-blue-500' : 'tw-hidden'}`}
+                                                style={{
+                                                    width: "calc(100% + 20px)",
+                                                    height: "calc(100% + 20px)",
+                                                }}
+                                                >
+
+                                    <div className={`"tw-relative tw-w-full  tw-h-full"`}> {/* ${this.state.isDragging ? "tw-pointer-events-none" : "tw-pointer-events-auto"} */}
+                                        <EditableDiv value={this.state.widgetName} onChange={this.setWidgetName}
+                                            maxLength={40}
+                                            openEdit={this.state.enableRename}
+                                            className="tw-text-sm tw-w-fit tw-max-w-[160px] tw-text-clip tw-min-w-[150px] 
+                                                                    tw-overflow-hidden tw-absolute tw--top-6 tw-h-6"
+                                        />
+
+                                        <div
+                                            className="tw-w-2 tw-h-2 tw-absolute  tw--left-1 tw--top-1 tw-bg-blue-500"
+                                            style={{ cursor: Cursor.NW_RESIZE }}
+                                            onMouseDown={(e) => {
+                                                e.stopPropagation()
+                                                e.preventDefault()
+                                                this.props.onWidgetResizing("nw")
+                                                this.setState({dragEnabled: false})
+                                            }}
+                                            onMouseUp={() => this.setState({dragEnabled: true})}
+                                        />
+                                        <div
+                                            className="tw-w-2 tw-h-2 tw-absolute tw--right-1 tw--top-1 tw-bg-blue-500"
+                                            style={{ cursor: Cursor.SW_RESIZE }}
+                                            onMouseDown={(e) => {
+                                                e.stopPropagation()
+                                                e.preventDefault()
+                                                this.props.onWidgetResizing("ne")
+                                                this.setState({dragEnabled: false})
+                                            }}
+                                            onMouseUp={() => this.setState({dragEnabled: true})}
+                                        />
+                                        <div
+                                            className="tw-w-2 tw-h-2 tw-absolute tw--left-1 tw--bottom-1 tw-bg-blue-500"
+                                            style={{ cursor: Cursor.SW_RESIZE }}
+                                            onMouseDown={(e) => {
+                                                e.stopPropagation()
+                                                e.preventDefault()
+                                                this.props.onWidgetResizing("sw")
+                                                this.setState({dragEnabled: false})
+                                            }}
+                                            onMouseUp={() => this.setState({dragEnabled: true})}
+                                        />
+                                        <div
+                                            className="tw-w-2 tw-h-2 tw-absolute tw--right-1 tw--bottom-1 tw-bg-blue-500"
+                                            style={{ cursor: Cursor.SE_RESIZE }}
+                                            onMouseDown={(e) => {
+                                                e.stopPropagation()
+                                                e.preventDefault()
+                                                this.props.onWidgetResizing("se")
+                                                this.setState({dragEnabled: false})
+                                            }}
+                                            onMouseUp={() => this.setState({dragEnabled: true})}
+                                        />
+
+                                    </div>
+
+                                </div>
 
 
+                            </div>
+                        </div>
+                    )
+                }
 
-                </div>
-            </div>
+            </DragContext.Consumer>
+            // <WidgetDraggable widgetRef={this.elementRef} 
+            //                     enableDrag={this.state.dragEnabled}
+            //                     onDrop={this.handleDrop}
+            //                     onDragEnter={({dragElement, showDrop}) => {
+            //                         this.setState({
+            //                             showDroppableStyle: showDrop
+            //                         })
+            //                         }
+            //                     }
+            //                     onDragLeave={ () => {
+            //                             this.setState({
+            //                                 showDroppableStyle: {
+            //                                     allow: false, 
+            //                                     show: false
+            //                                 }
+            //                             })
+            //                         }
+            //                     }
+
+            //                     >
+            // </WidgetDraggable>
         )
 
     }
