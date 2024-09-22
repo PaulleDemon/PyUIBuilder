@@ -5,7 +5,7 @@ import { useDragContext } from "./draggableContext"
 const DroppableWrapper = memo(({onDrop, droppableTags=["widget"], ...props}) => {
 
 
-    const { draggedElement, overElement, setOverElement } = useDragContext()
+    const { draggedElement, overElement, setOverElement, widgetClass } = useDragContext()
 
     const [showDroppable, setShowDroppable] = useState({
                                                             show: false, 
@@ -53,7 +53,7 @@ const DroppableWrapper = memo(({onDrop, droppableTags=["widget"], ...props}) => 
         })
 
         if(onDrop){
-            onDrop(e, draggedElement)
+            onDrop(e, draggedElement, widgetClass)
         }
     }
 

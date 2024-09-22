@@ -2,11 +2,12 @@ import { useEffect, useMemo, useState } from "react"
 
 import { CloseCircleFilled, SearchOutlined } from "@ant-design/icons"
 
-import {DraggableWidgetCard} from "../components/cards"
+import {SidebarWidgetCard} from "../components/cards"
 
 import ButtonWidget from "../assets/widgets/button.png"
 
 import { filterObjectListStartingWith } from "../utils/filter"
+import Widget from "../canvas/widgets/base"
 
 
 /**
@@ -14,56 +15,30 @@ import { filterObjectListStartingWith } from "../utils/filter"
  * @param {function} onWidgetsUpdate - this is a callback that will be called once the sidebar is populated with widgets
  * @returns 
  */
-function WidgetsContainer({onWidgetsUpdate}){
+function WidgetsContainer({sidebarContent, onWidgetsUpdate}){
 
-    const widgets = useMemo(() => {
-        return [
-            {
-                name: "TopLevel",
-                img: ButtonWidget,
-                link: "https://github.com", 
-                // widgetType: Widget
-            },
-            {
-                name: "Frame",
-                img: ButtonWidget,
-                link: "https://github.com"
-            },
-            {
-                name: "Button",
-                img: ButtonWidget,
-                link: "https://github.com"
-            },
-            {
-                name: "Input",
-                img: ButtonWidget,
-                link: "https://github.com"
-            },
-        ]
-    }, [])
 
     const [searchValue, setSearchValue] = useState("")
-    const [widgetData, setWidgetData] = useState(widgets)
+    const [widgetData, setWidgetData] = useState(sidebarContent)
  
     useEffect(() => {
 
-        setWidgetData(widgets)
+        setWidgetData(sidebarContent)
+        // if (onWidgetsUpdate){
+        //     onWidgetsUpdate(widgets)
+        // }
 
-        if (onWidgetsUpdate){
-            onWidgetsUpdate(widgets)
-        }
-
-    }, [widgets])
+    }, [sidebarContent])
 
     
 
     useEffect(() => {
 
         if (searchValue.length > 0){
-            const searchData = filterObjectListStartingWith(widgets, "name", searchValue)
+            const searchData = filterObjectListStartingWith(sidebarContent, "name", searchValue)
             setWidgetData(searchData)
         }else{
-            setWidgetData(widgets)
+            setWidgetData(sidebarContent)
         }
 
     }, [searchValue])
@@ -95,10 +70,11 @@ function WidgetsContainer({onWidgetsUpdate}){
                 {
                     widgetData.map((widget, index) => {
                         return (    
-                            <DraggableWidgetCard key={widget.name} 
+                            <SidebarWidgetCard key={widget.name} 
                                                 name={widget.name}
                                                 img={widget.img}
                                                 url={widget.link}
+                                                widgetClass={widget.widgetClass}
                                                 />
                                 
                         )

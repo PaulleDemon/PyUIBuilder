@@ -6,8 +6,6 @@ import { Layouts, PosType} from "../constants/layouts"
 import Cursor from "../constants/cursor"
 import { toSnakeCase } from "../utils/utils"
 import EditableDiv from "../../components/editableDiv"
-import DraggableWrapper from "../../components/draggable/draggable"
-import DroppableWrapper from "../../components/draggable/droppable"
 
 import { ActiveWidgetContext } from "../activeWidgetContext"
 import { DragWidgetProvider } from "./draggableWidgetContext"
@@ -185,16 +183,6 @@ class Widget extends React.Component {
 
     componentWillUnmount() {
         this.elementRef.current?.removeEventListener("click", this.mousePress)
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        // if (prevState !== this.state) {
-        //     // State has changed
-        //     console.log('State has been updated')
-        // } else {
-        //     // State has not changed
-        //     console.log('State has not changed')
-        // }
     }
 
     updateState = (newState, callback) => {
@@ -450,7 +438,7 @@ class Widget extends React.Component {
     }
 
     setLayout(value){
-
+        // FIXME: when the parent layout is place, the child widgets should have position absolute
         const {layout, direction, grid={rows: 1, cols: 1}, gap=10} = value
 
         const widgetStyle = {
@@ -585,7 +573,7 @@ class Widget extends React.Component {
      */
     handleDrop = (event, dragElement) => {
         // THIS function is depreciated in favour of handleDropEvent()
-        console.log("dragging event: ", event, dragElement)
+        // console.log("dragging event: ", event, dragElement)
         const container = dragElement.getAttribute("data-container")
         // TODO: check if the drop is allowed
         if (container === "canvas"){
@@ -630,11 +618,8 @@ class Widget extends React.Component {
             document.body.removeChild(dragImage)
         }, 0)
 
-        setTimeout(() => {
-            // NOTE: this line will prevent problem's such as self-drop or dropping inside its own children
-            this.elementRef.current.style.pointerEvents = "none"
-
-        }, 1)
+        // NOTE: this line will prevent problem's such as self-drop or dropping inside its own children
+        setTimeout(this.disablePointerEvents, 1)
 
         this.setState({isDragging: true})
 
@@ -644,7 +629,7 @@ class Widget extends React.Component {
 
         const dragEleType = draggedElement.getAttribute("data-draggable-type")
 
-        console.log("Drag entering...", dragEleType, draggedElement, this.droppableTags)
+        // console.log("Drag entering...", dragEleType, draggedElement, this.droppableTags)
         // FIXME:  the outer widget shouldn't be swallowed by inner widget
         if (draggedElement === this.elementRef.current){
             // prevent drop on itself, since the widget is invisible when dragging, if dropped on itself, it may consume itself
@@ -695,7 +680,7 @@ class Widget extends React.Component {
     handleDropEvent = (e, draggedElement) => {
         e.preventDefault()
         e.stopPropagation()
-        // FIXME: sometimes the elements shoDroppableStyle is not gone, when dropping on the same widget
+        // FIXME: sometimes the elements showDroppableStyle is not gone, when dropping on the same widget
         this.setState({
             showDroppableStyle: {
                         allow: false, 
@@ -771,9 +756,19 @@ class Widget extends React.Component {
     handleDragEnd = (callback) => {
         callback()
         this.setState({isDragging: false})
-        this.elementRef.current.style.pointerEvents = "auto"
+        this.enablePointerEvents()
     }
 
+    disablePointerEvents = () => {
+        
+        if (this.elementRef.current)
+            this.elementRef.current.style.pointerEvents = "none"
+    }
+
+    enablePointerEvents = () => {
+        if (this.elementRef.current)
+            this.elementRef.current.style.pointerEvents = "auto"
+    }
 
     // FIXME: children outside the bounding box, add tw-overflow-hidden
     renderContent() {
@@ -803,7 +798,6 @@ class Widget extends React.Component {
             opacity: this.state.isDragging ? 0.3 : 1,
         }
 
-        // console.log("selected: ", this.state.dragEnabled)
         return (
 
             <DragContext.Consumer>
@@ -865,7 +859,7 @@ class Widget extends React.Component {
                                 }
                             
                                 <div className={`tw-absolute tw-bg-transparent tw-top-[-10px] tw-left-[-10px] tw-opacity-100 
-                                                tw-w-full tw-h-full
+                                                tw-w-full tw-h-full tw-z-[-1]
                                                 ${this.state.selected ? 'tw-border-2 tw-border-solid tw-border-blue-500' : 'tw-hidden'}`}
                                                 style={{
                                                     width: "calc(100% + 20px)",
@@ -873,7 +867,7 @@ class Widget extends React.Component {
                                                 }}
                                                 >
 
-                                    <div className="tw-relative tw-w-full tw-h-full">
+                                    <div className={`"tw-relative tw-w-full  tw-h-full"`}> {/* ${this.state.isDragging ? "tw-pointer-events-none" : "tw-pointer-events-auto"} */}
                                         <EditableDiv value={this.state.widgetName} onChange={this.setWidgetName}
                                             maxLength={40}
                                             openEdit={this.state.enableRename}
@@ -882,7 +876,7 @@ class Widget extends React.Component {
                                         />
 
                                         <div
-                                            className="tw-w-2 tw-h-2 tw-absolute tw--left-1 tw--top-1 tw-bg-blue-500"
+                                            className="tw-w-2 tw-h-2 tw-absolute  tw--left-1 tw--top-1 tw-bg-blue-500"
                                             style={{ cursor: Cursor.NW_RESIZE }}
                                             onMouseDown={(e) => {
                                                 e.stopPropagation()

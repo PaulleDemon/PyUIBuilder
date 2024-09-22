@@ -128,7 +128,6 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
 
 
     const renderWidgets = (obj, parentKey = "") => {
-        // FIXME: The color widget is not being updated on selection change
         return Object.entries(obj).map(([key, val], i) => {
             const keyName = parentKey ? `${parentKey}.${key}` : key
 
@@ -164,7 +163,8 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
 
                         {val.tool === Tools.COLOR_PICKER && (
                             <ColorPicker
-                                defaultValue={val.value || "#fff"}
+                                // defaultValue={val.value || "#fff"}
+                                value={val.value || "#fff"}
                                 disabledAlpha
                                 arrow={false}
                                 size="middle"

@@ -16,7 +16,6 @@ const WidgetDraggable = memo(({ widgetRef, enableDrag=true, dragElementType="wid
                                 onDragEnter, onDragLeave, onDrop, style={},
                                 droppableTags = ["widget"], ...props }) => {
 
-    // FIXME: It's not possible to move the widget ~10px because, its considered as self drop, so fix it
     // const { draggedElement, onDragStart, onDragEnd } = useDragWidgetContext()
     const { draggedElement, onDragStart, onDragEnd, overElement, setOverElement } = useDragContext()
 
@@ -61,7 +60,6 @@ const WidgetDraggable = memo(({ widgetRef, enableDrag=true, dragElementType="wid
         const dragEleType = draggedElement.getAttribute("data-draggable-type")
 
         // console.log("Drag entering...", overElement === e.currentTarget)
-        // FIXME:  the outer widget shouldn't be swallowed by inner widget
         if (draggedElement === widgetRef.current){
             // prevent drop on itself, since the widget is invisible when dragging, if dropped on itself, it may consume itself
             return 

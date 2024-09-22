@@ -178,9 +178,13 @@ class Canvas extends React.Component {
         // TODO: improve search, currently O(n), but can be improved via this.state.widgets or something
 
         let innerWidget = null
-        // FIXME: target selection not accurate when there is inner child involved
         for (let [key, ref] of Object.entries(this.widgetRefs)) {
-            console.log("key: ", key, innerWidget)
+            
+            if (ref.current === target){
+                innerWidget = ref.current
+                break
+            }
+
             if (ref.current.getElement().contains(target)) {
 
                 if (!innerWidget) {
@@ -193,34 +197,6 @@ class Canvas extends React.Component {
         }
 
         return innerWidget
-        // for (let [key, ref] of Object.entries(this.widgetRefs)) {
-        //     console.log("ref: ", ref, key)
-        //     if (ref.current.getElement().contains(target)) {
-        //         return ref.current
-        //     }
-        // }
-
-
-        // const returnTargetWidget = (widgets) => {
-        //     for (let x of widgets) {
-        //         const widget = this.widgetRefs[x.id]
-
-        //         // Check if the widget contains the target
-        //         if (widget && widget.current.getElement().contains(target)) {
-        //             // If it has children, continue checking the children for the innermost match
-        //             const childWidget = returnTargetWidget(x.children)
-
-        //             // Return the innermost child widget if found, otherwise return the current widget
-        //             return childWidget || widget.current
-        //         }
-        //     }
-        //     // If no matching widget is found, return null
-        //     return null
-        // }
-
-
-        // return returnTargetWidget(this.state.widgets)
-
     }
 
     keyDownEvent(event) {
@@ -248,25 +224,32 @@ class Canvas extends React.Component {
         if (event.button === 0) {
             this.mousePressed = true
 
-            // FIXME: the inner widgets are not selected properly
             if (selectedWidget) {
-                console.log("selected widget: ", selectedWidget.getId(), selectedWidget.getElement())
                 // if the widget is selected don't pan, instead move the widget
                 if (!selectedWidget._disableSelection) {
-                    console.log("selected widget: ", selectedWidget.getId(), this.state.selectedWidget?.getId())
+                    // console.log("selected widget2: ", selectedWidget.getId(), this.state.selectedWidget?.getId())
 
-                    if (!this.state.selectedWidget || (selectedWidget.getId() !== this.state.selectedWidget?.getId())) {
-                        this.state.selectedWidget?.deSelect() // deselect the previous widget before adding the new one
-                        this.state.selectedWidget?.setZIndex(0)
+                    this.state.selectedWidget?.deSelect() // deselect the previous widget before adding the new one
+                    this.state.selectedWidget?.setZIndex(0)
+                    selectedWidget.setZIndex(1000)
+                    selectedWidget.select()
+                    this.setState({
+                        selectedWidget: selectedWidget,
+                        toolbarAttrs: selectedWidget.getToolbarAttrs()
+                    })
 
-                        selectedWidget.setZIndex(1000)
-                        selectedWidget.select()
-                        console.log("widget selected")
-                        this.setState({
-                            selectedWidget: selectedWidget,
-                            toolbarAttrs: selectedWidget.getToolbarAttrs()
-                        })
-                    }
+                    // if (!this.state.selectedWidget || (selectedWidget.getId() !== this.state.selectedWidget?.getId())) {
+                    //     this.state.selectedWidget?.deSelect() // deselect the previous widget before adding the new one
+                    //     this.state.selectedWidget?.setZIndex(0)
+                    //     console.log("working: ", this.state.selectedWidget)
+                    //     selectedWidget.setZIndex(1000)
+                    //     selectedWidget.select()
+                    //     console.log("widget selected")
+                    //     this.setState({
+                    //         selectedWidget: selectedWidget,
+                    //         toolbarAttrs: selectedWidget.getToolbarAttrs()
+                    //     })
+                    // }
                     this.currentMode = CanvasModes.MOVE_WIDGET
                 }
 
@@ -277,7 +260,7 @@ class Canvas extends React.Component {
                 this.clearSelections()
                 this.currentMode = CanvasModes.PAN
                 this.setCursor(Cursor.GRAB)
-                console.log("clear selection")
+                // console.log("clear selection")
             }
 
             this.setState({
@@ -763,27 +746,13 @@ class Canvas extends React.Component {
      */
     deleteSelectedWidgets(widgets = []) {
 
-
         let activeWidgets = removeDuplicateObjects([...widgets, this.state.selectedWidget], "__id")
 
         const widgetIds = activeWidgets.map(widget => widget.__id)
 
         for (let widgetId of widgetIds) {
-
-            // this.widgetRefs[widgetId]?.current.remove()
-            delete this.widgetRefs[widgetId]
-
-            this.setState((prevState) => ({
-                widgets: prevState.widgets.filter(widget => widget.id !== widgetId)
-            }), () => {
-
-                if (this._onWidgetListUpdated)
-                    this._onWidgetListUpdated(this.state.widgets)
-            })
-            // value.current?.remove()
+            this.removeWidget(widgetId)
         }
-
-
 
     }
 
@@ -805,15 +774,10 @@ class Canvas extends React.Component {
 
     removeWidget(widgetId) {
 
-        // FIXME: need to delete the child widgets
-        // IDEA: find the widget first, check for the parent, if parent exist remove it from the parents children list
-        // this.widgetRefs[widgetId]?.current.remove()
 
-        //this.removeWidgetFromCurrentList(widgetID) <--- use this
         delete this.widgetRefs[widgetId]
 
-        const widgets = this.state.widgets.filter(widget => widget.id !== widgetId)
-
+        const widgets = this.removeWidgetFromCurrentList(widgetId)
         this.setState({
             widgets: widgets
         })
@@ -841,7 +805,7 @@ class Canvas extends React.Component {
      * Handles drop event to canvas from the sidebar and on canvas widget movement
      * @param {DragEvent} e 
      */
-    handleDropEvent = (e, draggedElement) => {
+    handleDropEvent = (e, draggedElement, widgetClass=null) => {
 
         e.preventDefault()
 
@@ -854,18 +818,19 @@ class Canvas extends React.Component {
 
         const { clientX, clientY } = e
 
-        // const finalPosition = {
-        //     x: (clientX - canvasRect.left) / this.state.zoom,
-        //     y: (clientY - canvasRect.top) / this.state.zoom,
-        // }
-        
-        // snaps to center
-        const finalPosition = {
-            x: (clientX - canvasRect.left) / this.state.zoom - (elementWidth / 2) / this.state.zoom,
-            y: (clientY - canvasRect.top) / this.state.zoom - (elementHeight / 2) / this.state.zoom,
+        let finalPosition = {
+            x: (clientX - canvasRect.left) / this.state.zoom,
+            y: (clientY - canvasRect.top) / this.state.zoom,
         }
         
+        
+        
         if (container === WidgetContainer.SIDEBAR) {
+
+            if (!widgetClass){
+                throw new Error("WidgetClass has to be passed for widgets dropped from sidebar")
+            }
+
             // TODO: handle drop from sidebar
             // if the widget is being dropped from the sidebar, use the info to create the widget first
             this.createWidget(Widget, ({ id, widgetRef }) => {
@@ -873,6 +838,12 @@ class Canvas extends React.Component {
             })
 
         } else if ([WidgetContainer.CANVAS, WidgetContainer.WIDGET].includes(container)) {
+
+            // snaps to center
+            finalPosition = {
+                x: (clientX - canvasRect.left) / this.state.zoom - (elementWidth / 2) / this.state.zoom,
+                y: (clientY - canvasRect.top) / this.state.zoom - (elementHeight / 2) / this.state.zoom,
+            }
 
             let widgetId = draggedElement.getAttribute("data-widget-id")
 
@@ -945,7 +916,6 @@ class Canvas extends React.Component {
             // recursively render the child elements
             return childrenData.map((child) => {
                 const childWidget = this.findWidgetFromListById(child.id)
-                // console.log("Found the child : ", childWidget)
                 if (childWidget) {
                     return this.renderWidget(childWidget) // Recursively render child widgets
                 }
