@@ -9,6 +9,7 @@ Any feature that has 👑 beside it, is meant only for [premium users](./readme.
 - [ ] UI fixes and enhancement 
 - [ ] Tree view for elements on the canvas
 - [ ] Add text editor to support event handlers
+- [ ] Support more widgets
 - [ ] Rewrite DND for better feedback - (swappy/react-dnd-kit/ GSAP draggable)
 - [ ] Duplicate widgets
 
@@ -23,6 +24,7 @@ Any feature that has 👑 beside it, is meant only for [premium users](./readme.
 ### 2.0.0
 - [ ] Support for more third party plugins
 - [ ] Support more templates
+- [ ] Allow creating components
 - [ ] Support for Kivy
 - [ ] Sharable Templates
 - [ ] Dark theme 👑

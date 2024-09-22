@@ -55,7 +55,7 @@ class Widget extends React.Component {
             "load": { "args1": "number", "args2": "string" }
         }
 
-        this.droppableTags = ["widget"] // This indicates if the draggable can be dropped on this widget
+        this.droppableTags = {} // This indicates if the draggable can be dropped on this widget
         this.boundingRect = {
             x: 0,
             y: 0,
@@ -143,7 +143,6 @@ class Widget extends React.Component {
             },
         }
 
-        this.mousePress = this.mousePress.bind(this)
         this.getElement = this.getElement.bind(this)
 
         this.getId = this.getId.bind(this)
@@ -169,7 +168,6 @@ class Widget extends React.Component {
     }
 
     componentDidMount() {
-        this.elementRef.current?.addEventListener("click", this.mousePress)
 
         // FIXME: initial layout is not set properly
         console.log("prior layout: ", this.state.attrs.layout.value)
@@ -182,7 +180,6 @@ class Widget extends React.Component {
     }
 
     componentWillUnmount() {
-        this.elementRef.current?.removeEventListener("click", this.mousePress)
     }
 
     updateState = (newState, callback) => {
@@ -271,12 +268,6 @@ class Widget extends React.Component {
 
     getId(){
         return this.__id
-    }
-
-    mousePress(event) {
-        // event.preventDefault()
-        if (!this._disableSelection) {
-        }
     }
 
     select() {
@@ -642,7 +633,12 @@ class Widget extends React.Component {
             show: true
         }
 
-        if (this.droppableTags.length === 0 || this.droppableTags.includes(dragEleType)) {
+        const allowDrop = (this.droppableTags && (Object.keys(this.droppableTags).length === 0 || 
+                            (this.droppableTags.include?.length > 0 && this.droppableTags.include?.includes(dragEleType)) || 
+                            (this.droppableTags.exclude?.length > 0 && !this.droppableTags.exclude?.includes(dragEleType))
+                        ))
+
+        if (allowDrop) {
             showDrop = {
                 allow: true,
                 show: true
@@ -670,7 +666,12 @@ class Widget extends React.Component {
         // console.log("Drag over: ", e.dataTransfer.getData("text/plain"), e.dataTransfer)
         const dragEleType = draggedElement.getAttribute("data-draggable-type")
 
-        if (this.droppableTags.length === 0 || this.droppableTags.includes(dragEleType)) {
+        const allowDrop = (this.droppableTags && (Object.keys(this.droppableTags).length === 0 || 
+                            (this.droppableTags.include?.length > 0 && this.droppableTags.include?.includes(dragEleType)) || 
+                            (this.droppableTags.exclude?.length > 0 && !this.droppableTags.exclude?.includes(dragEleType))
+                        ))
+
+        if (allowDrop) {
             e.preventDefault() // NOTE: this is necessary to allow drop to take place
         }
 
@@ -692,7 +693,12 @@ class Widget extends React.Component {
 
         const dragEleType = draggedElement.getAttribute("data-draggable-type")
 
-        if (this.droppableTags.length > 0 && !this.droppableTags.includes(dragEleType)) {
+        const allowDrop = (this.droppableTags && (Object.keys(this.droppableTags).length === 0 || 
+                            (this.droppableTags.include?.length > 0 && this.droppableTags.include?.includes(dragEleType)) || 
+                            (this.droppableTags.exclude?.length > 0 && !this.droppableTags.exclude?.includes(dragEleType))
+                        ))
+
+        if (allowDrop) {
             return // prevent drop if the draggable element doesn't match 
         }
 
@@ -771,11 +777,14 @@ class Widget extends React.Component {
             this.elementRef.current.style.pointerEvents = "auto"
     }
 
-    // FIXME: children outside the bounding box, add tw-overflow-hidden
-    renderContent() {
+    /**
+     * Note: you must implement this method in subclass, if you want children make sure to pass
+     * {this.props.children}, to modify the style add this.state.widgetStyling
+    */
+   renderContent() {
         // throw new NotImplementedError("render method has to be implemented")
         return (
-            <div className="tw-w-full tw-h-full tw-p-2 tw-content-start tw-rounded-md" style={this.state.widgetStyling}>
+            <div className="tw-w-full tw-h-full tw-p-2 tw-content-start tw-rounded-md tw-overflow-hidden" style={this.state.widgetStyling}>
                 {this.props.children}
             </div>
         )

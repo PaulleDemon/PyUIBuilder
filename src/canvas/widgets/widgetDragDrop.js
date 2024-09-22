@@ -14,7 +14,7 @@ import { useDragContext } from "../../components/draggable/draggableContext"
  */
 const WidgetDraggable = memo(({ widgetRef, enableDrag=true, dragElementType="widget", 
                                 onDragEnter, onDragLeave, onDrop, style={},
-                                droppableTags = ["widget"], ...props }) => {
+                                droppableTags = {}, ...props }) => {
 
     // const { draggedElement, onDragStart, onDragEnd } = useDragWidgetContext()
     const { draggedElement, onDragStart, onDragEnd, overElement, setOverElement } = useDragContext()
@@ -71,8 +71,12 @@ const WidgetDraggable = memo(({ widgetRef, enableDrag=true, dragElementType="wid
             allow: true, 
             show: true
         }
+        const allowDrop = (Object.keys(droppableTags).length === 0 || 
+                            (droppableTags.include.length > 0 && droppableTags.include.includes(dragEleType)) || 
+                            (droppableTags.exclude.length > 0 && !droppableTags.exclude.includes(dragEleType))
+                        )
 
-        if (droppableTags.length === 0 || droppableTags.includes(dragEleType)) {
+        if (allowDrop) {
             showDrop = {
                 allow: true,
                 show: true
@@ -99,7 +103,12 @@ const WidgetDraggable = memo(({ widgetRef, enableDrag=true, dragElementType="wid
         // console.log("Drag over: ", e.dataTransfer.getData("text/plain"), e.dataTransfer)
         const dragEleType = draggedElement.getAttribute("data-draggable-type")
 
-        if (droppableTags.length === 0 || droppableTags.includes(dragEleType)) {
+        const allowDrop = (Object.keys(droppableTags).length === 0 || 
+                            (droppableTags.include.length > 0 && droppableTags.include.includes(dragEleType)) || 
+                            (droppableTags.exclude.length > 0 && !droppableTags.exclude.includes(dragEleType))
+                        )
+
+        if (allowDrop) {
             e.preventDefault() // this is necessary to allow drop to take place
         }
 

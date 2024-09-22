@@ -713,6 +713,8 @@ class Canvas extends React.Component {
             throw new Error("widgetComponentType must be a subclass of Widget class")
         }
 
+        console.log("componete: ", widgetComponentType)
+
         const widgetRef = React.createRef()
 
         const id = `${widgetComponentType.widgetType}_${UID()}`
@@ -842,7 +844,7 @@ class Canvas extends React.Component {
 
             // TODO: handle drop from sidebar
             // if the widget is being dropped from the sidebar, use the info to create the widget first
-            this.createWidget(Widget, ({ id, widgetRef }) => {
+            this.createWidget(widgetClass, ({ id, widgetRef }) => {
                 widgetRef.current.setPos(finalPosition.x, finalPosition.y)
             })
 
@@ -968,6 +970,7 @@ class Canvas extends React.Component {
 
                 {/* <ActiveWidgetProvider> */}
                 <DroppableWrapper id="canvas-droppable"
+                    droppableTags={{exclude: ["image", "video"]}}
                     className="tw-w-full tw-h-full"
                     onDrop={this.handleDropEvent}>
                     {/* <DragWidgetProvider> */}

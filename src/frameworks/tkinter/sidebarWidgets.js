@@ -2,6 +2,7 @@
 import Widget from "../../canvas/widgets/base"
 
 import ButtonWidget from "./assets/widgets/button.png"
+import MainWindow from "./widgets/mainWindow"
 
 
 const TkinterSidebar = [
@@ -9,7 +10,7 @@ const TkinterSidebar = [
         name: "Main window",
         img: ButtonWidget,
         link: "https://github.com", 
-        widgetClass: Widget
+        widgetClass: MainWindow
     },
     {
         name: "Top Level",
