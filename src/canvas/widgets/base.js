@@ -55,7 +55,9 @@ class Widget extends React.Component {
             "load": { "args1": "number", "args2": "string" }
         }
 
-        this.droppableTags = {} // This indicates if the draggable can be dropped on this widget
+        // This indicates if the draggable can be dropped on this widget, set this to null to disable drops
+        this.droppableTags = {} 
+        
         this.boundingRect = {
             x: 0,
             y: 0,
@@ -168,9 +170,14 @@ class Widget extends React.Component {
     componentDidMount() {
 
         // FIXME: initial layout is not set properly
-        console.log("prior layout: ", this.state.attrs.layout.value)
-        this.setLayout(this.state.attrs.layout.value)
-        this.setWidgetStyling('backgroundColor', this.state.attrs.styling?.backgroundColor.value || "#fff")
+        
+        if (this.state.attrs.layout){
+            this.setLayout(this.state.attrs.layout.value)
+            console.log("prior layout: ", this.state.attrs.layout.value)
+        }
+        
+        if (this.state.attrs.styling.backgroundColor)
+            this.setWidgetStyling('backgroundColor', this.state.attrs.styling?.backgroundColor.value || "#fff")
 
         this.load(this.props.initialData || {}) // load the initial data
 
@@ -577,26 +584,6 @@ class Widget extends React.Component {
 
     }
 
-    /**
-     * 
-     * @depreciated - This function is depreciated in favour of handleDropEvent()
-     */
-    handleDrop = (event, dragElement) => {
-        // THIS function is depreciated in favour of handleDropEvent()
-        // console.log("dragging event: ", event, dragElement)
-        const container = dragElement.getAttribute("data-container")
-        // TODO: check if the drop is allowed
-        if (container === "canvas") {
-
-            this.props.onAddChildWidget(this.__id, dragElement.getAttribute("data-widget-id"))
-
-        } else if (container === "sidebar") {
-
-            this.props.onAddChildWidget(this.__id, null, true) //  if dragged from the sidebar create the widget first
-
-        }
-
-    }
 
     handleDragStart = (e, callback) => {
         e.stopPropagation()
@@ -653,7 +640,7 @@ class Widget extends React.Component {
             show: true
         }
 
-        const allowDrop = (this.droppableTags && (Object.keys(this.droppableTags).length === 0 ||
+        const allowDrop = (this.droppableTags && this.droppableTags !== null && (Object.keys(this.droppableTags).length === 0 ||
             (this.droppableTags.include?.length > 0 && this.droppableTags.include?.includes(dragEleType)) ||
             (this.droppableTags.exclude?.length > 0 && !this.droppableTags.exclude?.includes(dragEleType))
         ))
@@ -686,7 +673,7 @@ class Widget extends React.Component {
         // console.log("Drag over: ", e.dataTransfer.getData("text/plain"), e.dataTransfer)
         const dragEleType = draggedElement.getAttribute("data-draggable-type")
 
-        const allowDrop = (this.droppableTags && (Object.keys(this.droppableTags).length === 0 ||
+        const allowDrop = (this.droppableTags && this.droppableTags !== null && (Object.keys(this.droppableTags).length === 0 ||
             (this.droppableTags.include?.length > 0 && this.droppableTags.include?.includes(dragEleType)) ||
             (this.droppableTags.exclude?.length > 0 && !this.droppableTags.exclude?.includes(dragEleType))
         ))
@@ -713,7 +700,7 @@ class Widget extends React.Component {
 
         const dragEleType = draggedElement.getAttribute("data-draggable-type")
 
-        const allowDrop = (this.droppableTags && (Object.keys(this.droppableTags).length === 0 ||
+        const allowDrop = (this.droppableTags && this.droppableTags !== null && (Object.keys(this.droppableTags).length === 0 ||
             (this.droppableTags.include?.length > 0 && this.droppableTags.include?.includes(dragEleType)) ||
             (this.droppableTags.exclude?.length > 0 && !this.droppableTags.exclude?.includes(dragEleType))
         ))
@@ -816,7 +803,7 @@ class Widget extends React.Component {
      * This is an internal methods don't override
      * @returns {HTMLElement}
      */
-    render() {
+    render() {  
 
         let outerStyle = {
             cursor: this.cursor,
@@ -962,27 +949,6 @@ class Widget extends React.Component {
                 }
 
             </DragContext.Consumer>
-            // <WidgetDraggable widgetRef={this.elementRef} 
-            //                     enableDrag={this.state.dragEnabled}
-            //                     onDrop={this.handleDrop}
-            //                     onDragEnter={({dragElement, showDrop}) => {
-            //                         this.setState({
-            //                             showDroppableStyle: showDrop
-            //                         })
-            //                         }
-            //                     }
-            //                     onDragLeave={ () => {
-            //                             this.setState({
-            //                                 showDroppableStyle: {
-            //                                     allow: false, 
-            //                                     show: false
-            //                                 }
-            //                             })
-            //                         }
-            //                     }
-
-            //                     >
-            // </WidgetDraggable>
         )
 
     }

@@ -29,7 +29,7 @@ export function SidebarWidgetCard({ name, img, url, widgetClass, innerRef}){
     return (
         // <Draggable className="tw-cursor-pointer" id={name}>
             <DraggableWrapper data-container={"sidebar"} 
-                                dragElementType={"widget"} 
+                                dragElementType={widgetClass.widgetType} 
                                 dragWidgetClass={widgetClass}
                                 className="tw-cursor-pointer tw-w-fit tw-h-fit">
                 

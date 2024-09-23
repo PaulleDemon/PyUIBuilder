@@ -1,6 +1,6 @@
 import { memo, useEffect, useState } from "react"
 
-import { ColorPicker, Input, InputNumber, Select } from "antd"
+import { Checkbox, ColorPicker, Input, InputNumber, Select } from "antd"
 
 import { capitalize } from "../utils/common"
 import Tools from "./constants/tools.js"
@@ -186,6 +186,14 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
                             />
                         )}
 
+                        {val.tool === Tools.CHECK_BUTTON && (
+                            <Checkbox
+                                value={val.value}
+                                defaultChecked={val.value}
+                                onChange={(e) => handleChange(e.target.checked, val.onChange)}
+                            >{val.label}</Checkbox>
+                        )}
+
                         {
                             val.tool === Tools.LAYOUT_MANAGER && (
                                 renderLayoutManager(val)
@@ -223,7 +231,7 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
                              tw-flex tw-flex-col tw-gap-2 tw-overflow-y-auto`}
         >
             <h3 className="tw-text-xl tw-text-center">
-                {capitalize(`${widgetType || ""}`)}
+                {capitalize(`${widgetType || ""}`).replace(/_/g, " ")}
             </h3>
 
             <div className="tw-flex tw-flex-col tw-gap-4">{renderWidgets(toolbarAttrs || {})}</div>

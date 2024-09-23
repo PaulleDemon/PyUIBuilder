@@ -1,5 +1,6 @@
 # PyUIBuilder - The only Python GUI builder you'll ever need
 
+
 <p align="center">
     <a href="https://twitter.com/share?url=https://github.com/PaulleDemon/tkbuilder&text=Check out PyUIBuilder tool">
         <img src="./assets/share/1.png" height="30" />
@@ -16,6 +17,20 @@
 </p>
 
 Build Python GUI's with the ease of Canva
+
+
+## Table of contents
+
+- [Features](#features)
+- [Roadmap](#roadmap)
+- [License](#license)
+- [Newsletter](#newsletter)
+- [FAQ](#faq)
+- [License Information](#license-information)
+    - [Webbased Editor](#webbased-editor)
+    - [Electron App - Hobbyist License](#electron-app---hobbyist-license)
+    - [Electron App - Commercial License](#electron-app---commercial-license)
+
 
 
 
@@ -37,7 +52,7 @@ To learn more/ see upcoming features visit [roadmap](./roadmap.md)
 
 ## License
 
-To support open-source and development of this tool, consider buying a one-time license.
+To support open-source and development of this tool and upcoming free open-source tools, consider buying a one-time license.
 
 License will give you access to upcoming features, early access and more.
 
@@ -65,6 +80,10 @@ The discount's will be available for limited time only on pre-orders.
 Join the free newsletter to know about upcoming updates, learn how I built this tool and more about open-source.
 
 [Join free newsletter](https://paulfreeman.substack.com/subscribe?utm_source=Github-Pybuilder)
+
+#### Keep yourself updated
+
+To keep up with the latest developments considering starting ⭐️ this repo
 
 ## FAQ
 

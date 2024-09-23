@@ -1,12 +1,13 @@
 ## Road map for PyUIBuilder
 
-Any feature that has 👑 beside it, is meant only for [premium users](./readme.md#license--support)
+Any feature that has 👑 beside it, is meant only for [premium users](./readme.md#license)
 
 ### 1.0.0
 - [x] Create the initial version for UI builder
 
 ### 1.2.0
 - [ ] UI fixes and enhancement 
+- [ ] Documentation
 - [ ] Tree view for elements on the canvas
 - [ ] Add text editor to support event handlers
 - [ ] Support more widgets

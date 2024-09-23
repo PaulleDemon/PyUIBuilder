@@ -34,37 +34,16 @@ class TopLevel extends Widget{
     componentDidMount(){
         super.componentDidMount()
         this.setAttrValue("styling.backgroundColor", "#E4E2E2")
+        this.setWidgetName("toplevel")
     }
 
     getToolbarAttrs(){
+        const toolBarAttrs = super.getToolbarAttrs()
+
         return ({
-            id: this.__id,
-            widgetName: {
-                label: "Widget Name",
-                tool: Tools.INPUT, // the tool to display, can be either HTML ELement or a constant string
-                toolProps: { placeholder: "Widget name", maxLength: 40 },
-                value: this.state.widgetName,
-                onChange: (value) => this.setWidgetName(value)
-            },
+            widgetName: toolBarAttrs.widgetName,
             title: this.state.attrs.title,
-            size: {
-                label: "Size",
-                display: "horizontal",
-                width: {
-                    label: "Width",
-                    tool: Tools.NUMBER_INPUT, // the tool to display, can be either HTML ELement or a constant string
-                    toolProps: { placeholder: "width", max: this.maxSize.width, min: this.minSize.width },
-                    value: this.state.size.width || 100,
-                    onChange: (value) => this.setWidgetSize(value, null)
-                },
-                height: {
-                    label: "Height",
-                    tool: Tools.NUMBER_INPUT,
-                    toolProps: { placeholder: "height", max: this.maxSize.height, min: this.minSize.height },
-                    value: this.state.size.height || 100,
-                    onChange: (value) => this.setWidgetSize(null, value)
-                },
-            },
+            size: toolBarAttrs.size,
 
             ...this.state.attrs,
 

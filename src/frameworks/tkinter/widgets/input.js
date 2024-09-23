@@ -1,26 +1,26 @@
 import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
+import { removeKeyFromObject } from "../../../utils/common"
 
 
-class Input extends Widget{
+export class Input extends Widget{
 
-    static widgetType = "input"
-    // TODO: override the widgetName value
+    static widgetType = "entry"
+    // TODO: remove layouts
     constructor(props) {
         super(props)
 
-        this.droppableTags = {
-            // TODO: exclude all
-            exclude: ["image", "video", "media", "main_window", "toplevel"]
-        }
+        this.droppableTags = null // disables drops
+
+        const newAttrs = removeKeyFromObject("layout", this.state.attrs)
 
         this.state = {
             ...this.state,
             size: { width: 120, height: 40 },
             attrs: {
-                ...this.state.attrs,
+                ...newAttrs,
                 styling: {
-                    ...this.state.attrs.styling,
+                    ...newAttrs.styling,
                     foregroundColor: {
                         label: "Foreground Color",
                         tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
@@ -46,37 +46,93 @@ class Input extends Widget{
     componentDidMount(){
         super.componentDidMount()
         this.setAttrValue("styling.backgroundColor", "#fff")
+        this.setWidgetName("Entry")
     }
 
     getToolbarAttrs(){
+
+        const toolBarAttrs = super.getToolbarAttrs()
+
         return ({
             id: this.__id,
-            widgetName: {
-                label: "Widget Name",
-                tool: Tools.INPUT, // the tool to display, can be either HTML ELement or a constant string
-                toolProps: { placeholder: "Widget name", maxLength: 40 },
-                value: this.state.widgetName,
-                onChange: (value) => this.setWidgetName(value)
-            },
+            widgetName: toolBarAttrs.widgetName,
             placeHolder: this.state.attrs.placeHolder,
-            size: {
-                label: "Size",
-                display: "horizontal",
-                width: {
-                    label: "Width",
-                    tool: Tools.NUMBER_INPUT, // the tool to display, can be either HTML ELement or a constant string
-                    toolProps: { placeholder: "width", max: this.maxSize.width, min: this.minSize.width },
-                    value: this.state.size.width || 100,
-                    onChange: (value) => this.setWidgetSize(value, null)
+            size: toolBarAttrs.widgetName,
+
+            ...this.state.attrs,
+
+        })
+    }
+
+    renderContent(){
+        return (
+            <div className="tw-w-flex tw-flex-col tw-w-full tw-h-full tw-rounded-md tw-overflow-hidden">
+                <div className="tw-p-2 tw-w-full tw-h-full tw-flex tw-place-items-center" style={this.state.widgetStyling}>
+                    <div className="tw-text-sm tw-text-gray-300">
+                        {this.getAttrValue("placeHolder")}
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+}
+
+
+export class Text extends Widget{
+
+    static widgetType = "Text"
+
+    constructor(props) {
+        super(props)
+
+        this.droppableTags = null
+
+        const newAttrs = removeKeyFromObject("layout", this.state.attrs)
+
+        this.state = {
+            ...this.state,
+            size: { width: 120, height: 80 },
+            attrs: {
+                ...newAttrs,
+                styling: {
+                    ...newAttrs.styling,
+                    foregroundColor: {
+                        label: "Foreground Color",
+                        tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
+                        value: "#000",
+                        onChange: (value) => {
+                            this.setWidgetStyling("color", value)
+                            this.setAttrValue("styling.foregroundColor", value)
+                        }
+                    }
                 },
-                height: {
-                    label: "Height",
-                    tool: Tools.NUMBER_INPUT,
-                    toolProps: { placeholder: "height", max: this.maxSize.height, min: this.minSize.height },
-                    value: this.state.size.height || 100,
-                    onChange: (value) => this.setWidgetSize(null, value)
-                },
-            },
+                placeHolder: {
+                    label: "PlaceHolder",
+                    tool: Tools.INPUT, // the tool to display, can be either HTML ELement or a constant string
+                    toolProps: {placeholder: "text", maxLength: 100}, 
+                    value: "placeholder text",
+                    onChange: (value) => this.setAttrValue("placeHolder", value)
+                }
+
+            }
+        }
+    }
+
+    componentDidMount(){
+        super.componentDidMount()
+        this.setAttrValue("styling.backgroundColor", "#fff")
+        this.setWidgetName("text")
+    }
+
+    getToolbarAttrs(){
+        const toolBarAttrs = super.getToolbarAttrs()
+
+        return ({
+            id: this.__id,
+            widgetName: toolBarAttrs.widgetName,
+            placeHolder: this.state.attrs.placeHolder,
+            size: toolBarAttrs.size,
 
             ...this.state.attrs,
 
@@ -96,6 +152,3 @@ class Input extends Widget{
     }
 
 }
-
-
-export default Input

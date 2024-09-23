@@ -1,5 +1,6 @@
 import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
+import { removeKeyFromObject } from "../../../utils/common"
 
 
 class Label extends Widget{
@@ -14,13 +15,16 @@ class Label extends Widget{
             exclude: ["image", "video", "media", "main_window", "toplevel"]
         }
 
+        const newAttrs = removeKeyFromObject("layout", this.state.attrs)
+        
+
         this.state = {
             ...this.state,
             size: { width: 80, height: 40 },
             attrs: {
-                ...this.state.attrs,
+                ...newAttrs,
                 styling: {
-                    ...this.state.attrs.styling,
+                    ...newAttrs.styling,
                     foregroundColor: {
                         label: "Foreground Color",
                         tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
@@ -45,38 +49,18 @@ class Label extends Widget{
 
     componentDidMount(){
         super.componentDidMount()
-        this.setAttrValue("styling.backgroundColor", "#E4E2E2")
+        this.setAttrValue("styling.backgroundColor", "#fff")
+        this.setWidgetStyling("backgroundColor", "#fff0")
     }
 
     getToolbarAttrs(){
+        const toolBarAttrs = super.getToolbarAttrs()
+
         return ({
             id: this.__id,
-            widgetName: {
-                label: "Widget Name",
-                tool: Tools.INPUT, // the tool to display, can be either HTML ELement or a constant string
-                toolProps: { placeholder: "Widget name", maxLength: 40 },
-                value: this.state.widgetName,
-                onChange: (value) => this.setWidgetName(value)
-            },
+            widgetName: toolBarAttrs.widgetName,
             labelWidget: this.state.attrs.labelWidget,
-            size: {
-                label: "Size",
-                display: "horizontal",
-                width: {
-                    label: "Width",
-                    tool: Tools.NUMBER_INPUT, // the tool to display, can be either HTML ELement or a constant string
-                    toolProps: { placeholder: "width", max: this.maxSize.width, min: this.minSize.width },
-                    value: this.state.size.width || 100,
-                    onChange: (value) => this.setWidgetSize(value, null)
-                },
-                height: {
-                    label: "Height",
-                    tool: Tools.NUMBER_INPUT,
-                    toolProps: { placeholder: "height", max: this.maxSize.height, min: this.minSize.height },
-                    value: this.state.size.height || 100,
-                    onChange: (value) => this.setWidgetSize(null, value)
-                },
-            },
+            size: toolBarAttrs.size,
 
             ...this.state.attrs,
 

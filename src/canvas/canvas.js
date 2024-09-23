@@ -26,6 +26,7 @@ import { DragWidgetProvider } from "./widgets/draggableWidgetContext"
 import { PosType } from "./constants/layouts"
 import WidgetContainer from "./constants/containers"
 import { isSubClassOfWidget } from "../utils/widget"
+import { ButtonModal } from "../components/modals"
 
 // const DotsBackground = require("../assets/background/dots.svg")
 
@@ -114,8 +115,6 @@ class Canvas extends React.Component {
 
     componentDidMount() {
         this.initEvents()
-
-        this.createWidget(Widget)
 
     }
 
@@ -636,7 +635,7 @@ class Canvas extends React.Component {
         // Find the dragged widget object
         let dragWidgetObj = this.findWidgetFromListById(dragElementID)
 
-        console.log("Drag widget obj: ", dragWidgetObj)
+        // console.log("Drag widget obj: ", dragWidgetObj)
 
         if (dropWidgetObj && dragWidgetObj) {
             const dragWidget = this.widgetRefs[dragWidgetObj.id]
@@ -713,7 +712,7 @@ class Canvas extends React.Component {
             throw new Error("widgetComponentType must be a subclass of Widget class")
         }
 
-        console.log("componete: ", widgetComponentType)
+        // console.log("componete: ", widgetComponentType)
 
         const widgetRef = React.createRef()
 
@@ -758,6 +757,11 @@ class Canvas extends React.Component {
     deleteSelectedWidgets(widgets = []) {
 
         let activeWidgets = removeDuplicateObjects([...widgets, this.state.selectedWidget], "__id")
+
+        this.setState({
+            toolbarAttrs: null,
+            selectedWidget: null
+        })
 
         const widgetIds = activeWidgets.map(widget => widget.__id)
 
@@ -963,9 +967,17 @@ class Canvas extends React.Component {
                     <Tooltip title="Reset viewport">
                         <Button icon={<ReloadOutlined />} onClick={this.resetTransforms} />
                     </Tooltip>
-                    <Tooltip title="Clear canvas">
-                        <Button danger icon={<DeleteOutlined />} onClick={this.clearCanvas} />
-                    </Tooltip>
+                    <ButtonModal 
+                            message={"Are you sure you want to clear the canvas? This cannot be undone."} 
+                            title={"Clear canvas"}
+                            onOk={this.clearCanvas}
+                            okText="Yes"
+                            okButtonType="danger"
+                            >
+                        <Tooltip title="Clear canvas">
+                            <Button danger icon={<DeleteOutlined />} />
+                        </Tooltip>
+                    </ButtonModal>
                 </div>
 
                 {/* <ActiveWidgetProvider> */}

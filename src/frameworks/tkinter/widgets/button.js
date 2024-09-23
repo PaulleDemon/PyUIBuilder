@@ -1,5 +1,6 @@
 import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
+import { removeKeyFromObject } from "../../../utils/common"
 
 
 class Button extends Widget{
@@ -15,14 +16,15 @@ class Button extends Widget{
             // TODO: exclude all
             exclude: ["image", "video", "media", "main_window", "toplevel"]
         }
+        const newAttrs = removeKeyFromObject("layout", this.state.attrs)
 
         this.state = {
             ...this.state,
             size: { width: 80, height: 40 },
             attrs: {
-                ...this.state.attrs,
+                ...newAttrs,
                 styling: {
-                    ...this.state.attrs.styling,
+                    ...newAttrs.styling,
                     foregroundColor: {
                         label: "Foreground Color",
                         tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
@@ -47,38 +49,20 @@ class Button extends Widget{
 
     componentDidMount(){
         super.componentDidMount()
+        this.setWidgetName("button")
         this.setAttrValue("styling.backgroundColor", "#E4E2E2")
     }
 
     getToolbarAttrs(){
+
+        const toolBarAttrs = super.getToolbarAttrs()
+
+
         return ({
             id: this.__id,
-            widgetName: {
-                label: "Widget Name",
-                tool: Tools.INPUT, // the tool to display, can be either HTML ELement or a constant string
-                toolProps: { placeholder: "Widget name", maxLength: 40 },
-                value: this.state.widgetName,
-                onChange: (value) => this.setWidgetName(value)
-            },
+            widgetName: toolBarAttrs.widgetName,
             buttonLabel: this.state.attrs.buttonLabel,
-            size: {
-                label: "Size",
-                display: "horizontal",
-                width: {
-                    label: "Width",
-                    tool: Tools.NUMBER_INPUT, // the tool to display, can be either HTML ELement or a constant string
-                    toolProps: { placeholder: "width", max: this.maxSize.width, min: this.minSize.width },
-                    value: this.state.size.width || 100,
-                    onChange: (value) => this.setWidgetSize(value, null)
-                },
-                height: {
-                    label: "Height",
-                    tool: Tools.NUMBER_INPUT,
-                    toolProps: { placeholder: "height", max: this.maxSize.height, min: this.minSize.height },
-                    value: this.state.size.height || 100,
-                    onChange: (value) => this.setWidgetSize(null, value)
-                },
-            },
+            size: toolBarAttrs.widgetName,
 
             ...this.state.attrs,
 
@@ -87,7 +71,8 @@ class Button extends Widget{
 
     renderContent(){
         return (
-            <div className="tw-w-flex tw-flex-col tw-w-full tw-h-full tw-rounded-md tw-border tw-border-solid tw-overflow-hidden">
+            <div className="tw-w-flex tw-flex-col tw-w-full tw-h-full tw-rounded-md 
+                            tw-border tw-border-solid tw-border-gray-400 tw-overflow-hidden">
                 <div className="tw-p-2 tw-w-full tw-h-full tw-content-start " style={this.state.widgetStyling}>
                     {/* {this.props.children} */}
                     <div className="tw-text-sm" style={{color: this.getAttrValue("styling.foregroundColor")}}>

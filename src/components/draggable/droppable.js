@@ -3,7 +3,7 @@ import { useDragContext } from "./draggableContext"
 
 
 /**
- * @param {{include: [], exclude: []} || {}} - droppableTags - if empty object, allows everything to be dropped, define include to allow only included widgets, define exclude to exclude
+ * @param {{include: [], exclude: []} || {} || null} - droppableTags - if empty object, allows everything to be dropped, if null nothing can be dropped, define include to allow only included widgets, define exclude to exclude
  */
 const DroppableWrapper = memo(({onDrop, droppableTags={}, ...props}) => {
 
@@ -20,11 +20,10 @@ const DroppableWrapper = memo(({onDrop, droppableTags={}, ...props}) => {
         
         const dragElementType = draggedElement.getAttribute("data-draggable-type")
 
-        console.log("Current target: ", droppableTags, Object.keys(droppableTags))
 
         setOverElement(e.currentTarget)
 
-        const allowDrop = (droppableTags && (Object.keys(droppableTags).length === 0 || 
+        const allowDrop = (droppableTags && droppableTags !== null && (Object.keys(droppableTags).length === 0 || 
                             (droppableTags.include?.length > 0 && droppableTags.include?.includes(dragElementType)) || 
                             (droppableTags.exclude?.length > 0 && !droppableTags.exclude?.includes(dragElementType))
                         ))
@@ -46,7 +45,7 @@ const DroppableWrapper = memo(({onDrop, droppableTags={}, ...props}) => {
         // console.log("Drag over: ", e.dataTransfer.getData("text/plain"), e.dataTransfer)
         const dragElementType = draggedElement.getAttribute("data-draggable-type")
 
-        const allowDrop = (droppableTags && (Object.keys(droppableTags).length === 0 || 
+        const allowDrop = (droppableTags && droppableTags !== null && (Object.keys(droppableTags).length === 0 || 
                             (droppableTags.include?.length > 0 && droppableTags.include?.includes(dragElementType)) || 
                             (droppableTags.exclude?.length > 0 && !droppableTags.exclude?.includes(dragElementType))
                         ))
@@ -67,7 +66,7 @@ const DroppableWrapper = memo(({onDrop, droppableTags={}, ...props}) => {
         const dragElementType = draggedElement.getAttribute("data-draggable-type")
 
 
-        const allowDrop = (droppableTags && (Object.keys(droppableTags).length === 0 || 
+        const allowDrop = (droppableTags && droppableTags !== null && (Object.keys(droppableTags).length === 0 || 
                             (droppableTags.include?.length > 0 && droppableTags.include?.includes(dragElementType)) || 
                             (droppableTags.exclude?.length > 0 && !droppableTags.exclude?.includes(dragElementType))
                         ))
