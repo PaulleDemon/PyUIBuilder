@@ -8,6 +8,7 @@ import Frame from "./widgets/frame"
 import { Input, Text } from "./widgets/input"
 import Label from "./widgets/label"
 import MainWindow from "./widgets/mainWindow"
+import OptionMenu from "./widgets/optionMenu"
 import Slider from "./widgets/slider"
 import TopLevel from "./widgets/toplevel"
 
@@ -72,6 +73,12 @@ const TkinterSidebar = [
         img: ButtonWidget,
         link: "https://github.com",
         widgetClass: Slider
+    },
+    {
+        name: "Option Menu",
+        img: ButtonWidget,
+        link: "https://github.com",
+        widgetClass: OptionMenu
     },
 
 ]

@@ -108,7 +108,7 @@ export class CheckBox extends Widget{
 export class RadioButton extends Widget{
 
     static widgetType = "radio_button"
-    // FIXME: the radio buttons are not visible because of the default heigh provided
+    // FIXME: the radio buttons are not visible because of the default height provided
     constructor(props) {
         super(props)
 
