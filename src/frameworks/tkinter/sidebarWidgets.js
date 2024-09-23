@@ -2,12 +2,13 @@
 import Widget from "../../canvas/widgets/base"
 
 import ButtonWidget from "./assets/widgets/button.png"
-import { CheckBox } from "./widgets/ checkButton"
+import { CheckBox, RadioButton } from "./widgets/ checkButton"
 import Button from "./widgets/button"
 import Frame from "./widgets/frame"
 import { Input, Text } from "./widgets/input"
 import Label from "./widgets/label"
 import MainWindow from "./widgets/mainWindow"
+import Slider from "./widgets/slider"
 import TopLevel from "./widgets/toplevel"
 
 
@@ -60,6 +61,19 @@ const TkinterSidebar = [
         link: "https://github.com",
         widgetClass: CheckBox
     },
+    {
+        name: "Radio button",
+        img: ButtonWidget,
+        link: "https://github.com",
+        widgetClass: RadioButton
+    },
+    {
+        name: "Scale",
+        img: ButtonWidget,
+        link: "https://github.com",
+        widgetClass: Slider
+    },
+
 ]
 
 

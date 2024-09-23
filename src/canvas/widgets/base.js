@@ -569,18 +569,39 @@ class Widget extends React.Component {
 
         if (Object.keys(data).length === 0) return // no data to load
 
-        for (let [key, value] of Object.entries(data.attrs | {}))
-            this.setAttrValue(key, value)
+        data = {...data} // create a shallow copy
 
-        delete data.attrs
+        const {attrs, ...restData} = data
 
-        /**
-         * const obj = { a: 1, b: 2, c: 3 }
-         * const { b, ...newObj } = obj
-         * console.log(newObj) // { a: 1, c: 3 }
-         */
+        // for (let [key, value] of Object.entries(attrs | {}))
+        //     this.setAttrValue(key, value)
 
-        this.setState(data)
+        // delete data.attrs
+
+        this.setState(restData,  () => {
+            // UPdates attrs
+            let newAttrs = { ...this.state.attrs }
+
+            // Iterate over each path in the updates object
+            Object.entries(attrs).forEach(([path, value]) => {
+                const keys = path.split('.')
+                const lastKey = keys.pop()
+
+                // Traverse the nested object within attrs
+                let nestedObject = newAttrs
+
+                keys.forEach(key => {
+                    nestedObject[key] = { ...nestedObject[key] } // Ensure immutability for each nested level
+                    nestedObject = nestedObject[key]
+                })
+
+                // Set the value at the last key
+                nestedObject[lastKey].value = value
+            })
+
+            this.updateState({ attrs: newAttrs })
+
+        })  
 
     }
 
@@ -698,17 +719,6 @@ class Widget extends React.Component {
         })
 
 
-        const dragEleType = draggedElement.getAttribute("data-draggable-type")
-
-        const allowDrop = (this.droppableTags && this.droppableTags !== null && (Object.keys(this.droppableTags).length === 0 ||
-            (this.droppableTags.include?.length > 0 && this.droppableTags.include?.includes(dragEleType)) ||
-            (this.droppableTags.exclude?.length > 0 && !this.droppableTags.exclude?.includes(dragEleType))
-        ))
-
-        if (!allowDrop) {
-            return // prevent drop if the draggable element doesn't match 
-        }
-
         if (draggedElement === this.elementRef.current){
             // prevent drop on itself, since the widget is invisible when dragging, if dropped on itself, it may consume itself
             return 
@@ -731,6 +741,17 @@ class Widget extends React.Component {
         // If swaparea is true, then it swaps instead of adding it as a child, also make sure that the parent widget(this widget) is on the widget and not on the canvas
         const swapArea = (this.swappableAreaRef.current.contains(e.target) && !this.innerAreaRef.current.contains(e.target) && thisContainer === WidgetContainer.WIDGET)
 
+        const dragEleType = draggedElement.getAttribute("data-draggable-type")
+
+        const allowDrop = (this.droppableTags && this.droppableTags !== null && (Object.keys(this.droppableTags).length === 0 ||
+            (this.droppableTags.include?.length > 0 && this.droppableTags.include?.includes(dragEleType)) ||
+            (this.droppableTags.exclude?.length > 0 && !this.droppableTags.exclude?.includes(dragEleType))
+        ))
+
+        if (!allowDrop && !swapArea) {
+            // only if both swap and drop is not allowed return, if swap is allowed continue
+            return  
+        }
         // TODO: check if the drop is allowed
         if ([WidgetContainer.CANVAS, WidgetContainer.WIDGET].includes(container)) {
             // console.log("Dropped on meee: ", swapArea, this.swappableAreaRef.current.contains(e.target), thisContainer)

@@ -6,6 +6,7 @@ import { capitalize } from "../utils/common"
 import Tools from "./constants/tools.js"
 import { useActiveWidget } from "./activeWidgetContext.js"
 import { Layouts } from "./constants/layouts.js"
+import { DynamicRadioInputList } from "../components/inputs.js"
 
 
 // FIXME: Maximum recursion error
@@ -188,10 +189,18 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
 
                         {val.tool === Tools.CHECK_BUTTON && (
                             <Checkbox
-                                value={val.value}
+                                checked={val.value}
                                 defaultChecked={val.value}
                                 onChange={(e) => handleChange(e.target.checked, val.onChange)}
                             >{val.label}</Checkbox>
+                        )}
+
+                        {val.tool === Tools.INPUT_RADIO_LIST && (
+                            <DynamicRadioInputList 
+                                    defaultInputs={val.value.inputs}
+                                    defaultSelected={val.value.selectedRadio}
+                                    onChange={({inputs, selectedRadio}) => handleChange({inputs, selectedRadio}, val.onChange)}
+                                    />
                         )}
 
                         {
@@ -207,7 +216,7 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
             // Handle nested objects and horizontal display for inner elements
             if (typeof val === "object") {
                 const containerClass = val.display === "horizontal"
-                    ? "tw-flex tw-flex-row tw-gap-4"
+                    ? "tw-flex tw-flex-row tw-flex-wrap tw-content-start tw-gap-4"
                     : "tw-flex tw-flex-col tw-gap-2"
 
                 return (
@@ -227,7 +236,7 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
         <div
             className={`tw-absolute tw-top-20 tw-right-5 tw-bg-white ${toolbarOpen ? "tw-w-[280px]" : "tw-w-0"
                 } tw-px-4 tw-p-2 tw-h-[600px] tw-rounded-md tw-z-[1000] tw-shadow-lg 
-                             tw-transition-transform tw-duration-75
+                             tw-transition-transform tw-duration-75 tw-overflow-x-hidden
                              tw-flex tw-flex-col tw-gap-2 tw-overflow-y-auto`}
         >
             <h3 className="tw-text-xl tw-text-center">

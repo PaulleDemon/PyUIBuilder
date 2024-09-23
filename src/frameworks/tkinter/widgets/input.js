@@ -57,7 +57,7 @@ export class Input extends Widget{
             id: this.__id,
             widgetName: toolBarAttrs.widgetName,
             placeHolder: this.state.attrs.placeHolder,
-            size: toolBarAttrs.widgetName,
+            size: toolBarAttrs.size,
 
             ...this.state.attrs,
 

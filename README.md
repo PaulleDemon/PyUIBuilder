@@ -3,16 +3,16 @@
 
 <p align="center">
     <a href="https://twitter.com/share?url=https://github.com/PaulleDemon/tkbuilder&text=Check out PyUIBuilder tool">
-        <img src="./assets/share/1.png" height="30" />
+        <img src="./assets/share/1.png" height="35" />
     </a>
     <a href="https://www.reddit.com/submit?url=https://github.com/PaulleDemon/tkbuilder&title=Check out PyUIBuilder tool">
-        <img src="./assets/share/4.png" height="30" />
+        <img src="./assets/share/4.png" height="35" />
     </a>
     <a href="https://www.linkedin.com/shareArticle?mini=true&url=https://github.com/PaulleDemon/tkbuilder&title=check out PyUIBuilder tool">
-        <img src="./assets/share/2.png" height="30" />
+        <img src="./assets/share/2.png" height="35" />
     </a>
     <a href="https://youtube.com/">
-        <img src="./assets/share/3.png" height="30" />
+        <img src="./assets/share/3.png" height="35" />
     </a>
 </p>
 
@@ -61,7 +61,7 @@ The discount's will be available for limited time only on pre-orders.
 | Type                                                              | Free              | Premium - Hobbyist / Per user                            | Premium - Commercial / Per user                            |
 |-------------------------------------------------------------------|-------------------|----------------------------------------------------------|------------------------------------------------------------|
 | **Support open-source development**                               | 👍️                 | 😎                                                        | 🚀                                                          |
-| **Priority support** - (priorities your feature requests, issues) | community support | ✅                                                        | ✅                                                          |
+| **Priority support** - (prioritize your feature requests, issues) | community support | ✅                                                        | ✅                                                          |
 | **Lifetime license** (one-time  purchase)                         | 👍️                 | ✅                                                        | ✅                                                          |
 | **Early access** to upcoming features                             | ❌                 | ✅                                                        | ✅                                                          |
 | **Downloadable Electron App** (upcoming)                          | ❌                 | ✅                                                        | ✅                                                          |
@@ -72,7 +72,7 @@ The discount's will be available for limited time only on pre-orders.
 | **Commercial Use**                                                | ✅                 | ❌                                                        | ✅                                                          |
 | **Support for PyQt/PySide frameworks** (upcoming)                 | ❌                 | ❌                                                        | ✅                                                          |
 | **More upcoming features and support**                            | ❓️                 | ✅                                                        | ✅                                                          |
-| **Price**                                                         | -                 | ~~$129~~ $29 (save 77.52% for limited time on pre-order) | ~~180~~ $49 (Save 72.78% for a limited time on pre-orders) |
+| **Price**                                                         | -                 | ~~$129~~ **$29** (save 77.52% for limited time on pre-order) | ~~180~~ **$49** (Save 72.78% for a limited time on pre-orders) |
 | Pre-order now!                                                    |                   | [Get license]()                                          | [Get license]()                                            |
 
 ## Newsletter
@@ -104,6 +104,12 @@ To keep up with the latest developments considering starting ⭐️ this repo
    * This outputs code in Python, not in XML or other formats which can be hard to debug. So its easier to modify even after downloading the code.
 
    * Support for 3rd party UI libraries. Many GUI builders don't come with support for 3rd party libraries. 
+
+4. **Why doesn't the theme of the GUI builder match the theme of Tkinter?**
+   
+   **A.** Tkinter is a OS-dependent library, so it would render differently on different OS. Having a common UI the the GUI builder makes it simpler for development. 
+   
+   If you want a live preview before generating the code you can get a premium license and you'll be notified when that feature releases.
 
 ## License Information
 

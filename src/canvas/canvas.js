@@ -1,11 +1,11 @@
 import React from "react"
 
-import { DndContext } from '@dnd-kit/core'
+// import { DndContext } from '@dnd-kit/core'
 
-import { CloseOutlined, DeleteOutlined, EditOutlined, FullscreenOutlined, ReloadOutlined } from "@ant-design/icons"
+import { DeleteOutlined, EditOutlined, ReloadOutlined } from "@ant-design/icons"
 import { Button, Tooltip, Dropdown } from "antd"
 
-import Droppable from "../components/utils/droppableDnd"
+// import Droppable from "../components/utils/droppableDnd"
 import Widget from "./widgets/base"
 import Cursor from "./constants/cursor"
 
@@ -14,15 +14,12 @@ import CanvasToolBar from "./toolbar"
 import { UID } from "../utils/uid"
 import { removeDuplicateObjects } from "../utils/common"
 
-import { WidgetContext } from './context/widgetContext'
-// import {ReactComponent as DotsBackground} from "../assets/background/dots.svg"
 
 // import DotsBackground from "../assets/background/dots.svg"
 import { ReactComponent as DotsBackground } from "../assets/background/dots.svg"
 
 import DroppableWrapper from "../components/draggable/droppable"
-import { ActiveWidgetContext, ActiveWidgetProvider, withActiveWidget } from "./activeWidgetContext"
-import { DragWidgetProvider } from "./widgets/draggableWidgetContext"
+
 import { PosType } from "./constants/layouts"
 import WidgetContainer from "./constants/containers"
 import { isSubClassOfWidget } from "../utils/widget"
@@ -629,7 +626,6 @@ class Canvas extends React.Component {
      */
     handleAddWidgetChild = ({ parentWidgetId, dragElementID, swap = false }) => {
     
-        // TODO: creation of the child widget if its not created
         // widgets data structure { id, widgetType: widgetComponentType, children: [], parent: "" }
         const dropWidgetObj = this.findWidgetFromListById(parentWidgetId)
         // Find the dragged widget object
@@ -846,7 +842,6 @@ class Canvas extends React.Component {
                 throw new Error("WidgetClass has to be passed for widgets dropped from sidebar")
             }
 
-            // TODO: handle drop from sidebar
             // if the widget is being dropped from the sidebar, use the info to create the widget first
             this.createWidget(widgetClass, ({ id, widgetRef }) => {
                 widgetRef.current.setPos(finalPosition.x, finalPosition.y)
@@ -877,8 +872,6 @@ class Canvas extends React.Component {
                 const childData = widgetObj.current.serialize() // save the data and pass it the updated child object
 
                 // remove child from current position
-
-                // console.log("pre updated widgets: ", updatedWidgets)
 
                 const updatedChildWidget = {
                     ...childWidgetObj,

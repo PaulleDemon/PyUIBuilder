@@ -6,6 +6,8 @@ const Tools = {
     COLOR_PICKER: "color_picker",
     EVENT_HANDLER: "event_handler", // shows a event handler with all the possible function in the dropdown
     CHECK_BUTTON: "check_button",
+    INPUT_LIST: "input_list",
+    INPUT_RADIO_LIST: "input_radio_list",
 
     LAYOUT_MANAGER: "layout_manager"
 }
