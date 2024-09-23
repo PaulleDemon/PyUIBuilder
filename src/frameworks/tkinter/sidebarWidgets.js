@@ -9,6 +9,7 @@ import MainWindow from "./widgets/mainWindow"
 import OptionMenu from "./widgets/optionMenu"
 import Slider from "./widgets/slider"
 import TopLevel from "./widgets/toplevel"
+import SpinBox from "./widgets/spinBox"
 
 import MainWindowImage from "./assets/widgets/mainwindow.png"
 import TopLevelImage from "./assets/widgets/Toplevel.png"
@@ -21,6 +22,7 @@ import SliderImage from "./assets/widgets/slider.png"
 import DropDownImage from "./assets/widgets/dropdown.png"
 import CheckButtonImage from "./assets/widgets/check.png"
 import RadioButtonImage from "./assets/widgets/radio.png"
+import SpinBoxImage from "./assets/widgets/spinbox.png"
 
 
 const TkinterSidebar = [
@@ -89,6 +91,12 @@ const TkinterSidebar = [
         img: DropDownImage,
         link: "https://github.com",
         widgetClass: OptionMenu
+    },
+    {
+        name: "Spinbox",
+        img: SpinBoxImage,
+        link: "https://github.com",
+        widgetClass: SpinBox
     },
 
 ]

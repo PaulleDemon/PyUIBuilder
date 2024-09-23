@@ -1,6 +1,7 @@
 import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
 import { removeKeyFromObject } from "../../../utils/common"
+import { DownOutlined, UpOutlined } from "@ant-design/icons"
 
 
 class SpinBox extends Widget{
@@ -15,7 +16,7 @@ class SpinBox extends Widget{
 
         this.state = {
             ...this.state,
-            size: { width: 120, height: 40 },
+            size: { width: 70, height: 'fit' },
             attrs: {
                 ...newAttrs,
                 styling: {
@@ -30,13 +31,38 @@ class SpinBox extends Widget{
                         }
                     }
                 },
-                placeHolder: {
-                    label: "PlaceHolder",
-                    tool: Tools.INPUT, // the tool to display, can be either HTML ELement or a constant string
-                    toolProps: {placeholder: "text", maxLength: 100}, 
-                    value: "placeholder text",
-                    onChange: (value) => this.setAttrValue("placeHolder", value)
-                }
+                spinProps: {
+                    label: "Properties",
+                    display: "horizontal",
+                    min: {
+                        label: "Min",
+                        tool: Tools.NUMBER_INPUT, // the tool to display, can be either HTML ELement or a constant string
+                        toolProps: { placeholder: "min" },
+                        value: 0,
+                        onChange: (value) => this.setAttrValue("spinProps.min", value)
+                    },
+                    max: {
+                        label: "Max",
+                        tool: Tools.NUMBER_INPUT,
+                        toolProps: { placeholder: "max"},
+                        value: 100,
+                        onChange: (value) => this.setAttrValue("spinProps.max", value)
+                    },
+                    step: {
+                        label: "Step",
+                        tool: Tools.NUMBER_INPUT,
+                        toolProps: { placeholder: "max", stringMode: true, step: "0.1"},
+                        value: 1,
+                        onChange: (value) => this.setAttrValue("spinProps.step", value)
+                    },
+                    default: {
+                        label: "Default",
+                        tool: Tools.NUMBER_INPUT,
+                        toolProps: { placeholder: "max", stringMode: true, step: "0.1"},
+                        value: 0,
+                        onChange: (value) => this.setAttrValue("spinProps.default", value)
+                    }
+                },
 
             }
         }
@@ -45,7 +71,7 @@ class SpinBox extends Widget{
     componentDidMount(){
         super.componentDidMount()
         this.setAttrValue("styling.backgroundColor", "#fff")
-        this.setWidgetName("Entry")
+        this.setWidgetName("SpinBox")
     }
 
     getToolbarAttrs(){
@@ -66,9 +92,13 @@ class SpinBox extends Widget{
     renderContent(){
         return (
             <div className="tw-w-flex tw-flex-col tw-w-full tw-h-full tw-rounded-md tw-overflow-hidden">
-                <div className="tw-p-2 tw-w-full tw-h-full tw-flex tw-place-items-center" style={this.state.widgetStyling}>
-                    <div className="tw-text-sm tw-text-gray-300">
-                        {this.getAttrValue("placeHolder")}
+                <div className="tw-p-2 tw-w-full tw-h-full tw-flex tw-place-items-center tw-justify-between" style={this.state.widgetStyling}>
+                    <div className="tw-text-sm ">
+                        {this.getAttrValue("spinProps.default")}
+                    </div>
+                    <div className="tw-flex tw-flex-col tw-text-black tw-gap-1 tw-text-sm">
+                        <UpOutlined />
+                        <DownOutlined />
                     </div>
                 </div>
             </div>

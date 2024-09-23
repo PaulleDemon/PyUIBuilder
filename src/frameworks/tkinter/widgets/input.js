@@ -6,7 +6,7 @@ import { removeKeyFromObject } from "../../../utils/common"
 export class Input extends Widget{
 
     static widgetType = "entry"
-    // TODO: remove layouts
+    
     constructor(props) {
         super(props)
 
