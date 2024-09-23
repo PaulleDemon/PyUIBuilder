@@ -2,8 +2,11 @@ import React from "react"
 
 // import { DndContext } from '@dnd-kit/core'
 
-import { DeleteOutlined, EditOutlined, ReloadOutlined } from "@ant-design/icons"
+import { DeleteOutlined, EditOutlined, FileImageOutlined, ReloadOutlined } from "@ant-design/icons"
 import { Button, Tooltip, Dropdown } from "antd"
+
+import domtoimage from "dom-to-image-more"
+import { saveAs } from 'file-saver'
 
 // import Droppable from "../components/utils/droppableDnd"
 import Widget from "./widgets/base"
@@ -291,6 +294,24 @@ class Canvas extends React.Component {
                             label: (<div onClick={() => this.deleteSelectedWidgets([selectedWidget])}><DeleteOutlined /> Delete</div>),
                             icons: <DeleteOutlined />,
                             danger: true
+                        },
+                        {
+                            type: 'divider',
+                        },
+                        {
+                            key: "snap",
+                            label: (<div onClick={() => {
+                                        domtoimage.toPng(selectedWidget.getElement(), {
+                                            width: selectedWidget.getElement().offsetWidth * 2,   // Multiply element's width by 2
+                                            height: selectedWidget.getElement().offsetHeight * 2  // Multiply element's height by 2
+                                        }).then((dataUrl) => {
+                                            saveAs(dataUrl, 'widget.png')  
+                                        }).catch((error) => {
+                                            console.error('Error capturing widget as PNg:', error)
+                                        })  
+                                    }}>
+                                    <FileImageOutlined /> Save as Image</div>),
+                            icons: <FileImageOutlined />,
                         }
                     ]
                 })

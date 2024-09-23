@@ -1,7 +1,5 @@
 
-import Widget from "../../canvas/widgets/base"
 
-import ButtonWidget from "./assets/widgets/button.png"
 import { CheckBox, RadioButton } from "./widgets/ checkButton"
 import Button from "./widgets/button"
 import Frame from "./widgets/frame"
@@ -12,71 +10,83 @@ import OptionMenu from "./widgets/optionMenu"
 import Slider from "./widgets/slider"
 import TopLevel from "./widgets/toplevel"
 
+import MainWindowImage from "./assets/widgets/mainwindow.png"
+import TopLevelImage from "./assets/widgets/Toplevel.png"
+import FrameImage from "./assets/widgets/frame2.png"
+import LabelImage from "./assets/widgets/label.png"
+import ButtonImage from "./assets/widgets/button.png"
+import InputImage from "./assets/widgets/input.png"
+import TextAreaImage from "./assets/widgets/textarea.png"
+import SliderImage from "./assets/widgets/slider.png"
+import DropDownImage from "./assets/widgets/dropdown.png"
+import CheckButtonImage from "./assets/widgets/check.png"
+import RadioButtonImage from "./assets/widgets/radio.png"
+
 
 const TkinterSidebar = [
     {
         name: "Main window",
-        img: ButtonWidget,
+        img: MainWindowImage,
         link: "https://github.com", 
         widgetClass: MainWindow
     },
     {
         name: "Top Level",
-        img: ButtonWidget,
+        img: TopLevelImage,
         link: "https://github.com", 
         widgetClass: TopLevel
     },
     {
         name: "Frame",
-        img: ButtonWidget,
+        img: FrameImage,
         link: "https://github.com",
         widgetClass: Frame
     },
     {
         name: "Label",
-        img: ButtonWidget,
+        img: LabelImage,
         link: "https://github.com",
         widgetClass: Label
     },
     {
         name: "Button",
-        img: ButtonWidget,
+        img: ButtonImage,
         link: "https://github.com",
         widgetClass: Button
     },
     {
         name: "Entry",
-        img: ButtonWidget,
+        img: InputImage,
         link: "https://github.com",
         widgetClass: Input
     },
     {
         name: "Text",
-        img: ButtonWidget,
+        img: TextAreaImage,
         link: "https://github.com",
         widgetClass: Text
     },
     {
         name: "CheckBox",
-        img: ButtonWidget,
+        img: CheckButtonImage,
         link: "https://github.com",
         widgetClass: CheckBox
     },
     {
         name: "Radio button",
-        img: ButtonWidget,
+        img: RadioButtonImage,
         link: "https://github.com",
         widgetClass: RadioButton
     },
     {
         name: "Scale",
-        img: ButtonWidget,
+        img: SliderImage,
         link: "https://github.com",
         widgetClass: Slider
     },
     {
         name: "Option Menu",
-        img: ButtonWidget,
+        img: DropDownImage,
         link: "https://github.com",
         widgetClass: OptionMenu
     },
