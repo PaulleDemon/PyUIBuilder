@@ -1,21 +1,30 @@
+import React from "react"
+
+import { timePicker, timePickerInput } from 'analogue-time-picker'
+
 import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
 import { removeKeyFromObject } from "../../../utils/common"
 
 
-class Button extends Widget{
+class AnalogTimePicker extends Widget{
 
-    static widgetType = "button"
+    static widgetType = "analogue_timepicker"
 
     constructor(props) {
         super(props)
 
         this.droppableTags = null
+        
         const newAttrs = removeKeyFromObject("layout", this.state.attrs)
+
+        this.timePicker = null
+
+        this.timePickerRef = React.createRef()
 
         this.state = {
             ...this.state,
-            size: { width: 80, height: 40 },
+            size: { width: 'fit', height: 'fit' },
             attrs: {
                 ...newAttrs,
                 styling: {
@@ -44,8 +53,22 @@ class Button extends Widget{
 
     componentDidMount(){
         super.componentDidMount()
-        this.setWidgetName("button")
+        this.setWidgetName("Time picker")
         this.setAttrValue("styling.backgroundColor", "#E4E2E2")
+
+        this.timePicker = timePicker({
+                                element: this.timePickerRef.current,
+                                mode: "12"
+                            })
+        
+        const timePickerBtns = this.timePickerRef.current.getElementsByClassName("atp-clock-btn")
+        for (let i = 0; i < timePickerBtns.length; i++) {
+            timePickerBtns[i].remove()
+        }
+    }
+
+    componentWillUnmount(){
+        this.timePicker.dispose()
     }
 
     getToolbarAttrs(){
@@ -68,11 +91,9 @@ class Button extends Widget{
         return (
             <div className="tw-w-flex tw-flex-col tw-w-full tw-h-full tw-rounded-md 
                             tw-border tw-border-solid tw-border-gray-400 tw-overflow-hidden">
-                <div className="tw-p-2 tw-w-full tw-h-full tw-content-start " style={this.state.widgetStyling}>
-                    {/* {this.props.children} */}
-                    <div className="tw-text-sm" style={{color: this.getAttrValue("styling.foregroundColor")}}>
-                        {this.getAttrValue("buttonLabel")}
-                    </div>
+                <div className="tw-p-2 tw-w-full tw-h-full tw-content-start tw-pointer-events-none" 
+                        style={this.state.widgetStyling} ref={this.timePickerRef}>
+                    
                 </div>
             </div>
         )
@@ -81,4 +102,4 @@ class Button extends Widget{
 }
 
 
-export default Button
+export default AnalogTimePicker

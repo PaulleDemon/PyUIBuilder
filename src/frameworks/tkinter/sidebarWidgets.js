@@ -1,31 +1,31 @@
 
 
-import { CheckBox, RadioButton } from "./widgets/ checkButton"
-import Button from "./widgets/button"
-import Frame from "./widgets/frame"
-import { Input, Text } from "./widgets/input"
-import Label from "./widgets/label"
 import MainWindow from "./widgets/mainWindow"
+import TopLevel from "./widgets/toplevel"
+import Frame from "./widgets/frame"
+import Label from "./widgets/label"
+import Button from "./widgets/button"
 import OptionMenu from "./widgets/optionMenu"
 import Slider from "./widgets/slider"
-import TopLevel from "./widgets/toplevel"
+import { CheckBox, RadioButton } from "./widgets/ checkButton"
+import { Input, Text } from "./widgets/input"
 import SpinBox from "./widgets/spinBox"
 
-import MainWindowImage from "./assets/widgets/mainwindow.png"
-import TopLevelImage from "./assets/widgets/Toplevel.png"
-import FrameImage from "./assets/widgets/frame2.png"
-import LabelImage from "./assets/widgets/label.png"
-import ButtonImage from "./assets/widgets/button.png"
-import InputImage from "./assets/widgets/input.png"
-import TextAreaImage from "./assets/widgets/textarea.png"
-import SliderImage from "./assets/widgets/slider.png"
-import DropDownImage from "./assets/widgets/dropdown.png"
-import CheckButtonImage from "./assets/widgets/check.png"
-import RadioButtonImage from "./assets/widgets/radio.png"
-import SpinBoxImage from "./assets/widgets/spinbox.png"
+import MainWindowImage from "./assets/widgets/main/mainwindow.png"
+import TopLevelImage from "./assets/widgets/main/Toplevel.png"
+import FrameImage from "./assets/widgets/main/frame2.png"
+import LabelImage from "./assets/widgets/main/label.png"
+import ButtonImage from "./assets/widgets/main/button.png"
+import InputImage from "./assets/widgets/main/input.png"
+import TextAreaImage from "./assets/widgets/main/textarea.png"
+import SliderImage from "./assets/widgets/main/slider.png"
+import DropDownImage from "./assets/widgets/main/dropdown.png"
+import CheckButtonImage from "./assets/widgets/main/check.png"
+import RadioButtonImage from "./assets/widgets/main/radio.png"
+import SpinBoxImage from "./assets/widgets/main/spinbox.png"
 
 
-const TkinterSidebar = [
+const TkinterWidgets = [
     {
         name: "Main window",
         img: MainWindowImage,
@@ -102,7 +102,7 @@ const TkinterSidebar = [
 ]
 
 
-export default TkinterSidebar
+export default TkinterWidgets
 
 
 /**

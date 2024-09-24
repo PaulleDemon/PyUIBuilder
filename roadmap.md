@@ -32,4 +32,5 @@ Any feature that has 👑 beside it, is meant only for [premium users](./readme.
 
 
 ### 3.0.0
+- [ ] Node based System  (eg: like blender/ unity node system)
 - [ ] Support for PySide / PyQt 👑 (commercial license only)

@@ -52,9 +52,9 @@ To learn more/ see upcoming features visit [roadmap](./roadmap.md)
 
 ## License
 
-To support open-source and development of this tool and upcoming free open-source tools, consider buying a one-time license.
+To support open-source and development of this tool and upcoming free open-source tools and libraries, consider buying a one-time license.
 
-License will give you access to upcoming features, early access and more.
+Purchasing License will allow me to focus on this work and give you access to more advance features, early access and more.
 
 The discount's will be available for limited time only on pre-orders.
 

@@ -14,7 +14,9 @@ import Widget from './canvas/widgets/base'
 import { DraggableWidgetCard } from './components/cards'
 import { DragProvider } from './components/draggable/draggableContext'
 import { ActiveWidgetProvider } from './canvas/activeWidgetContext'
-import TkinterSidebar from './frameworks/tkinter/sidebarWidgets'
+import TkinterWidgets from './frameworks/tkinter/sidebarWidgets'
+import PluginsContainer from './sidebar/pluginsContainer'
+import TkinterPluginWidgets from './frameworks/tkinter/sidebarPlugins'
 
 
 function App() {
@@ -31,7 +33,7 @@ function App() {
 
 	const [dropAnimation, setDropAnimation] = useState(null)
 
-	const [sidebarWidgets, setSidebarWidgets] = useState(TkinterSidebar || [])
+	const [sidebarWidgets, setSidebarWidgets] = useState(TkinterWidgets || [])
 	const [canvasWidgets, setCanvasWidgets] = useState([]) // contains the reference to the widgets inside the canvas
 	
 	const [activeSidebarWidget, setActiveSidebarWidget] = useState(null) // helps with the dnd overlay
@@ -44,12 +46,12 @@ function App() {
 		{
 			name: "Widgets",
 			icon: <LayoutFilled />,
-			content: <WidgetsContainer sidebarContent={TkinterSidebar} onWidgetsUpdate={(widgets) => setSidebarWidgets(widgets)}/>
+			content: <WidgetsContainer sidebarContent={TkinterWidgets} onWidgetsUpdate={(widgets) => setSidebarWidgets(widgets)}/>
 		},
 		{
 			name: "Plugins",
 			icon: <ProductFilled />,
-			content: <></>
+			content: <PluginsContainer sidebarContent={TkinterPluginWidgets}/>
 		},
 		{
 			name: "Uploads",
