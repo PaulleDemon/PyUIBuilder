@@ -13,7 +13,7 @@ import WidgetDraggable from "./widgetDragDrop"
 import WidgetContainer from "../constants/containers"
 import { DragContext } from "../../components/draggable/draggableContext"
 
-
+// FIXME: make it possible to have fit-width and height
 
 const ATTRS_KEYS = ['value', 'label', 'tool', 'onChange', 'toolProps'] // these are attrs keywords, don't use these keywords as keys while defining the attrs property
 
@@ -138,12 +138,12 @@ class Widget extends React.Component {
                         this.setLayout(value)
                     }
                 },
-                events: {
-                    event1: {
-                        tool: Tools.EVENT_HANDLER,
-                        value: ""
-                    }
-                }
+                // events: {
+                //     event1: {
+                //         tool: Tools.EVENT_HANDLER,
+                //         value: ""
+                //     }
+                // }
             },
         }
 
@@ -617,15 +617,11 @@ class Widget extends React.Component {
 
         const {attrs, parentLayout, ...restData} = data
 
-        // for (let [key, value] of Object.entries(attrs | {}))
-        //     this.setAttrValue(key, value)
-
-        // delete data.attrs
 
         let layoutUpdates = {
             parentLayout: parentLayout
         }
-        // FIXME: Need to load the data properly
+
         if (parentLayout === Layouts.FLEX || parentLayout === Layouts.GRID){
 
             layoutUpdates = {
@@ -640,8 +636,6 @@ class Widget extends React.Component {
             }
         }
 
-        console.log("loaded layout: ", layoutUpdates)
-        
         const newData = {
             ...restData,
             layoutUpdates

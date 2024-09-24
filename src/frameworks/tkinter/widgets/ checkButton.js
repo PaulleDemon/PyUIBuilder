@@ -28,6 +28,7 @@ export class CheckBox extends Widget{
             attrs: {
                 ...newAttrs,
                 styling: {
+                    label: "Styling",
                     foregroundColor: {
                         label: "Foreground Color",
                         tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
@@ -128,6 +129,7 @@ export class RadioButton extends Widget{
             attrs: {
                 ...newAttrs,
                 styling: {
+                    label: "styling",
                     foregroundColor: {
                         label: "Foreground Color",
                         tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
