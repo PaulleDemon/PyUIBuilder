@@ -33,6 +33,7 @@ const DraggableWrapper = memo(({dragElementType, dragWidgetClass=null, className
     return (
         <div className={`${className}`} 
                 draggable 
+                data-drag-start-within // this attribute indicates that the drag is occurring from within the project and not a outside file drop
                 data-draggable-type={dragElementType}
                 onDragStart={handleDragStart} 
                 onDragEnd={handleDragEnd}

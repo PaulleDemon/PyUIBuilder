@@ -62,8 +62,8 @@ function Sidebar({tabs}){
                 {
                     sidebarTabs.map((tab, index) => {
                         return (
-                            <div className={`${activeTab === index ? "tw-text-blue-400 " :  "tw-text-gray-600"} tw-cursor-pointer 
-                                            hover:tw-text-blue-400 tw-flex tw-flex-col tw-gap-2 tw-place-items-center`}
+                            <div className={`${activeTab === index ? "tw-text-blue-500" :  "tw-text-gray-600"} 
+                                            tw-cursor-pointer hover:tw-text-blue-500 tw-flex tw-flex-col tw-gap-2 tw-place-items-center`}
                                     key={tab.name}
                                     onMouseEnter={() => {
                                         openSidebar()
@@ -73,7 +73,7 @@ function Sidebar({tabs}){
                                         setActiveTab(index)
                                     }}
                                  >
-                                <div className="tw-bg-white  tw-shadow-lg tw-p-2 tw-rounded-md">
+                                <div className={`${activeTab === index && "tw-border-solid tw-border-[1px] tw-border-blue-500"} tw-bg-white  tw-shadow-lg tw-p-2 tw-rounded-md`}>
                                     {tab.icon}
                                 </div>
                                 <span className="tw-text-[12px] ">{tab.name}</span>

@@ -18,6 +18,11 @@ const DroppableWrapper = memo(({onDrop, droppableTags={}, ...props}) => {
 
     const handleDragEnter = (e) => {
         
+        if (!draggedElement || !draggedElement.getAttribute("data-drag-start-within")){
+            // if the drag is starting from outside (eg: file drop) or if drag doesn't exist
+            return
+        }
+
         const dragElementType = draggedElement.getAttribute("data-draggable-type")
 
 
@@ -42,6 +47,12 @@ const DroppableWrapper = memo(({onDrop, droppableTags={}, ...props}) => {
     }
 
     const handleDragOver = (e) => {
+
+        if (!draggedElement || !draggedElement.getAttribute("data-drag-start-within")){
+            // if the drag is starting from outside (eg: file drop) or if drag doesn't exist
+            return
+        }
+
         // console.log("Drag over: ", e.dataTransfer.getData("text/plain"), e.dataTransfer)
         const dragElementType = draggedElement.getAttribute("data-draggable-type")
 
@@ -57,6 +68,12 @@ const DroppableWrapper = memo(({onDrop, droppableTags={}, ...props}) => {
     }
 
     const handleDropEvent = (e) => {
+
+        if (!draggedElement || !draggedElement.getAttribute("data-drag-start-within")){
+            // if the drag is starting from outside (eg: file drop) or if drag doesn't exist
+            return
+        }
+
         e.stopPropagation()
 
         setShowDroppable({

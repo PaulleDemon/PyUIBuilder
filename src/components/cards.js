@@ -1,14 +1,12 @@
 import { useEffect, useMemo, useRef } from "react"
 import Draggable from "./utils/draggableDnd"
 
-import { FileImageOutlined, GithubOutlined, GitlabOutlined, LinkOutlined,
-            AudioOutlined, VideoCameraOutlined,
-            FileTextOutlined} from "@ant-design/icons"
+import { GithubOutlined, GitlabOutlined, LinkOutlined,
+            AudioOutlined, FileTextOutlined} from "@ant-design/icons"
 import DraggableWrapper from "./draggable/draggable"
-import { useDragContext } from "./draggable/draggableContext"
 
 
-export function SidebarWidgetCard({ name, img, url, widgetClass, innerRef}){
+export function SidebarWidgetCard({ name, img, url, license, widgetClass, innerRef}){
 
     const urlIcon = useMemo(() => {
         if (url){
@@ -36,16 +34,37 @@ export function SidebarWidgetCard({ name, img, url, widgetClass, innerRef}){
                 <div ref={innerRef} className="tw-select-none  tw-h-[200px] tw-w-[230px] tw-flex tw-flex-col 
                                                 tw-rounded-md tw-overflow-hidden 
                                                 tw-gap-2 tw-text-gray-600 tw-bg-[#ffffff44] tw-border-solid tw-border-[1px]
-                                                tw-border-[#888] ">
+                                                tw-border-blue-500 tw-shadow-md">
                     <div className="tw-h-[200px] tw-pointer-events-none tw-w-full tw-overflow-hidden">
                         <img src={img} alt={name} className="tw-object-contain tw-h-full tw-w-full tw-select-none" />
                     </div>
-                    <span className="tw-text-xl tw-text-center">{name}</span>
+                    <span className="tw-text-center tw-text-black tw-text-lg">{name}</span>
                     <div className="tw-flex tw-text-lg tw-place tw-px-4">
 
-                        <a href={url} className="tw-text-black" target="_blank" rel="noopener noreferrer">
+                        <a href={url} className="tw-text-gray-600" target="_blank" rel="noopener noreferrer">
                             {urlIcon}
                         </a>
+
+                        {license?.name && 
+
+                            <div className="tw-ml-auto tw-text-sm">
+                                {
+                                license.url ? 
+                                    <a href={license.url} target="_blank" rel="noreferrer noopener"
+                                        className="tw-p-[1px] tw-px-2 tw-text-blue-500 tw-border-[1px]
+                                                                        tw-border-solid tw-rounded-sm tw-border-blue-500
+                                                                        tw-shadow-md tw-text-center tw-no-underline">
+                                        {license.name}
+                                    </a>
+                                    :
+                                    <div className="tw-p-[1px] tw-px-2 tw-text-blue-500 tw-border-[1px]
+                                                    tw-border-solid tw-rounded-sm tw-border-blue-500
+                                                    tw-shadow-md tw-text-center">
+                                        {license.name}
+                                    </div>
+                                }
+                            </div>    
+                        }
                     </div>
                     
                 </div>
@@ -87,9 +106,10 @@ export function DraggableAssetCard({file}){
 
 
     return (
-        <Draggable className="tw-cursor-pointer">
+        <>
             <div className="tw-w-full tw-h-[240px] tw-p-1 tw-flex tw-flex-col tw-rounded-md tw-overflow-hidden 
-                            tw-gap-2 tw-text-gray-600 tw-bg-[#ffffff44] tw-border-solid tw-border-[1px] tw-border-[#888] ">
+                            tw-gap-2 tw-text-gray-600 tw-bg-[#ffffff44] tw-border-solid tw-border-[1px] 
+                            tw-border-blue-500 tw-shadow-md ">
                 <div className="tw-h-[200px] tw-w-full tw-flex tw-place-content-center tw-p-1 tw-text-3xl tw-overflow-hidden">
                     { file.fileType === "image" &&
                         <img src={file.previewUrl} alt={file.name} className="tw-object-contain tw-h-full tw-w-full tw-select-none" />
@@ -113,9 +133,9 @@ export function DraggableAssetCard({file}){
                     }
 
                 </div>
-                <span className="tw-text-base">{file.name}</span>
+                <span className="tw-text-sm tw-text-back">{file.name}</span>
             </div>
-        </Draggable>
+        </>
     )
 
 }

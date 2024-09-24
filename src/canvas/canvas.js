@@ -841,6 +841,11 @@ class Canvas extends React.Component {
 
         e.preventDefault()
 
+        if (!draggedElement || !draggedElement.getAttribute("data-drag-start-within")){
+            // if the drag is starting from outside (eg: file drop) or if drag doesn't exist
+            return
+        }
+
         const container = draggedElement.getAttribute("data-container")
         const canvasRect = this.canvasRef.current.getBoundingClientRect()
         

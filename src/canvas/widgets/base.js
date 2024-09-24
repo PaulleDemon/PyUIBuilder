@@ -645,6 +645,11 @@ class Widget extends React.Component {
 
     handleDragEnter = (e, draggedElement, setOverElement) => {
 
+        if (!draggedElement || !draggedElement.getAttribute("data-drag-start-within")){
+            // if the drag is starting from outside (eg: file drop) or if drag doesn't exist
+            return
+        }
+
         const dragEleType = draggedElement.getAttribute("data-draggable-type")
 
         // console.log("Drag entering...", dragEleType, draggedElement, this.droppableTags)
@@ -686,6 +691,12 @@ class Widget extends React.Component {
     }
 
     handleDragOver = (e, draggedElement) => {
+
+        if (!draggedElement || !draggedElement.getAttribute("data-drag-start-within")){
+            // if the drag is starting from outside (eg: file drop) or if drag doesn't exist
+            return
+        }
+
         if (draggedElement === this.elementRef.current) {
             // prevent drop on itself, since the widget is invisible when dragging, if dropped on itself, it may consume itself
             return
@@ -706,8 +717,15 @@ class Widget extends React.Component {
     }
 
     handleDropEvent = (e, draggedElement, widgetClass = null) => {
+
+        if (!draggedElement || !draggedElement.getAttribute("data-drag-start-within")){
+            // if the drag is starting from outside (eg: file drop) or if drag doesn't exist
+            return
+        }
+
         e.preventDefault()
         e.stopPropagation()
+    
         // FIXME: sometimes the elements showDroppableStyle is not gone, when dropping on the same widget
         this.setState({
             showDroppableStyle: {
@@ -849,6 +867,8 @@ class Widget extends React.Component {
                             style={outerStyle}
                             data-draggable-type={this.getWidgetType()} // helps with droppable 
                             data-container={this.state.widgetContainer} // indicates how the canvas should handle dragging, one is sidebar other is canvas
+
+                            data-drag-start-within // this attribute indicates that the drag is occurring from within the project and not a outside file drop
 
                             draggable={this.state.dragEnabled}
 

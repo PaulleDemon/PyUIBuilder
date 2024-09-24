@@ -1,6 +1,50 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import { Input, Button, Space, Radio } from "antd"
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons"
+import { SearchOutlined, CloseCircleFilled } from '@ant-design/icons'
+
+
+export const SearchComponent = ({ onSearch, searchValue, onClear, ...props }) => {
+    const inputRef = useRef(null) 
+
+    const handleOuterDivClick = () => {
+        inputRef.current.focus()
+    }
+
+    return (
+        <div className="tw-flex tw-gap-2 input tw-place-items-center" onClick={handleOuterDivClick}>
+            <SearchOutlined />
+            <input 
+                type="text" 
+                placeholder="Search" 
+                className="tw-outline-none tw-w-full tw-border-none" 
+                id="" 
+                onInput={onSearch} 
+                value={searchValue} 
+                ref={inputRef} // Attach the ref to the input
+                {...props}
+            />
+            <div className="">
+                {
+                    searchValue.length > 0 && 
+                    <div className="tw-cursor-pointer tw-text-gray-500" 
+                                onClick={(e) => {
+                                        e.preventDefault()
+                                        e.stopPropagation()
+                                        
+                                        if (onClear)
+                                            onClear()
+                                    }}>
+                        <CloseCircleFilled />
+                    </div>
+                }
+            </div>
+        </div>
+    )
+}
+
+
+
 
 
 export const DynamicInputList = () => {

@@ -8,6 +8,7 @@ import { CloseCircleFilled, InboxOutlined, SearchOutlined } from "@ant-design/ic
 import { DraggableAssetCard } from "../components/cards.js"
 import { filterObjectListStartingWith } from "../utils/filter"
 import { getFileType } from "../utils/file.js"
+import { SearchComponent } from "../components/inputs.js"
 // import { update } from "../redux/assetSlice.js"
 
 
@@ -67,29 +68,18 @@ function UploadsContainer({assets, onAssetUploadChange}) {
 
     return (
         <div className="tw-w-full tw-p-2 tw-gap-4 tw-flex tw-flex-col"
-            onDragEnter={() => { setDragEnter(true) }}
-            onDragLeave={(e) => {
-                // Ensure the drag leave is happening on the container and not on a child element
-                if (e.currentTarget.contains(e.relatedTarget)) {
-                    return
-                }
-                setDragEnter(false)
-            }}
-        >
+                    onDragEnter={() => { setDragEnter(true) }}
+                    onDragLeave={(e) => {
+                        // Ensure the drag leave is happening on the container and not on a child element
+                        if (e.currentTarget.contains(e.relatedTarget)) {
+                            return
+                        }
+                        setDragEnter(false)
+                    }}
+                >
 
-            <div className="tw-flex tw-gap-2 input tw-place-items-center">
-                <SearchOutlined />
-                <input type="text" placeholder="Search" className="tw-outline-none tw-w-full tw-border-none"
-                    id="" onInput={onSearch} value={searchValue} />
-                <div className="">
-                    {
-                        searchValue.length > 0 &&
-                        <div className="tw-cursor-pointer tw-text-gray-600" onClick={() => setSearchValue("")}>
-                            <CloseCircleFilled />
-                        </div>
-                    }
-                </div>
-            </div>
+            <SearchComponent onSearch={onSearch} searchValue={searchValue} 
+                                        onClear={() => setSearchValue("")} />
             <div className="tw-flex tw-relative tw-flex-col tw-gap-2 tw-h-full tw-p-1 tw-pb-4">
                 <Dragger className={`${dragEnter && "!tw-h-[80vh] !tw-opacity-100 !tw-bg-[#fafafa] tw-absolute tw-top-0 tw-z-10"} tw-w-full !tw-min-w-[250px]`}
                     {...props}
