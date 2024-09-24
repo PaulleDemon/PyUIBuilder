@@ -25,6 +25,9 @@ class Widget extends React.Component {
 
     static widgetType = "widget"
 
+    static requirements = [] // requirements for the widgets (libraries) eg: tkvideoplayer, tktimepicker
+    static requiredImports = [] // import statements
+
     // static contextType = ActiveWidgetContext
 
     constructor(props) {
@@ -70,6 +73,8 @@ class Widget extends React.Component {
             selected: false,
             widgetName: widgetName || 'widget', // this will later be converted to variable name
             enableRename: false, // will open the widgets editable div for renaming
+
+            parentLayout: null, // depending on the parents layout the child will behave
 
             isDragging: false, //  tells if the widget is currently being dragged
             dragEnabled: true,
@@ -128,6 +133,7 @@ class Widget extends React.Component {
                         ],
                     },
                     onChange: (value) => {
+                        console.log("changed: ", value)
                         // this.setAttrValue("layout", value)
                         this.setLayout(value)
                     }
@@ -267,6 +273,18 @@ class Widget extends React.Component {
         return this.constructor.widgetType
     }
 
+    getRequirements = () => {
+        return this.constructor.requirements
+    }
+
+    getImports = () => {
+        return this.constructor.requiredImports
+    }
+
+    getCode = () => {
+        throw new NotImplementedError("Get Code must be implemented by the subclass")
+    }
+
     getAttributes() {
         return this.state.attrs
     }
@@ -344,19 +362,6 @@ class Widget extends React.Component {
         return this.elementRef.current
     }
 
-    getLayoutStyleForWidget = () => {
-
-        switch (this.state.attrs.layout) {
-            case 'grid':
-                return { display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }
-            case 'flex':
-                return { display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }
-            case 'absolute':
-                return { position: 'absolute', left: "0", top: "0" } // Custom positioning
-            default:
-                return {}
-        }
-    }
 
     /**
      * Given the key as a path, sets the value for the widget attribute
@@ -454,23 +459,61 @@ class Widget extends React.Component {
         })
     }
 
+    /**
+     * 
+     * @param {Layouts} layout 
+     */
+    setParentLayout = (layout) => {
+
+        let updates = {
+            parentLayout: layout,
+        }
+
+        if (layout === Layouts.FLEX || layout === Layouts.GRID){
+
+            updates = {
+                ...updates,
+                positionType: PosType.NONE
+            }
+
+        }else if (layout === Layouts.PLACE){
+            updates = {
+                ...updates,
+                positionType: PosType.ABSOLUTE
+            }
+        }
+
+        console.log("Parent layout updated: ", updates)
+
+        this.setState(updates)
+    }
+
+    getLayout = () => {
+
+        return this.state?.attrs?.layout?.value || Layouts.FLEX
+    }
+
     setLayout(value) {
         // FIXME: when the parent layout is place, the child widgets should have position absolute
         const { layout, direction, grid = { rows: 1, cols: 1 }, gap = 10 } = value
 
+        console.log("layout value: ", value)
+
         const widgetStyle = {
             ...this.state.widgetStyling,
-            display: layout,
+            display: layout !== Layouts.PLACE ? layout : "block",
             flexDirection: direction,
             gap: `${gap}px`,
             flexWrap: "wrap"
             // TODO: add grid rows and cols
         }
 
-        this.setAttrValue("layout", value)
         this.updateState({
             widgetStyling: widgetStyle
         })
+
+        this.setAttrValue("layout", value)
+        this.props.onLayoutUpdate({parentId: this.__id, parentLayout: layout})// inform children about the layout update
 
     }
 
@@ -480,7 +523,7 @@ class Widget extends React.Component {
      * @param {string} value - Value of the style
      */
     setWidgetStyling(key, value) {
-
+        
         const widgetStyle = {
             ...this.state.widgetStyling,
             [key]: value
@@ -555,6 +598,7 @@ class Widget extends React.Component {
             size: this.state.size,
             widgetContainer: this.state.widgetContainer,
             widgetStyling: this.state.widgetStyling,
+            parentLayout: this.state.parentLayout,
             positionType: this.state.positionType,
             attrs: this.serializeAttrsValues() // makes sure that functions are not serialized
         })
@@ -571,14 +615,40 @@ class Widget extends React.Component {
 
         data = {...data} // create a shallow copy
 
-        const {attrs, ...restData} = data
+        const {attrs, parentLayout, ...restData} = data
 
         // for (let [key, value] of Object.entries(attrs | {}))
         //     this.setAttrValue(key, value)
 
         // delete data.attrs
 
-        this.setState(restData,  () => {
+        let layoutUpdates = {
+            parentLayout: parentLayout
+        }
+        // FIXME: Need to load the data properly
+        if (parentLayout === Layouts.FLEX || parentLayout === Layouts.GRID){
+
+            layoutUpdates = {
+                ...layoutUpdates,
+                positionType: PosType.NONE
+            }
+
+        }else if (parentLayout === Layouts.PLACE){
+            layoutUpdates = {
+                ...layoutUpdates,
+                positionType: PosType.ABSOLUTE
+            }
+        }
+
+        console.log("loaded layout: ", layoutUpdates)
+        
+        const newData = {
+            ...restData,
+            layoutUpdates
+        }
+        console.log("loaded layout2: ", newData)
+
+        this.setState(newData,  () => {
             // UPdates attrs
             let newAttrs = { ...this.state.attrs }
 
@@ -610,6 +680,8 @@ class Widget extends React.Component {
         e.stopPropagation()
 
         callback(this.elementRef?.current || null)
+
+        // this.props.onWidgetDragStart(this.elementRef?.current)
 
         // Create custom drag image with full opacity, this will ensure the image isn't taken from part of the canvas
         const dragImage = this.elementRef?.current.cloneNode(true)
@@ -775,6 +847,7 @@ class Widget extends React.Component {
             // console.log("Dropped on meee: ", swapArea, this.swappableAreaRef.current.contains(e.target), thisContainer)
 
             this.props.onAddChildWidget({
+                event: e,
                 parentWidgetId: this.__id,
                 dragElementID: draggedElement.getAttribute("data-widget-id"),
                 swap: swapArea || false
@@ -784,7 +857,11 @@ class Widget extends React.Component {
 
             // console.log("Dropped on Sidebar: ", this.__id)
             this.props.onCreateWidgetRequest(widgetClass, ({ id, widgetRef }) => {
-                this.props.onAddChildWidget({ parentWidgetId: this.__id, dragElementID: id }) //  if dragged from the sidebar create the widget first
+                this.props.onAddChildWidget({
+                                            event: e, 
+                                            parentWidgetId: this.__id, 
+                                            dragElementID: id 
+                                        }) //  if dragged from the sidebar create the widget first
             })
 
         }
@@ -811,6 +888,8 @@ class Widget extends React.Component {
         callback()
         this.setState({ isDragging: false })
         this.enablePointerEvents()
+
+        // this.props.onWidgetDragEnd(this.elementRef?.current)
     }
 
     disablePointerEvents = () => {
@@ -854,6 +933,9 @@ class Widget extends React.Component {
             height: `${this.state.size.height}px`,
             opacity: this.state.isDragging ? 0.3 : 1,
         }
+
+        // const boundingRect = this.getBoundingRect
+
         // FIXME: if the parent container has tw-overflow-none, then the resizable indicator are also hidden
         return (
 
@@ -887,14 +969,14 @@ class Widget extends React.Component {
                             >
                                 <div className={`tw-absolute tw-top-[-5px] tw-left-[-5px] 
                                                     tw-border-1 tw-opacity-0 tw-border-solid tw-border-black
-                                                    tw-w-full tw-h-full
+                                                    tw-w-full tw-h-full tw-bg-red-400
                                                     tw-scale-[1.1] tw-opacity-1 tw-z-[-1] `}
                                     style={{
                                         width: "calc(100% + 10px)",
                                         height: "calc(100% + 10px)",
                                     }}
                                     ref={this.swappableAreaRef}
-
+                                    // swapable area
                                 >
                                     {/* helps with swappable: if the mouse is in this area while hovering/dropping, then swap */}
                                 </div>
@@ -916,13 +998,14 @@ class Widget extends React.Component {
                                     >
                                     </div>
                                 }
-
-                                <div className={`tw-absolute tw-bg-transparent tw-top-[-10px] tw-left-[-10px] tw-opacity-100 
-                                                tw-w-full tw-h-full tw-z-[-1]
+                                {/* FIXME: the resize handles get clipped in parent container */}
+                                <div className={`tw-absolute tw-z-[-1] tw-bg-transparent tw-top-[-10px] tw-left-[-10px] tw-opacity-100 
+                                                tw-w-full tw-h-full 
                                                 ${this.state.selected ? 'tw-border-2 tw-border-solid tw-border-blue-500' : 'tw-hidden'}`}
                                     style={{
                                         width: "calc(100% + 20px)",
                                         height: "calc(100% + 20px)",
+                                        zIndex: -1,
                                     }}
                                 >
 
