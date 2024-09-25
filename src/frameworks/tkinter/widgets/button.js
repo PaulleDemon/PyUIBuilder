@@ -69,7 +69,7 @@ class Button extends TkinterBase{
         return (
             <div className="tw-w-flex tw-flex-col tw-w-full tw-h-full tw-rounded-md 
                             tw-border tw-border-solid tw-border-gray-400 tw-overflow-hidden">
-                <div className="tw-p-2 tw-w-full tw-h-full tw-content-start " style={this.state.widgetInnerStyling}>
+                <div className="tw-p-2 tw-w-full tw-flex tw-place-content-center tw-place-items-center tw-h-full tw-text-center" style={this.state.widgetInnerStyling}>
                     {/* {this.props.children} */}
                     <div className="tw-text-sm" style={{color: this.getAttrValue("styling.foregroundColor")}}>
                         {this.getAttrValue("buttonLabel")}

@@ -132,7 +132,7 @@ class TkinterBase extends Widget {
      * loads the data 
      * @param {object} data 
      */
-    load = (data) => {
+    load(data, callback=null){
 
         if (Object.keys(data).length === 0) return // no data to load
 
@@ -188,7 +188,13 @@ class TkinterBase extends Widget {
                     nestedObject[lastKey].value = value
             })
 
-            this.updateState({ attrs: newAttrs })
+            
+            if (newAttrs?.styling?.backgroundColor){
+                // TODO: find a better way to apply innerStyles
+                this.setWidgetInnerStyle("backgroundColor", newAttrs.styling.backgroundColor.value)
+            }
+
+            this.updateState({ attrs: newAttrs }, callback)
 
         })  
 

@@ -774,7 +774,6 @@ class Canvas extends React.Component {
 
             const parentWidget = this.widgetRefs[parentWidgetId].current
             const parentRect = parentWidget.getBoundingRect()
-            const canvasRect = this.canvasRef.current.getBoundingClientRect()
             const { clientX, clientY } = event
     
 
@@ -782,7 +781,7 @@ class Canvas extends React.Component {
                 x: (clientX - parentRect.left) / this.state.zoom,
                 y: (clientY - parentRect.top) / this.state.zoom,
             }
-
+            // TODO: fix swapping for grid layouts
             if (swap) {
                 // If swapping, we need to find the common parent
                 const grandParentWidgetObj = this.findWidgetFromListById(dropWidgetObj.parent)

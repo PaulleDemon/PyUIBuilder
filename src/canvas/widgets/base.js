@@ -12,10 +12,11 @@ import { DragWidgetProvider } from "./draggableWidgetContext"
 import WidgetDraggable from "./widgetDragDrop"
 import WidgetContainer from "../constants/containers"
 import { DragContext } from "../../components/draggable/draggableContext"
-import { removeKeyFromObject } from "../../utils/common"
+import { isNumeric, removeKeyFromObject } from "../../utils/common"
 
 // FIXME: make it possible to have fit-width and height
-// FIXME: widget styling not being applied if directly added to child instead of the canvas
+
+// TODO: make it possible to apply widgetInnerStyle on load
 
 const ATTRS_KEYS = ['value', 'label', 'tool', 'onChange', 'toolProps'] // these are attrs keywords, don't use these keywords as keys while defining the attrs property
 
@@ -63,12 +64,12 @@ class Widget extends React.Component {
         // This indicates if the draggable can be dropped on this widget, set this to null to disable drops
         this.droppableTags = {} 
         
-        this.boundingRect = {
-            x: 0,
-            y: 0,
-            height: 100,
-            width: 100
-        }
+        // this.boundingRect = {
+        //     x: 0,
+        //     y: 0,
+        //     height: 100,
+        //     width: 100
+        // }
 
         this.state = {
             zIndex: 0,
@@ -178,6 +179,10 @@ class Widget extends React.Component {
 
         this.setPosType = this.setPosType.bind(this)
         this.setParentLayout = this.setParentLayout.bind(this)
+
+        this.load = this.load.bind(this)
+        this.serialize = this.serialize.bind(this)
+        this.serializeAttrsValues = this.serializeAttrsValues.bind(this)
     }
 
     componentDidMount() {
@@ -186,7 +191,7 @@ class Widget extends React.Component {
         
         if (this.state.attrs.layout){
             this.setLayout(this.state.attrs.layout.value)
-            console.log("prior layout: ", this.state.attrs.layout.value)
+            // console.log("prior layout: ", this.state.attrs.layout.value)
         }
         
         if (this.state.attrs.styling.backgroundColor)
@@ -230,8 +235,6 @@ class Widget extends React.Component {
 
     getToolbarAttrs() {
 
-        console.log("Current attributes: ", this.state.attrs)
-
         return ({
             id: this.__id,
             widgetName: {
@@ -257,6 +260,50 @@ class Widget extends React.Component {
                     toolProps: { placeholder: "height", max: this.maxSize.height, min: this.minSize.height },
                     value: this.state.size.height || 100,
                     onChange: (value) => this.setWidgetSize(null, value)
+                },
+                fitWidth: {
+                    label: "Fit width",
+                    tool: Tools.CHECK_BUTTON,
+                    value: this.state.size?.width === 'fit-content' || false,
+                    onChange: (value) => {  
+                        if (value === true){
+                            this.updateState({
+                                    size: {
+                                        ...this.state.size,
+                                        width: 'fit-content'
+                                    }
+                                })
+                        }else{
+                            this.updateState({
+                                size: {
+                                    ...this.state.size,
+                                    width: Math.floor(this.getBoundingRect().width)
+                                }
+                            })
+                        }
+                    }
+                },
+                fitHeight: {
+                    label: "Fit height",
+                    tool: Tools.CHECK_BUTTON,
+                    value: this.state.size?.height === 'fit-content' || false,
+                    onChange: (value) => {  
+                        if (value === true){
+                            this.updateState({
+                                    size: {
+                                        ...this.state.size,
+                                        height: 'fit-content'
+                                    }
+                                })
+                        }else{
+                            this.updateState({
+                                size: {
+                                    ...this.state.size,
+                                    height: Math.floor(this.getBoundingRect().height)
+                                }
+                            })
+                        }
+                    }
                 },
             },
 
@@ -440,7 +487,7 @@ class Widget extends React.Component {
      * this is a helper function to remove any non-serializable data associated with attrs
      * eg: {"styling.backgroundColor": "#ffff", "layout": {layout: "flex", direction: "", grid: }}
      */
-    serializeAttrsValues = () => {
+    serializeAttrsValues(){
 
         const serializeValues = (obj, currentPath = "") => {
             const result = {}
@@ -524,11 +571,10 @@ class Widget extends React.Component {
     }
 
     setLayout(value) {
-        // FIXME: when the parent layout is place, the child widgets should have position absolute
         const { layout, direction, grid = { rows: 1, cols: 1 }, gap = 10 } = value
 
-        console.log("layout value: ", value)
-
+        // console.log("layout value: ", value)
+        // FIXME: In grid layout the layout doesn't adapt to the size of the child if resized
         let widgetStyle = {
             ...this.state.widgetInnerStyling,
             display: layout !== Layouts.PLACE ? layout : "block",
@@ -537,7 +583,8 @@ class Widget extends React.Component {
             flexWrap: "wrap",
             gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))",
             gridTemplateRows: "repeat(auto-fill, minmax(100px, 1fr))",  
-            // gridAutoRows: "auto"
+            // gridAutoRows: 'minmax(100px, auto)',  // Rows with minimum height of 100px, and grow to fit content
+            // gridAutoCols: 'minmax(100px, auto)',  // Cols with minimum height of 100px, and grow to fit content
         }
 
         this.updateState({
@@ -647,7 +694,7 @@ class Widget extends React.Component {
      * 
      * serialize data for saving
      */
-    serialize = () => {
+    serialize(){
         // NOTE: when serializing make sure, you are only passing serializable objects not functions or other
         return ({
             zIndex: this.state.zIndex,
@@ -667,8 +714,9 @@ class Widget extends React.Component {
     /**
      * loads the data 
      * @param {object} data 
+     * @param {() => void | undefined} callback - optional callback that will be called after load 
      */
-    load = (data) => {
+    load(data, callback){
 
         if (Object.keys(data).length === 0) return // no data to load
 
@@ -699,10 +747,9 @@ class Widget extends React.Component {
             ...restData,
             ...layoutUpdates
         }
-        console.log("loaded layout2: ", newData)
 
         this.setState(newData,  () => {
-            // UPdates attrs
+            // Updates attrs
             let newAttrs = { ...this.state.attrs }
 
             // Iterate over each path in the updates object
@@ -723,7 +770,12 @@ class Widget extends React.Component {
                     nestedObject[lastKey].value = value
             })
 
-            this.updateState({ attrs: newAttrs })
+            if (newAttrs?.styling?.backgroundColor){
+                // some widgets don't have background color
+                this.setWidgetInnerStyle("backgroundColor", newAttrs.styling.backgroundColor)
+            }
+
+            this.updateState({ attrs: newAttrs }, callback)
 
         })  
 
@@ -785,7 +837,7 @@ class Widget extends React.Component {
             return
         }
 
-        setOverElement(e.currentTarget) // provide context to the provider
+        setOverElement(this.elementRef.current) // provide context to the provider
 
         let showDrop = {
             allow: true,
@@ -858,8 +910,6 @@ class Widget extends React.Component {
                 allow: false,
                 show: false
             }
-        }, () => {
-            console.log("droppable cleared: ", this.elementRef.current, this.state.showDroppableStyle)
         })
 
 
@@ -923,16 +973,29 @@ class Widget extends React.Component {
     }
 
 
-    handleDragLeave = (e, draggedElement) => {
+    handleDragLeave = (e, draggedElement, overElement) => {
 
-        // console.log("Left: ", e.currentTarget, e.relatedTarget, draggedElement)
+        e.preventDefault()
+        e.stopPropagation()
 
-        if (!e.currentTarget.contains(draggedElement)) {
+        const rect = this.getBoundingRect()
+        
+        const {clientX, clientY} = e
+        
+        const isInBoundingBox = (clientX >= rect.left && clientX <= rect.right &&
+            clientY >= rect.top && clientY <= rect.bottom)
+            
+        // if (!e.currentTarget.contains(draggedElement)) {
+        if (!isInBoundingBox) {
+            // FIXME: if the mouse pointer is over this widget's child, then droppable from here
+            // only if the dragging element is not within the rect of this element remove the dragging rect
             this.setState({
                 showDroppableStyle: {
                     allow: false,
                     show: false
                 }
+            }, () => {
+                // console.log("Drag left", this.state.showDroppableStyle)
             })
 
         }
@@ -977,6 +1040,9 @@ class Widget extends React.Component {
      */
     render() {  
 
+        const width = isNumeric(this.state.size.width) ? `${this.state.size.width}px` : this.state.size.width
+        const height = isNumeric(this.state.size.height) ? `${this.state.size.height}px` : this.state.size.height
+
         let outerStyle = {
             ...this.state.widgetOuterStyling,
             cursor: this.cursor,
@@ -984,8 +1050,8 @@ class Widget extends React.Component {
             position: this.state.positionType, //  don't change this if it has to be movable on the canvas
             top: `${this.state.pos.y}px`,
             left: `${this.state.pos.x}px`,
-            width: `${this.state.size.width}px`,
-            height: `${this.state.size.height}px`,
+            width: width,
+            height: height,
             opacity: this.state.isDragging ? 0.3 : 1,
         }
 
@@ -996,7 +1062,7 @@ class Widget extends React.Component {
 
             <DragContext.Consumer>
                 {
-                    ({ draggedElement, widgetClass, onDragStart, onDragEnd, setOverElement }) => (
+                    ({ draggedElement, widgetClass, onDragStart, onDragEnd, overElement, setOverElement }) => (
 
                         <div data-widget-id={this.__id}
                             ref={this.elementRef}
@@ -1013,7 +1079,7 @@ class Widget extends React.Component {
                             onDrop={(e) => this.handleDropEvent(e, draggedElement, widgetClass)}
 
                             onDragEnter={(e) => this.handleDragEnter(e, draggedElement, setOverElement)}
-                            onDragLeave={(e) => this.handleDragLeave(e, draggedElement)}
+                            onDragLeave={(e) => this.handleDragLeave(e, draggedElement, overElement)}
 
                             onDragStart={(e) => this.handleDragStart(e, onDragStart)}
                             onDragEnd={(e) => this.handleDragEnd(onDragEnd)}

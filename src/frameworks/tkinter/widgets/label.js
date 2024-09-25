@@ -47,7 +47,7 @@ class Label extends TkinterBase{
 
     componentDidMount(){
         super.componentDidMount()
-        this.setAttrValue("styling.backgroundColor", "#fff")
+        this.setAttrValue("styling.backgroundColor", "#fff0")
         this.setWidgetInnerStyle("backgroundColor", "#fff0")
     }
 
@@ -68,7 +68,7 @@ class Label extends TkinterBase{
     renderContent(){
         return (
             <div className="tw-w-flex tw-flex-col tw-w-full tw-h-full tw-rounded-md tw-overflow-hidden">
-                <div className="tw-p-2 tw-w-full tw-h-full tw-content-start " style={this.state.widgetInnerStyling}>
+                <div className="tw-p-2 tw-w-full tw-h-full  tw-flex tw-place-content-center tw-place-items-center " style={this.state.widgetInnerStyling}>
                     {/* {this.props.children} */}
                     <div className="tw-text-sm" style={{color: this.getAttrValue("styling.foregroundColor")}}>
                         {this.getAttrValue("labelWidget")}
