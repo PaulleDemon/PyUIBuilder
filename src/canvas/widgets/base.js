@@ -12,8 +12,10 @@ import { DragWidgetProvider } from "./draggableWidgetContext"
 import WidgetDraggable from "./widgetDragDrop"
 import WidgetContainer from "../constants/containers"
 import { DragContext } from "../../components/draggable/draggableContext"
+import { removeKeyFromObject } from "../../utils/common"
 
 // FIXME: make it possible to have fit-width and height
+// FIXME: widget styling not being applied if directly added to child instead of the canvas
 
 const ATTRS_KEYS = ['value', 'label', 'tool', 'onChange', 'toolProps'] // these are attrs keywords, don't use these keywords as keys while defining the attrs property
 
@@ -90,7 +92,10 @@ class Widget extends React.Component {
             size: { width: 100, height: 100 },
             positionType: PosType.ABSOLUTE,
 
-            widgetStyling: {
+            widgetOuterStyling: {
+                // responsible for stuff like position, grid placement etc
+            },
+            widgetInnerStyling: {
                 // use for widget's inner styling
                 backgroundColor: "#fff",
                 display: "flex",
@@ -106,7 +111,7 @@ class Widget extends React.Component {
                         tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
                         value: "#fff",
                         onChange: (value) => {
-                            this.setWidgetStyling("backgroundColor", value)
+                            this.setWidgetInnerStyle("backgroundColor", value)
                             this.setAttrValue("styling.backgroundColor", value)
                         }
                     },
@@ -119,10 +124,10 @@ class Widget extends React.Component {
                     value: {
                         layout: "flex",
                         direction: "row",
-                        grid: {
-                            rows: 1,
-                            cols: 1
-                        },
+                        // grid: {
+                        //     rows: 12,
+                        //     cols: 12
+                        // },
                         gap: 10,
                     },
                     toolProps: {
@@ -133,7 +138,6 @@ class Widget extends React.Component {
                         ],
                     },
                     onChange: (value) => {
-                        console.log("changed: ", value)
                         // this.setAttrValue("layout", value)
                         this.setLayout(value)
                     }
@@ -168,9 +172,12 @@ class Widget extends React.Component {
         this.setPos = this.setPos.bind(this)
         this.setAttrValue = this.setAttrValue.bind(this)
         this.setWidgetName = this.setWidgetName.bind(this)
-        this.setWidgetStyling = this.setWidgetStyling.bind(this)
-        this.setPosType = this.setPosType.bind(this)
+        
+        this.setWidgetInnerStyle = this.setWidgetInnerStyle.bind(this)
+        this.setWidgetOuterStyle = this.setWidgetOuterStyle.bind(this)
 
+        this.setPosType = this.setPosType.bind(this)
+        this.setParentLayout = this.setParentLayout.bind(this)
     }
 
     componentDidMount() {
@@ -183,7 +190,7 @@ class Widget extends React.Component {
         }
         
         if (this.state.attrs.styling.backgroundColor)
-            this.setWidgetStyling('backgroundColor', this.state.attrs.styling?.backgroundColor.value || "#fff")
+            this.setWidgetInnerStyle('backgroundColor', this.state.attrs.styling?.backgroundColor.value || "#fff")
 
         this.load(this.props.initialData || {}) // load the initial data
 
@@ -222,6 +229,8 @@ class Widget extends React.Component {
     }
 
     getToolbarAttrs() {
+
+        console.log("Current attributes: ", this.state.attrs)
 
         return ({
             id: this.__id,
@@ -364,6 +373,23 @@ class Widget extends React.Component {
 
 
     /**
+     * 
+     * @param {string} path - eg: styling.backgroundColor
+     * @returns 
+     */
+    removeAttr = (path) =>{
+
+        const newAttrs = removeKeyFromObject(path, this.state.attrs)
+
+        this.setState({
+            attrs: newAttrs
+        })
+
+        return newAttrs
+
+    }
+
+    /**
      * Given the key as a path, sets the value for the widget attribute
      * @param {string} path - path to the key, eg: styling.backgroundColor
      * @param {any} value 
@@ -460,10 +486,10 @@ class Widget extends React.Component {
     }
 
     /**
-     * 
+     * inform the child about the parent layout changes
      * @param {Layouts} layout 
      */
-    setParentLayout = (layout) => {
+    setParentLayout(layout){
 
         let updates = {
             parentLayout: layout,
@@ -488,6 +514,10 @@ class Widget extends React.Component {
         this.setState(updates)
     }
 
+    getParentLayout = () => {
+        return this.state.parentLayout
+    }
+
     getLayout = () => {
 
         return this.state?.attrs?.layout?.value || Layouts.FLEX
@@ -499,17 +529,19 @@ class Widget extends React.Component {
 
         console.log("layout value: ", value)
 
-        const widgetStyle = {
-            ...this.state.widgetStyling,
+        let widgetStyle = {
+            ...this.state.widgetInnerStyling,
             display: layout !== Layouts.PLACE ? layout : "block",
             flexDirection: direction,
             gap: `${gap}px`,
-            flexWrap: "wrap"
-            // TODO: add grid rows and cols
+            flexWrap: "wrap",
+            gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))",
+            gridTemplateRows: "repeat(auto-fill, minmax(100px, 1fr))",  
+            // gridAutoRows: "auto"
         }
 
         this.updateState({
-            widgetStyling: widgetStyle
+            widgetInnerStyling: widgetStyle
         })
 
         this.setAttrValue("layout", value)
@@ -517,20 +549,46 @@ class Widget extends React.Component {
 
     }
 
+    getWidgetInnerStyle = (key) => {
+        return this.state.widgetInnerStyling[key]
+    }
+
+    getWidgetOuterStyle = (key) => {
+        return this.state.widgetOuterStyling[key]
+    }
+
+    /**
+     * sets outer styling like grid placement etc, don't use this for background color, foreground color etc
+     * @param {string} key - The string in react Style format
+     * @param {string} value - Value of the style
+     */
+    setWidgetOuterStyle(key, value){
+        const widgetStyle = {
+            ...this.state.widgetOuterStyling,
+            [key]: value
+        }
+
+        this.setState({
+            widgetOuterStyling: widgetStyle
+        })
+
+        console.log("widget styling: ", widgetStyle)
+    }
+
     /**
      * 
      * @param {string} key - The string in react Style format
      * @param {string} value - Value of the style
      */
-    setWidgetStyling(key, value) {
+    setWidgetInnerStyle(key, value) {
         
         const widgetStyle = {
-            ...this.state.widgetStyling,
+            ...this.state.widgetInnerStyling,
             [key]: value
         }
 
         this.setState({
-            widgetStyling: widgetStyle
+            widgetInnerStyling: widgetStyle
         })
 
     }
@@ -597,7 +655,8 @@ class Widget extends React.Component {
             pos: this.state.pos,
             size: this.state.size,
             widgetContainer: this.state.widgetContainer,
-            widgetStyling: this.state.widgetStyling,
+            widgetInnerStyling: this.state.widgetInnerStyling,
+            widgetOuterStyling: this.state.widgetOuterStyling,
             parentLayout: this.state.parentLayout,
             positionType: this.state.positionType,
             attrs: this.serializeAttrsValues() // makes sure that functions are not serialized
@@ -638,7 +697,7 @@ class Widget extends React.Component {
 
         const newData = {
             ...restData,
-            layoutUpdates
+            ...layoutUpdates
         }
         console.log("loaded layout2: ", newData)
 
@@ -660,7 +719,8 @@ class Widget extends React.Component {
                 })
 
                 // Set the value at the last key
-                nestedObject[lastKey].value = value
+                if (nestedObject[lastKey])
+                    nestedObject[lastKey].value = value
             })
 
             this.updateState({ attrs: newAttrs })
@@ -899,12 +959,12 @@ class Widget extends React.Component {
 
     /**
      * Note: you must implement this method in subclass, if you want children make sure to pass
-     * {this.props.children}, to modify the style add this.state.widgetStyling
+     * {this.props.children}, to modify the style add this.state.widgetInnerStyling
     */
     renderContent() {
         // throw new NotImplementedError("render method has to be implemented")
         return (
-            <div className="tw-w-full tw-h-full tw-p-2 tw-content-start tw-rounded-md tw-overflow-hidden" style={this.state.widgetStyling}>
+            <div className="tw-w-full tw-h-full tw-p-2 tw-content-start tw-rounded-md tw-overflow-hidden" style={this.state.widgetInnerStyling}>
                 {this.props.children}
             </div>
         )
@@ -918,6 +978,7 @@ class Widget extends React.Component {
     render() {  
 
         let outerStyle = {
+            ...this.state.widgetOuterStyling,
             cursor: this.cursor,
             zIndex: this.state.zIndex,
             position: this.state.positionType, //  don't change this if it has to be movable on the canvas

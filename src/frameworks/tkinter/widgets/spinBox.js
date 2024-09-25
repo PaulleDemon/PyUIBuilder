@@ -2,9 +2,10 @@ import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
 import { removeKeyFromObject } from "../../../utils/common"
 import { DownOutlined, UpOutlined } from "@ant-design/icons"
+import TkinterBase from "./base"
 
 
-class SpinBox extends Widget{
+class SpinBox extends TkinterBase{
 
     static widgetType = "spin_box"
     constructor(props) {
@@ -26,7 +27,7 @@ class SpinBox extends Widget{
                         tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
                         value: "#000",
                         onChange: (value) => {
-                            this.setWidgetStyling("color", value)
+                            this.setWidgetInnerStyle("color", value)
                             this.setAttrValue("styling.foregroundColor", value)
                         }
                     }
@@ -92,7 +93,7 @@ class SpinBox extends Widget{
     renderContent(){
         return (
             <div className="tw-w-flex tw-flex-col tw-w-full tw-h-full tw-rounded-md tw-overflow-hidden">
-                <div className="tw-p-2 tw-w-full tw-h-full tw-flex tw-place-items-center tw-justify-between" style={this.state.widgetStyling}>
+                <div className="tw-p-2 tw-w-full tw-h-full tw-flex tw-place-items-center tw-justify-between" style={this.state.widgetInnerStyling}>
                     <div className="tw-text-sm ">
                         {this.getAttrValue("spinProps.default")}
                     </div>

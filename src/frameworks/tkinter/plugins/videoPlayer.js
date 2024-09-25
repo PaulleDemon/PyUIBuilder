@@ -51,7 +51,7 @@ class VideoPlayer extends Widget{
             <div className="tw-w-flex tw-flex-col tw-w-full tw-h-full tw-rounded-md 
                             tw-border tw-border-solid tw-border-gray-400 tw-overflow-hidden">
                 <div className="tw-p-2 tw-w-full tw-h-full tw-content-start tw-pointer-events-none" 
-                        style={this.state.widgetStyling}>
+                        style={this.state.widgetInnerStyling}>
                     <div className="tw-relative tw-w-full tw-h-full">
                         <div className="tw-absolute tw-text-white tw-left-1/2 tw-top-1/2 
                                         tw--translate-x-1/2 tw--translate-y-1/2">

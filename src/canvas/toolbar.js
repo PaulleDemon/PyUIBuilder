@@ -87,7 +87,7 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
                         }}
                     />
                 </div>
-                <div className="tw-flex tw-flex-col">
+                {/* <div className="tw-flex tw-flex-col">
                     <span className="tw-text-sm tw-font-medium">Grids</span>
                     <div className="tw-flex tw-gap-2">
                         <div className="tw-flex tw-flex-col">
@@ -123,7 +123,7 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
                             />
                         </div>
                     </div>
-                </div>
+                </div> */}
 
             </div>
         )

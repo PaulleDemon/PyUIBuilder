@@ -237,7 +237,7 @@ class Canvas extends React.Component {
                     this.state.selectedWidget?.setZIndex(0)
                     selectedWidget.setZIndex(1000)
                     selectedWidget.select()
-                    // console.log("selected widget", selectedWidget, this.state.selectedWidget)
+                    console.log("selected widget", selectedWidget.getToolbarAttrs(), selectedWidget, this.state.selectedWidget)
                     this.setState({
                         selectedWidget: selectedWidget,
                         toolbarAttrs: selectedWidget.getToolbarAttrs()
@@ -672,6 +672,7 @@ class Canvas extends React.Component {
         }
 
 
+        console.log("droped on canvas: ", container)
 
         if (container === WidgetContainer.SIDEBAR) {
 
@@ -717,10 +718,12 @@ class Canvas extends React.Component {
                         ...childData,
                         pos: { x: finalPosition.x, y: finalPosition.y },
                         positionType: PosType.ABSOLUTE, // makes sure that after dropping the position is set to absolute value
+                        parentLayout: null,// reset the parent layout when its put on the canvas
                         zIndex: 0,
                         widgetContainer: WidgetContainer.CANVAS
                     }
                 }
+                console.log("dropped to canvas: ", updatedChildWidget)
             
                 let updatedWidgets = this.removeWidgetFromCurrentList(widgetObj.current.getId())
 
@@ -765,7 +768,7 @@ class Canvas extends React.Component {
         // Find the dragged widget object
         let dragWidgetObj = this.findWidgetFromListById(dragElementID)
 
-        // console.log("Drag widget obj: ", dragWidgetObj)
+        console.log("Drag widget obj: ", dragWidgetObj, dropWidgetObj)
 
         if (dropWidgetObj && dragWidgetObj) {
             const dragWidget = this.widgetRefs[dragWidgetObj.id]
@@ -815,9 +818,9 @@ class Canvas extends React.Component {
                 // Non-swap mode: Add the dragged widget as a child of the drop widget
                 let updatedWidgets = this.removeWidgetFromCurrentList(dragElementID)
 
-                const parentLayout = parentWidget.getLayout()?.layout
+                const parentLayout = parentWidget.getLayout()?.layout || null
 
-                console.log("parent layout: ", parentLayout, parentWidget.getLayout(), parentWidget)
+                console.log("parent layout child add: ", parentLayout, parentWidget.getLayout(), parentWidget)
                 dragWidget.current.setPos(finalPosition.x, finalPosition.y)
                 const updatedDragWidget = {
                     ...dragWidgetObj,
@@ -825,6 +828,7 @@ class Canvas extends React.Component {
                     initialData: {
                         ...dragData,
                         positionType: parentLayout === Layouts.PLACE ? PosType.ABSOLUTE : PosType.NONE,
+                        parentLayout: parentLayout,
                         zIndex: 0,
                         pos: {x: finalPosition.x, y: finalPosition.y},
                         widgetContainer: WidgetContainer.WIDGET

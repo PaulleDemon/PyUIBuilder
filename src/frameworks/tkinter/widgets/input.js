@@ -1,9 +1,10 @@
 import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
 import { removeKeyFromObject } from "../../../utils/common"
+import TkinterBase from "./base"
 
 
-export class Input extends Widget{
+export class Input extends TkinterBase{
 
     static widgetType = "entry"
     
@@ -26,7 +27,7 @@ export class Input extends Widget{
                         tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
                         value: "#000",
                         onChange: (value) => {
-                            this.setWidgetStyling("color", value)
+                            this.setWidgetInnerStyle("color", value)
                             this.setAttrValue("styling.foregroundColor", value)
                         }
                     }
@@ -67,7 +68,7 @@ export class Input extends Widget{
     renderContent(){
         return (
             <div className="tw-w-flex tw-flex-col tw-w-full tw-h-full tw-rounded-md tw-overflow-hidden">
-                <div className="tw-p-2 tw-w-full tw-h-full tw-flex tw-place-items-center" style={this.state.widgetStyling}>
+                <div className="tw-p-2 tw-w-full tw-h-full tw-flex tw-place-items-center" style={this.state.widgetInnerStyling}>
                     <div className="tw-text-sm tw-text-gray-300">
                         {this.getAttrValue("placeHolder")}
                     </div>
@@ -79,7 +80,7 @@ export class Input extends Widget{
 }
 
 
-export class Text extends Widget{
+export class Text extends TkinterBase{
 
     static widgetType = "Text"
 
@@ -102,7 +103,7 @@ export class Text extends Widget{
                         tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
                         value: "#000",
                         onChange: (value) => {
-                            this.setWidgetStyling("color", value)
+                            this.setWidgetInnerStyle("color", value)
                             this.setAttrValue("styling.foregroundColor", value)
                         }
                     }
@@ -142,7 +143,7 @@ export class Text extends Widget{
     renderContent(){
         return (
             <div className="tw-w-flex tw-flex-col tw-w-full tw-h-full tw-rounded-md tw-overflow-hidden">
-                <div className="tw-p-2 tw-w-full tw-h-full tw-content-start " style={this.state.widgetStyling}>
+                <div className="tw-p-2 tw-w-full tw-h-full tw-content-start " style={this.state.widgetInnerStyling}>
                     <div className="tw-text-sm tw-text-gray-300">
                         {this.getAttrValue("placeHolder")}
                     </div>

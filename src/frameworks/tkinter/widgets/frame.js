@@ -1,7 +1,8 @@
 import Widget from "../../../canvas/widgets/base"
+import TkinterBase from "./base"
 
 
-class Frame extends Widget{
+class Frame extends TkinterBase{
 
     static widgetType = "frame"
 
@@ -25,9 +26,10 @@ class Frame extends Widget{
     }
 
     renderContent(){
+        // console.log("widget styling: ", this.state.widgetInnerStyling)
         return (
             <div className="tw-w-flex tw-flex-col tw-w-full tw-h-full tw-relative tw-rounded-md tw-overflow-hidden">
-                <div className="tw-p-2 tw-w-full tw-h-full tw-content-start" style={this.state.widgetStyling}>
+                <div className="tw-p-2 tw-w-full tw-h-full tw-content-start" style={this.state.widgetInnerStyling}>
                     {this.props.children}
                 </div>
             </div>

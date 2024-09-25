@@ -1,12 +1,12 @@
 import Widget from "../../../canvas/widgets/base"
 
 import Tools from "../../../canvas/constants/tools"
-import { Checkbox } from "antd"
 import { removeKeyFromObject } from "../../../utils/common"
-import { CheckOutlined, CheckSquareFilled } from "@ant-design/icons"
+import { CheckSquareFilled } from "@ant-design/icons"
+import TkinterBase from "./base"
 
 
-export class CheckBox extends Widget{
+export class CheckBox extends TkinterBase{
 
     static widgetType = "check_button"
     // TODO: remove layouts
@@ -34,7 +34,7 @@ export class CheckBox extends Widget{
                         tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
                         value: "#000",
                         onChange: (value) => {
-                            this.setWidgetStyling("color", value)
+                            this.setWidgetInnerStyle("color", value)
                             this.setAttrValue("styling.foregroundColor", value)
                         }
                     }
@@ -61,7 +61,7 @@ export class CheckBox extends Widget{
         super.componentDidMount()
         // this.setAttrValue("styling.backgroundColor", "#fff")
         this.setWidgetName("Checkbox")
-        this.setWidgetStyling("backgroundColor", "#fff0")
+        this.setWidgetInnerStyle("backgroundColor", "#fff0")
     }
 
     getToolbarAttrs(){
@@ -81,7 +81,7 @@ export class CheckBox extends Widget{
     renderContent(){
         return (
             <div className="tw-flex tw-p-1 tw-w-full tw-h-full tw-rounded-md tw-overflow-hidden"
-                style={this.state.widgetStyling}
+                style={this.state.widgetInnerStyling}
                 >
                 
                 <div className="tw-flex tw-gap-2 tw-w-full tw-h-full tw-place-items-center tw-place-content-center">
@@ -135,7 +135,7 @@ export class RadioButton extends Widget{
                         tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
                         value: "#000",
                         onChange: (value) => {
-                            this.setWidgetStyling("color", value)
+                            this.setWidgetInnerStyle("color", value)
                             this.setAttrValue("styling.foregroundColor", value)
                         }
                     }
@@ -158,8 +158,8 @@ export class RadioButton extends Widget{
     componentDidMount(){
         super.componentDidMount()
         // this.setAttrValue("styling.backgroundColor", "#fff")
-        this.setWidgetName("Checkbox")
-        this.setWidgetStyling("backgroundColor", "#fff0")
+        this.setWidgetName("Radio button")
+        this.setWidgetInnerStyle("backgroundColor", "#fff0")
     }
 
     getToolbarAttrs(){
@@ -182,7 +182,7 @@ export class RadioButton extends Widget{
 
         return (
             <div className="tw-flex tw-p-1 tw-w-full tw-h-full tw-rounded-md tw-overflow-hidden"
-                style={this.state.widgetStyling}
+                style={this.state.widgetInnerStyling}
                 >
                 
                 {
@@ -201,7 +201,7 @@ export class RadioButton extends Widget{
                                             </div>
                                     }
                                 </div>
-                                <span className="tw-text-base" style={{color: this.state.widgetStyling.foregroundColor}}>
+                                <span className="tw-text-base" style={{color: this.state.widgetInnerStyling.foregroundColor}}>
                                     {value}
                                 </span>
                             </div>

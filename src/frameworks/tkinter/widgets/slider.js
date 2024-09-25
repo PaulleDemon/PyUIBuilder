@@ -1,9 +1,10 @@
 import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
 import { removeKeyFromObject } from "../../../utils/common"
+import TkinterBase from "./base"
 
 
-class Slider extends Widget{
+class Slider extends TkinterBase{
 
     static widgetType = "scale"
 
@@ -26,7 +27,7 @@ class Slider extends Widget{
                         tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
                         value: "#000",
                         onChange: (value) => {
-                            this.setWidgetStyling("color", value)
+                            this.setWidgetInnerStyle("color", value)
                             this.setAttrValue("styling.foregroundColor", value)
                         }
                     }

@@ -1,19 +1,17 @@
 import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
 import { removeKeyFromObject } from "../../../utils/common"
+import TkinterBase from "./base"
 
 
-class Label extends Widget{
+class Label extends TkinterBase{
 
     static widgetType = "label"
 
     constructor(props) {
         super(props)
 
-        this.droppableTags = {
-            // TODO: exclude all
-            exclude: ["image", "video", "media", "main_window", "toplevel"]
-        }
+        this.droppableTags = null
 
         const newAttrs = removeKeyFromObject("layout", this.state.attrs)
         
@@ -30,7 +28,7 @@ class Label extends Widget{
                         tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
                         value: "#000",
                         onChange: (value) => {
-                            this.setWidgetStyling("color", value)
+                            this.setWidgetInnerStyle("color", value)
                             this.setAttrValue("styling.foregroundColor", value)
                         }
                     }
@@ -50,7 +48,7 @@ class Label extends Widget{
     componentDidMount(){
         super.componentDidMount()
         this.setAttrValue("styling.backgroundColor", "#fff")
-        this.setWidgetStyling("backgroundColor", "#fff0")
+        this.setWidgetInnerStyle("backgroundColor", "#fff0")
     }
 
     getToolbarAttrs(){
@@ -70,7 +68,7 @@ class Label extends Widget{
     renderContent(){
         return (
             <div className="tw-w-flex tw-flex-col tw-w-full tw-h-full tw-rounded-md tw-overflow-hidden">
-                <div className="tw-p-2 tw-w-full tw-h-full tw-content-start " style={this.state.widgetStyling}>
+                <div className="tw-p-2 tw-w-full tw-h-full tw-content-start " style={this.state.widgetInnerStyling}>
                     {/* {this.props.children} */}
                     <div className="tw-text-sm" style={{color: this.getAttrValue("styling.foregroundColor")}}>
                         {this.getAttrValue("labelWidget")}

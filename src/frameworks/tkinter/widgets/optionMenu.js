@@ -3,9 +3,10 @@ import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
 import { removeKeyFromObject } from "../../../utils/common"
 import { ArrowDownOutlined, DownOutlined } from "@ant-design/icons"
+import TkinterBase from "./base"
 
 
-class OptionMenu extends Widget{
+class OptionMenu extends TkinterBase{
 
     static widgetType = "option_menu"
     // FIXME: the radio buttons are not visible because of the default heigh provided
@@ -34,7 +35,7 @@ class OptionMenu extends Widget{
                         tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
                         value: "#000",
                         onChange: (value) => {
-                            this.setWidgetStyling("color", value)
+                            this.setWidgetInnerStyle("color", value)
                             this.setAttrValue("styling.foregroundColor", value)
                         }
                     }
@@ -65,7 +66,7 @@ class OptionMenu extends Widget{
         super.componentDidMount()
         // this.setAttrValue("styling.backgroundColor", "#fff")
         this.setWidgetName("Option menu")
-        this.setWidgetStyling("backgroundColor", "#fff")
+        this.setWidgetInnerStyle("backgroundColor", "#fff")
     }
 
     getToolbarAttrs(){
@@ -94,7 +95,7 @@ class OptionMenu extends Widget{
 
         return (
             <div className="tw-flex tw-p-1 tw-w-full tw-h-full tw-rounded-md tw-overflow-hidden"
-                style={this.state.widgetStyling}
+                style={this.state.widgetInnerStyling}
                 onClick={this.toggleDropDownOpen}
                 >
                 <div className="tw-flex tw-justify-between tw-gap-1">
@@ -115,7 +116,7 @@ class OptionMenu extends Widget{
                                     <div key={index} className="tw-flex tw-gap-2 tw-w-full tw-h-full tw-place-items-center
                                                                 hover:tw-bg-[#c5c5c573] tw-p-1">
                                     
-                                        <span className="tw-text-base" style={{color: this.state.widgetStyling.foregroundColor}}>
+                                        <span className="tw-text-base" style={{color: this.state.widgetInnerStyling.foregroundColor}}>
                                             {value}
                                         </span>
                                     </div>
