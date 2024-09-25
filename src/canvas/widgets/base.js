@@ -719,7 +719,7 @@ class Widget extends React.Component {
                 })
 
                 // Set the value at the last key
-                if (nestedObject[lastKey])
+                if (nestedObject[lastKey]) // TODO: remove this check, else won't be able to catch buggy data
                     nestedObject[lastKey].value = value
             })
 

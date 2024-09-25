@@ -5,13 +5,6 @@ import Widget from "../../../canvas/widgets/base";
 
 
 class TkinterBase extends Widget {
-
-    componentDidMount(){
-        super.componentDidMount()
-        console.log("parent layout: ", this.state.parentLayout)
-        // this.setParentLayout(this.props.initialData)
-    }
-
     
     
     setParentLayout(layout){
@@ -19,7 +12,6 @@ class TkinterBase extends Widget {
         let updates = {
             parentLayout: layout,
         }
-        console.log("Parent layout updated1: ", layout)
         
         this.removeAttr("gridManager")
         if (layout === Layouts.FLEX || layout === Layouts.GRID) {
@@ -28,7 +20,7 @@ class TkinterBase extends Widget {
                 ...updates,
                 positionType: PosType.NONE
             }
-            console.log("Manager1 :", layout)
+
             if (layout === Layouts.GRID) {
                 // Set attributes related to grid layout manager
                 updates = {
@@ -44,13 +36,18 @@ class TkinterBase extends Widget {
                                 toolProps: { placeholder: "width", max: 1000, min: 1 },
                                 value: 1,
                                 onChange: (value) => {
-                                    this.setAttrValue("gridManager.row", value)
                                     
                                     const previousRow = this.getWidgetOuterStyle("gridRow") || "1/1"
-
-                                    const [_row=1, rowSpan=1] = previousRow.replace(/\s+/g, '').split("/").map(Number)
-
-
+                                    
+                                    let [_row=1, rowSpan=1] = previousRow.replace(/\s+/g, '').split("/").map(Number)
+                                    
+                                    if (value > rowSpan){
+                                        // rowSpan should always be greater than or eq to row
+                                        rowSpan = value
+                                        this.setAttrValue("gridManager.rowSpan", rowSpan)
+                                    }
+                                    
+                                    this.setAttrValue("gridManager.row", value)
                                     this.setWidgetOuterStyle("gridRow", `${value+' / '+rowSpan}`)
                                 }
                             },
@@ -60,12 +57,16 @@ class TkinterBase extends Widget {
                                 toolProps: { placeholder: "height", max: 1000, min: 1 },
                                 value: 1,
                                 onChange: (value) => {
-                                    this.setAttrValue("gridManager.rowSpan", value)
                                     
                                     const previousRow = this.getWidgetOuterStyle("gridRow") || "1/1"
-
+                                    
                                     const [row=1, _rowSpan=1] = previousRow.replace(/\s+/g, '').split("/").map(Number)
-
+                                    
+                                    if (value < row){
+                                        value = row + 1
+                                    }
+                                    
+                                    this.setAttrValue("gridManager.rowSpan", value)
                                     this.setWidgetOuterStyle("gridRow", `${row + ' / ' +value}`)
                                 }
                             },
@@ -75,12 +76,18 @@ class TkinterBase extends Widget {
                                 toolProps: { placeholder: "height", max: 1000, min: 1 },
                                 value: 1,
                                 onChange: (value) => {
-                                    this.setAttrValue("gridManager.column", value)
                                     
                                     const previousRow = this.getWidgetOuterStyle("gridColumn") || "1/1"
 
-                                    const [_col=1, colSpan=1] = previousRow.replace(/\s+/g, '').split("/").map(Number)
-                                    console.log("column: ", value, colSpan)
+                                    let [_col=1, colSpan=1] = previousRow.replace(/\s+/g, '').split("/").map(Number)
+
+                                    if (value > colSpan){
+                                        // The colSpan has always be equal or greater than col
+                                        colSpan = value
+                                        this.setAttrValue("gridManager.columnSpan", colSpan)
+                                    }
+
+                                    this.setAttrValue("gridManager.column", value)
                                     this.setWidgetOuterStyle("gridColumn", `${value +' / ' + colSpan}`)
                                 }
                             },
@@ -90,14 +97,16 @@ class TkinterBase extends Widget {
                                 toolProps: { placeholder: "height", max: 1000, min: 1 },
                                 value: 1,
                                 onChange: (value) => {
-                                    this.setAttrValue("gridManager.columnSpan", value)
-                                    
+                            
                                     const previousCol = this.getWidgetOuterStyle("gridColumn") || "1/1"
-
-                                    console.log("Value: ", previousCol)
 
                                     const [col=1, _colSpan=1] = previousCol.replace(/\s+/g, '').split("/").map(Number)
 
+                                    if (value < col){
+                                        value = col + 1
+                                    }
+                                    
+                                    this.setAttrValue("gridManager.columnSpan", value)
                                     this.setWidgetOuterStyle("gridColumn", `${col + ' / ' + value}`)
                                 }
                             },
@@ -113,8 +122,6 @@ class TkinterBase extends Widget {
                 positionType: PosType.ABSOLUTE
             }
         }
-
-        console.log("Parent layout updated2: ", updates)
 
         this.updateState(updates)
 
@@ -159,8 +166,6 @@ class TkinterBase extends Widget {
 
         this.setState(newData,  () => {
             let layoutAttrs = this.setParentLayout(parentLayout).attrs || {}
-            console.log("loaded layout2: ", layoutUpdates)
-
 
             // UPdates attrs
             let newAttrs = { ...this.state.attrs, ...layoutAttrs }

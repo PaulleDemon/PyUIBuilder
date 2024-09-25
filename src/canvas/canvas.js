@@ -237,7 +237,7 @@ class Canvas extends React.Component {
                     this.state.selectedWidget?.setZIndex(0)
                     selectedWidget.setZIndex(1000)
                     selectedWidget.select()
-                    console.log("selected widget", selectedWidget.getToolbarAttrs(), selectedWidget, this.state.selectedWidget)
+                    // console.log("selected widget", selectedWidget.getToolbarAttrs(), selectedWidget, this.state.selectedWidget)
                     this.setState({
                         selectedWidget: selectedWidget,
                         toolbarAttrs: selectedWidget.getToolbarAttrs()
@@ -672,8 +672,6 @@ class Canvas extends React.Component {
         }
 
 
-        console.log("droped on canvas: ", container)
-
         if (container === WidgetContainer.SIDEBAR) {
 
             if (!widgetClass) {
@@ -723,7 +721,6 @@ class Canvas extends React.Component {
                         widgetContainer: WidgetContainer.CANVAS
                     }
                 }
-                console.log("dropped to canvas: ", updatedChildWidget)
             
                 let updatedWidgets = this.removeWidgetFromCurrentList(widgetObj.current.getId())
 
@@ -820,7 +817,6 @@ class Canvas extends React.Component {
 
                 const parentLayout = parentWidget.getLayout()?.layout || null
 
-                console.log("parent layout child add: ", parentLayout, parentWidget.getLayout(), parentWidget)
                 dragWidget.current.setPos(finalPosition.x, finalPosition.y)
                 const updatedDragWidget = {
                     ...dragWidgetObj,
@@ -834,9 +830,6 @@ class Canvas extends React.Component {
                         widgetContainer: WidgetContainer.WIDGET
                     }
                 }
-
-                console.log("updated widget: ", updatedDragWidget)
-
 
                 const updatedDropWidget = {
                     ...dropWidgetObj,

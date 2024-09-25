@@ -3,16 +3,16 @@
 
 <p align="center">
     <a href="https://twitter.com/share?url=https://github.com/PaulleDemon/tkbuilder&text=Check out PyUIBuilder tool">
-        <img src="./assets/share/1.png" height="35" />
+        <img src="./repo-assets/share/1.png" height="35" />
     </a>
     <a href="https://www.reddit.com/submit?url=https://github.com/PaulleDemon/tkbuilder&title=Check out PyUIBuilder tool">
-        <img src="./assets/share/4.png" height="35" />
+        <img src="./repo-assets/share/4.png" height="35" />
     </a>
     <a href="https://www.linkedin.com/shareArticle?mini=true&url=https://github.com/PaulleDemon/tkbuilder&title=check out PyUIBuilder tool">
-        <img src="./assets/share/2.png" height="35" />
+        <img src="./repo-assets/share/2.png" height="35" />
     </a>
     <a href="https://youtube.com/">
-        <img src="./assets/share/3.png" height="35" />
+        <img src="./repo-assets/share/3.png" height="35" />
     </a>
 </p>
 
