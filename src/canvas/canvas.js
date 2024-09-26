@@ -767,7 +767,7 @@ class Canvas extends React.Component {
         // Find the dragged widget object
         let dragWidgetObj = this.findWidgetFromListById(dragElementID)
 
-        console.log("Drag widget obj: ", dragWidgetObj, dropWidgetObj)
+        // console.log("Drag widget obj: ", dragWidgetObj, dropWidgetObj)
 
         if (dropWidgetObj && dragWidgetObj) {
             const dragWidget = this.widgetRefs[dragWidgetObj.id]

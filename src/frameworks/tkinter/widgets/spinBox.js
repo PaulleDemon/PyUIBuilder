@@ -8,6 +8,7 @@ import TkinterBase from "./base"
 class SpinBox extends TkinterBase{
 
     static widgetType = "spin_box"
+
     constructor(props) {
         super(props)
 
@@ -73,6 +74,23 @@ class SpinBox extends TkinterBase{
         super.componentDidMount()
         this.setAttrValue("styling.backgroundColor", "#fff")
         this.setWidgetName("SpinBox")
+    }
+
+    generateCode(variableName, parent){
+
+        const min = this.getAttrValue("spinProps.min")
+        const max = this.getAttrValue("spinProps.max")
+        const step = this.getAttrValue("spinProps.step")
+        const defaultValue = this.getAttrValue("spinProps.defaultValue")
+
+        const bg = this.getAttrValue("styling.backgroundColor")
+        const fg = this.getAttrValue("styling.foregroundColor")
+        return [
+                `${variableName} = tk.Spinbox(master=${parent})`,
+                `${variableName}.config(bg="${bg}", fg="${fg}", from_=${min}, to=${max}, 
+                                    increment=${step})`,
+                `${variableName}.${this.getLayoutCode()}`
+            ]
     }
 
     getToolbarAttrs(){

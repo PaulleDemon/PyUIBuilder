@@ -46,21 +46,25 @@ class Label extends TkinterBase{
         }
     }
 
-    generateCode(parent){
-
-        const label = this.getAttrValue("labelWidget")
-
-        return (`
-                ${this.getWidgetName()} = tk.Label(master=${parent}, text="${label}")
-                ${this.getWidgetName()}.${this.getLayoutCode()}
-            `)
-    }
-
     componentDidMount(){
         super.componentDidMount()
-        this.setAttrValue("styling.backgroundColor", "#fff0")
-        this.setWidgetInnerStyle("backgroundColor", "#fff0")
+        this.setAttrValue("styling.backgroundColor", "#E4E2E2")
+        this.setWidgetName("label")
     }
+
+
+    generateCode(variableName, parent){
+
+        const labelText = this.getAttrValue("labelWidget")
+        const bg = this.getAttrValue("styling.backgroundColor")
+        const fg = this.getAttrValue("styling.foregroundColor")
+        return [
+                `${variableName} = tk.Label(master=${parent}, text="${labelText}")`,
+                `${variableName}.config(bg="${bg}", fg="${fg}")`,
+                `${variableName}.${this.getLayoutCode()}`
+            ]
+    }
+
 
     getToolbarAttrs(){
         const toolBarAttrs = super.getToolbarAttrs()

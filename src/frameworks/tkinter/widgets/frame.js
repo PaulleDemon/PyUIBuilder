@@ -12,11 +12,17 @@ class Frame extends TkinterBase{
         this.droppableTags = {
             exclude: ["image", "video", "media", "toplevel", "main_window"]
         }
+    }
 
-        this.state = {
-            ...this.state,
+    generateCode(variableName, parent){
 
-        }
+        const bg = this.getAttrValue("styling.backgroundColor")
+
+        return [
+                `${variableName} = tk.Frame(master=${parent})`,
+                `${variableName}.config(bg="${bg}")`,
+                `${variableName}.${this.getLayoutCode()}`
+            ]
     }
 
     componentDidMount(){

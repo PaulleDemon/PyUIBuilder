@@ -195,8 +195,6 @@ class Widget extends React.Component {
 
     componentDidMount() {
 
-        // FIXME: initial layout is not set properly
-        
         if (this.state.attrs.layout){
             this.setLayout(this.state.attrs.layout.value)
             // console.log("prior layout: ", this.state.attrs.layout.value)
@@ -534,7 +532,7 @@ class Widget extends React.Component {
     }
 
     setWidgetName(name) {
-
+        console.log("named: ", name)
         this.updateState({
             widgetName: name.length > 0 ? name : this.state.widgetName
         })
@@ -601,7 +599,7 @@ class Widget extends React.Component {
         })
 
         this.setAttrValue("layout", value)
-        this.props.onLayoutUpdate({parentId: this.__id, parentLayout: layout})// inform children about the layout update
+        this.props.onLayoutUpdate({parentId: this.__id, parentLayout: value})// inform children about the layout update
 
     }
 

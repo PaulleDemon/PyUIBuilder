@@ -50,6 +50,18 @@ export class Input extends TkinterBase{
         this.setWidgetName("Entry")
     }
 
+    generateCode(variableName, parent){
+
+        const placeHolderText = this.getAttrValue("labelWidget")
+        const bg = this.getAttrValue("styling.backgroundColor")
+        const fg = this.getAttrValue("styling.foregroundColor")
+        return [
+                `${variableName} = tk.Entry(master=${parent}, text="${placeHolderText}")`,
+                `${variableName}.config(bg="${bg}", fg="${fg}")`,
+                `${variableName}.${this.getLayoutCode()}`
+            ]
+    }
+
     getToolbarAttrs(){
 
         const toolBarAttrs = super.getToolbarAttrs()

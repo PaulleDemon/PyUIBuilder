@@ -2,7 +2,8 @@ import { Layouts, PosType } from "../../../canvas/constants/layouts"
 import Tools from "../../../canvas/constants/tools"
 import Widget from "../../../canvas/widgets/base"
 
-
+// TODO: add full width and full height in base widget
+// TODO: the pack should configure width and height of widgets
 
 class TkinterBase extends Widget {
 
@@ -20,7 +21,7 @@ class TkinterBase extends Widget {
         let layoutManager = `pack()`
 
         if (parentLayout === Layouts.FLEX){
-            layoutManager = `pack(${direction === "horizontal"? "tk.LEFT" : "tk.TOP"})`
+            layoutManager = `pack(side=${direction === "row" ? "tk.LEFT" : "tk.TOP"})`
         }else if (parentLayout === Layouts.GRID){
             const row = this.getAttrValue("gridManager.row")
             const col = this.getAttrValue("gridManager.col")
@@ -34,7 +35,6 @@ class TkinterBase extends Widget {
     }
 
     setParentLayout(parentLayout){
-        console.log("parent layout: ", parentLayout)
 
         const {layout, direction, gap} = parentLayout
 
@@ -195,7 +195,7 @@ class TkinterBase extends Widget {
         }
 
         this.setState(newData,  () => {
-            let layoutAttrs = this.setParentLayout(parentLayout).attrs || {}
+            let layoutAttrs = this.setParentLayout(parentLayout) || {}
 
             // UPdates attrs
             let newAttrs = { ...this.state.attrs, ...layoutAttrs }

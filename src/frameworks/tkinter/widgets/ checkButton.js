@@ -64,6 +64,26 @@ export class CheckBox extends TkinterBase{
         this.setWidgetInnerStyle("backgroundColor", "#fff0")
     }
 
+    generateCode(variableName, parent){
+
+        const labelText = this.getAttrValue("checkLabel")
+        const bg = this.getAttrValue("styling.backgroundColor")
+        const fg = this.getAttrValue("styling.foregroundColor")
+        
+        const code = [
+                `${variableName} = tk.Checkbutton(master=${parent}, text="${labelText}")`,
+                `${variableName}.config(bg="${bg}", fg="${fg}")`,
+            ]
+        
+        if (this.getAttrValue("defaultChecked")){
+            code.push(`${variableName}.select()`)
+        }
+        
+        code.push(`${variableName}.${this.getLayoutCode()}`)
+        
+        return code
+    }
+
     getToolbarAttrs(){
 
         const toolBarAttrs = super.getToolbarAttrs()
@@ -109,7 +129,7 @@ export class CheckBox extends TkinterBase{
 export class RadioButton extends Widget{
 
     static widgetType = "radio_button"
-    // FIXME: the radio buttons are not visible because of the default height provided
+    
     constructor(props) {
         super(props)
 
@@ -160,6 +180,28 @@ export class RadioButton extends Widget{
         // this.setAttrValue("styling.backgroundColor", "#fff")
         this.setWidgetName("Radio button")
         this.setWidgetInnerStyle("backgroundColor", "#fff0")
+    }
+
+    generateCode(variableName, parent){
+
+        const bg = this.getAttrValue("styling.backgroundColor")
+        const fg = this.getAttrValue("styling.foregroundColor")
+        
+        const radios = this.getAttrValue("radios")
+        // TODO: from here
+        const code = [
+                `${variableName}_var = tk.IntVar()`,
+                `${variableName} = tk.Radiobutton(master=${parent}, text="")`,
+                `${variableName}.config(bg="${bg}", fg="${fg}")`,
+            ]
+        
+        if (this.getAttrValue("defaultChecked")){
+            code.push(`${variableName}.select()`)
+        }
+        
+        code.push(`${variableName}.${this.getLayoutCode()}`)
+        
+        return code
     }
 
     getToolbarAttrs(){
