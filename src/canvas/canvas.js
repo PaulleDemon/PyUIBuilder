@@ -823,7 +823,7 @@ class Canvas extends React.Component {
                     initialData: {
                         ...dragData,
                         positionType: parentLayout === Layouts.PLACE ? PosType.ABSOLUTE : PosType.NONE,
-                        parentLayout: parentLayout,
+                        parentLayout: parentWidget.getLayout() || null, // pass everything about the parent layout
                         zIndex: 0,
                         pos: {x: finalPosition.x, y: finalPosition.y},
                         widgetContainer: WidgetContainer.WIDGET

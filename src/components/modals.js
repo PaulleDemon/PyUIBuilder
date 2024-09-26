@@ -20,7 +20,6 @@ export const ButtonModal = ({ message, title, okText="OK", onOk, onCancel, okBut
 
     const handleOk = () => {
         setIsModalOpen(false)
-        console.log("Ok pressed")
         if (onOk){
             onOk()
         }
@@ -30,12 +29,12 @@ export const ButtonModal = ({ message, title, okText="OK", onOk, onCancel, okBut
         e.stopPropagation()
 
         setIsModalOpen(false)
-        console.log("cancel pressed")
         
         if (onCancel){
             onCancel()
         }
     }
+    
     return (
         <div onClick={showModal}>
             {children}

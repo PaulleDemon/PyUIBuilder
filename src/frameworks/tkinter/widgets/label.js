@@ -2,6 +2,7 @@ import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
 import { removeKeyFromObject } from "../../../utils/common"
 import TkinterBase from "./base"
+import { Layouts } from "../../../canvas/constants/layouts"
 
 
 class Label extends TkinterBase{
@@ -43,6 +44,16 @@ class Label extends TkinterBase{
 
             }
         }
+    }
+
+    generateCode(parent){
+
+        const label = this.getAttrValue("labelWidget")
+
+        return (`
+                ${this.getWidgetName()} = tk.Label(master=${parent}, text="${label}")
+                ${this.getWidgetName()}.${this.getLayoutCode()}
+            `)
     }
 
     componentDidMount(){

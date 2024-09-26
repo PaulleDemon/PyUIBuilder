@@ -10,7 +10,7 @@ class Frame extends TkinterBase{
         super(props)
 
         this.droppableTags = {
-            exclude: ["image", "video", "media", "toplevel"]
+            exclude: ["image", "video", "media", "toplevel", "main_window"]
         }
 
         this.state = {

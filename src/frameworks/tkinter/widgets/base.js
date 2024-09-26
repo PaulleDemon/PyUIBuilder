@@ -1,16 +1,46 @@
 import { Layouts, PosType } from "../../../canvas/constants/layouts"
-import Tools from "../../../canvas/constants/tools";
-import Widget from "../../../canvas/widgets/base";
+import Tools from "../../../canvas/constants/tools"
+import Widget from "../../../canvas/widgets/base"
 
 
 
 class TkinterBase extends Widget {
-    
-    
-    setParentLayout(layout){
+
+    static requiredImports = ['import tkinter as tk']
+
+    constructor(props) {
+        super(props)
+
+        this.getLayoutCode = this.getLayoutCode.bind(this)
+    }
+
+    getLayoutCode(){
+        const {layout: parentLayout, direction, gap} = this.getParentLayout()
+
+        let layoutManager = `pack()`
+
+        if (parentLayout === Layouts.FLEX){
+            layoutManager = `pack(${direction === "horizontal"? "tk.LEFT" : "tk.TOP"})`
+        }else if (parentLayout === Layouts.GRID){
+            const row = this.getAttrValue("gridManager.row")
+            const col = this.getAttrValue("gridManager.col")
+            layoutManager = `grid(row=${row}, col=${col})`
+        }else{
+            // FIXME: position may not be correct
+            layoutManager = `place(x=${this.state.pos.x}, y=${this.state.pos.y})`
+        }
+
+        return layoutManager
+    }
+
+    setParentLayout(parentLayout){
+        console.log("parent layout: ", parentLayout)
+
+        const {layout, direction, gap} = parentLayout
+
         // show attributes related to the layout manager
         let updates = {
-            parentLayout: layout,
+            parentLayout: parentLayout,
         }
         
         this.removeAttr("gridManager")
@@ -21,7 +51,7 @@ class TkinterBase extends Widget {
                 positionType: PosType.NONE
             }
 
-            if (layout === Layouts.GRID) {
+            if (parentLayout === Layouts.GRID) {
                 // Set attributes related to grid layout manager
                 updates = {
                     ...updates,
@@ -145,14 +175,14 @@ class TkinterBase extends Widget {
             parentLayout: parentLayout
         }
 
-        if (parentLayout === Layouts.FLEX || parentLayout === Layouts.GRID){
+        if (parentLayout.layout === Layouts.FLEX || parentLayout.layout === Layouts.GRID){
 
             layoutUpdates = {
                 ...layoutUpdates,
                 positionType: PosType.NONE
             }
 
-        }else if (parentLayout === Layouts.PLACE){
+        }else if (parentLayout.layout === Layouts.PLACE){
             layoutUpdates = {
                 ...layoutUpdates,
                 positionType: PosType.ABSOLUTE

@@ -23,7 +23,7 @@ function Premium({ children, className = "" }) {
         <div onClick={onClick} className={`${className}`}>
             {children}
             <Modal
-                title={<h3 className="tw-text-xl tw-font-medium">Buy Pre-order one Time License</h3>}
+                title={<h3 className="tw-text-xl tw-font-medium">Fund development. Pre-order one Time License</h3>}
                 style={{ zIndex: 14000, gap: '10px', maxWidth: '80vw', placeItems: "center" }}
                 onCancel={onClose}
                 centered
@@ -33,8 +33,8 @@ function Premium({ children, className = "" }) {
                 open={premiumModalOpen}
             >
                 <div className="tw-mt-5 tw-text-lg tw-max-w-[850px] tw-w-full ">
-                    I am Paul, an open-source dev, funding open-source projects by providing custom works.
-                    If you find this tool useful and want to support its development, consider buying a <b>one time license</b>.
+                    I am Paul, a self-funded open-source dev.
+                    If you find this tool useful and want to fund and support it's development, consider buying a <b>one time license</b>.
                     <br />
                     <br />
                     By buying pre-order license, you get advance features, priority support, early access, upcoming features, and more.
@@ -88,6 +88,10 @@ function Premium({ children, className = "" }) {
                                 <li className="tw-flex tw-place-items-center tw-gap-2">
                                     <i className="bi bi-x-circle-fill tw-text-red-600 tw-text-base"></i>
                                     <span>Load plugins locally</span>
+                                </li>
+                                <li className="tw-flex tw-place-items-center tw-gap-2">
+                                    <i className="bi bi-x-circle-fill tw-text-red-600 tw-text-base"></i>
+                                    <span>Load local UI templates</span>
                                 </li>
                                 <li className="tw-flex tw-place-items-center tw-gap-2">
                                     <i className="bi bi-x-circle-fill tw-text-red-600 tw-text-base"></i>
@@ -145,6 +149,10 @@ function Premium({ children, className = "" }) {
                                 <li className="tw-flex tw-place-items-center tw-gap-2">
                                     <i className="bi bi-check-circle-fill tw-text-green-600 tw-text-base"></i>
                                     <span>Load plugins locally</span>
+                                </li>
+                                <li className="tw-flex tw-place-items-center tw-gap-2">
+                                    <i className="bi bi-x-circle-fill tw-text-green-600 tw-text-base"></i>
+                                    <span>Load local UI templates</span>
                                 </li>
                                 <li className="tw-flex tw-place-items-center tw-gap-2">
                                     <i className="bi bi-check-circle-fill tw-text-green-600 tw-text-base"></i>
@@ -220,6 +228,10 @@ function Premium({ children, className = "" }) {
                                 <li className="tw-flex tw-place-items-center tw-gap-2">
                                     <i className="bi bi-check-circle-fill tw-text-green-600 tw-text-base"></i>
                                     <span>Load plugins locally</span>
+                                </li>
+                                <li className="tw-flex tw-place-items-center tw-gap-2">
+                                    <i className="bi bi-x-circle-fill tw-text-green-600 tw-text-base"></i>
+                                    <span>Load local UI templates</span>
                                 </li>
                                 <li className="tw-flex tw-place-items-center tw-gap-2">
                                     <i className="bi bi-check-circle-fill tw-text-green-600 tw-text-base"></i>

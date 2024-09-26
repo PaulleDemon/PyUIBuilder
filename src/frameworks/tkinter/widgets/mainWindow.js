@@ -36,6 +36,13 @@ class MainWindow extends Widget{
         this.setWidgetName("main")
     }
 
+    generateCode(parent){
+
+        return (`
+                ${this.getWidgetName()} = tk.Tk()
+            `)
+    }
+
     getToolbarAttrs(){
         const toolBarAttrs = super.getToolbarAttrs()
 

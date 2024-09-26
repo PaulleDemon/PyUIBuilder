@@ -14,9 +14,10 @@ import WidgetContainer from "../constants/containers"
 import { DragContext } from "../../components/draggable/draggableContext"
 import { isNumeric, removeKeyFromObject } from "../../utils/common"
 
-// FIXME: make it possible to have fit-width and height
 
 // TODO: make it possible to apply widgetInnerStyle on load
+
+// FIXME: the drag drop indicator is not going invisible if the drop happens on the child
 
 const ATTRS_KEYS = ['value', 'label', 'tool', 'onChange', 'toolProps'] // these are attrs keywords, don't use these keywords as keys while defining the attrs property
 
@@ -162,9 +163,13 @@ class Widget extends React.Component {
         this.getWidgetType = this.getWidgetType.bind(this)
         this.getBoundingRect = this.getBoundingRect.bind(this)
 
-        this.getAttrValue = this.getAttrValue.bind(this)
+        this.getLayout = this.getLayout.bind(this)
+        this.getParentLayout = this.getParentLayout.bind(this)
 
+        this.getAttrValue = this.getAttrValue.bind(this)
         this.getToolbarAttrs = this.getToolbarAttrs.bind(this)
+
+        this.generateCode = this.generateCode.bind(this)
 
         // this.openRenaming = this.openRenaming.bind(this)
 
@@ -337,7 +342,7 @@ class Widget extends React.Component {
         return this.constructor.requiredImports
     }
 
-    getCode = () => {
+    generateCode(){
         throw new NotImplementedError("Get Code must be implemented by the subclass")
     }
 
@@ -534,12 +539,15 @@ class Widget extends React.Component {
 
     /**
      * inform the child about the parent layout changes
-     * @param {Layouts} layout 
+     * @param {Layouts} parentLayout 
      */
-    setParentLayout(layout){
+    setParentLayout(parentLayout){
+
+        const {layout, direction, gap} = parentLayout
+
 
         let updates = {
-            parentLayout: layout,
+            parentLayout: parentLayout,
         }
 
         if (layout === Layouts.FLEX || layout === Layouts.GRID){
@@ -556,16 +564,14 @@ class Widget extends React.Component {
             }
         }
 
-        console.log("Parent layout updated: ", updates)
-
         this.setState(updates)
     }
 
-    getParentLayout = () => {
+    getParentLayout(){
         return this.state.parentLayout
     }
 
-    getLayout = () => {
+    getLayout(){
 
         return this.state?.attrs?.layout?.value || Layouts.FLEX
     }
@@ -726,17 +732,17 @@ class Widget extends React.Component {
 
 
         let layoutUpdates = {
-            parentLayout: parentLayout
+            parentLayout: parentLayout.layout || null
         }
 
-        if (parentLayout === Layouts.FLEX || parentLayout === Layouts.GRID){
+        if (parentLayout?.layout === Layouts.FLEX || parentLayout?.layout === Layouts.GRID){
 
             layoutUpdates = {
                 ...layoutUpdates,
                 positionType: PosType.NONE
             }
 
-        }else if (parentLayout === Layouts.PLACE){
+        }else if (parentLayout?.layout === Layouts.PLACE){
             layoutUpdates = {
                 ...layoutUpdates,
                 positionType: PosType.ABSOLUTE
@@ -987,7 +993,7 @@ class Widget extends React.Component {
             
         // if (!e.currentTarget.contains(draggedElement)) {
         if (!isInBoundingBox) {
-            // FIXME: if the mouse pointer is over this widget's child, then droppable from here
+            // FIXME: if the mouse pointer is over this widget's child, then droppable style should be invisible
             // only if the dragging element is not within the rect of this element remove the dragging rect
             this.setState({
                 showDroppableStyle: {
