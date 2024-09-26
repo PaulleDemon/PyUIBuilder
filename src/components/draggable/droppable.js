@@ -18,6 +18,8 @@ const DroppableWrapper = memo(({onDrop, droppableTags={}, ...props}) => {
 
     const handleDragEnter = (e) => {
         
+        console.log("Drag enter")
+
         if (!draggedElement || !draggedElement.getAttribute("data-drag-start-within")){
             // if the drag is starting from outside (eg: file drop) or if drag doesn't exist
             return

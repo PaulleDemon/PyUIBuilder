@@ -10,7 +10,8 @@ Any feature that has 👑 beside it, is meant only for [premium users](./readme.
 - [ ] Documentation
 - [ ] Tree view for elements on the canvas
 - [ ] Add text editor to support event handlers
-- [ ] Support more widgets
+- [ ] Support for Event handlers
+- [ ] Support more pre-built widgets such as ttk.Notebook, multi-page etc.
 - [ ] Rewrite DND for better feedback - (swappy/react-dnd-kit/ GSAP draggable)
 - [ ] Duplicate widgets
 
@@ -21,6 +22,7 @@ Any feature that has 👑 beside it, is meant only for [premium users](./readme.
 - [ ] Load UI files 👑
 - [ ] Light/Dark theme 👑
 - [ ] Run the preview 👑
+- [ ] Load templates 👑
 
 ### 2.0.0
 - [ ] Support for more third party plugins
@@ -32,5 +34,7 @@ Any feature that has 👑 beside it, is meant only for [premium users](./readme.
 
 
 ### 3.0.0
+- [ ] Allow 3rd party UI plugin developers
+- [ ] Allow Templates to be sharable
 - [ ] Node based System  (eg: like blender/ unity node system)
 - [ ] Support for PySide / PyQt 👑 (commercial license only)

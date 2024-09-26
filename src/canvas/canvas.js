@@ -77,7 +77,7 @@ class Canvas extends React.Component {
             contextMenuItems: [],
             selectedWidget: null,
 
-            toolbarOpen: true,
+            toolbarOpen: false,
             toolbarAttrs: null
         }
 
@@ -240,7 +240,8 @@ class Canvas extends React.Component {
                     // console.log("selected widget", selectedWidget.getToolbarAttrs(), selectedWidget, this.state.selectedWidget)
                     this.setState({
                         selectedWidget: selectedWidget,
-                        toolbarAttrs: selectedWidget.getToolbarAttrs()
+                        toolbarAttrs: selectedWidget.getToolbarAttrs(),
+                        toolbarOpen: true
                     })
 
 
@@ -271,7 +272,7 @@ class Canvas extends React.Component {
 
             this.setState({
                 contextMenuItems: [],
-                toolbarOpen: true
+                // toolbarOpen: true
             })
             // this.setState({
             //     showContextMenu: false
@@ -538,7 +539,7 @@ class Canvas extends React.Component {
         this.setState({
             selectedWidget: null,
             toolbarAttrs: null,
-            // toolbarOpen: 
+            toolbarOpen: false
         })
 
     }
@@ -649,6 +650,7 @@ class Canvas extends React.Component {
       handleDropEvent = (e, draggedElement, widgetClass = null) => {
 
         e.preventDefault()
+        console.log("Drop event")
 
         this.setState({ isWidgetDragging: false })
 
@@ -1043,7 +1045,7 @@ class Canvas extends React.Component {
     render() {
 
         return (
-            <div className="tw-relative tw-flex tw-w-full tw-h-full tw-max-h-[100vh]">
+            <div className="tw-relative tw-overflow-hidden tw-flex tw-w-full tw-h-full tw-max-h-[100vh]">
 
                 <div className="tw-absolute tw-p-2 tw-bg-white tw-z-10 tw-min-w-[100px] tw-h-[50px] tw-gap-2 
                                     tw-top-4 tw-place-items-center tw-right-4 tw-shadow-md tw-rounded-md tw-flex">

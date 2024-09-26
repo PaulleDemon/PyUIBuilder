@@ -282,10 +282,15 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
 
     return (
         <div
-            className={`tw-absolute tw-top-20 tw-right-5 tw-bg-white ${toolbarOpen ? "tw-w-[280px]" : "tw-w-0"
-                } tw-px-3 tw-p-2 tw-h-[600px] tw-rounded-md tw-z-[1000] tw-shadow-lg 
-                             tw-transition-transform tw-duration-75 tw-overflow-x-hidden
-                             tw-flex tw-flex-col tw-gap-2 tw-overflow-y-auto`}
+            className={`tw-absolute tw-top-20 tw-right-5 tw-bg-white 
+                ${toolbarOpen ? "tw-translate-x-0" : "tw-translate-x-full"} 
+                tw-w-[280px] tw-px-3 tw-p-2 tw-h-[600px] tw-rounded-md tw-z-[1000] tw-shadow-lg 
+                tw-transition-transform tw-duration-[0.3s] tw-overflow-x-hidden
+                tw-flex tw-flex-col tw-gap-2 tw-overflow-y-auto`}
+
+                style={{
+                    transform: toolbarOpen ? "translateX(0)" : "translateX(calc(100% + 50px))"
+                }}
         >
             <h3 className="tw-text-lg tw-text-center">
                 {capitalize(`${widgetType || ""}`).replace(/_/g, " ")}

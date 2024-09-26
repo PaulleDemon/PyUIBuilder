@@ -29,7 +29,7 @@ export function SidebarWidgetCard({ name, img, url, license, widgetClass, innerR
             <DraggableWrapper data-container={"sidebar"} 
                                 dragElementType={widgetClass.widgetType} 
                                 dragWidgetClass={widgetClass}
-                                className="tw-cursor-pointer tw-w-fit tw-h-fit">
+                                className="tw-cursor-pointer tw-w-fit tw-bg-white tw-h-fit">
                 
                 <div ref={innerRef} className="tw-select-none  tw-h-[200px] tw-w-[230px] tw-flex tw-flex-col 
                                                 tw-rounded-md tw-overflow-hidden 

@@ -18,7 +18,9 @@ export const ButtonModal = ({ message, title, okText="OK", onOk, onCancel, okBut
         setIsModalOpen(true)
     }
 
-    const handleOk = () => {
+    const handleOk = (e) => {
+        e.stopPropagation()
+
         setIsModalOpen(false)
         if (onOk){
             onOk()
