@@ -17,6 +17,7 @@
     "dom-to-image-more": "^3.4.5",
     "fabric": "^6.1.0",
     "file-saver": "^2.0.5",
+    "jszip": "^3.10.1",
     "postcss-cli": "^11.0.0",
     "re-resizable": "^6.9.17",
     "react": "^18.3.1",

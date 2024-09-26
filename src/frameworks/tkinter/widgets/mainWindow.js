@@ -36,11 +36,12 @@ class MainWindow extends Widget{
         this.setWidgetName("main")
     }
 
-    generateCode(parent){
+    generateCode(variableName, parent){
 
-        return (`
-                ${this.getWidgetName()} = tk.Tk()
-            `)
+        return [
+                `${variableName} = tk.Tk()`,
+                `${variableName}.title("${this.getAttrValue("title")}")`
+            ]
     }
 
     getToolbarAttrs(){

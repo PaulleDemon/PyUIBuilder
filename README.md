@@ -88,6 +88,16 @@ Join the free newsletter to know about upcoming updates, learn how I built this 
 
 To keep up with the latest developments considering starting ⭐️ this repo
 
+## Tested on
+
+Depending on whether your Browser supports native HTML drag and drop, it may work differently.
+I haven't tested on Safari, since I don't have a Macbook, feel free to let me know if it works.
+
+- [x] Chrome
+- [x] Edge
+- [x] FireFox
+- [ ] Safari (Not tested on safari)
+
 ## FAQ
 
 

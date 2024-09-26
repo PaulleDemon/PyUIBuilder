@@ -37,6 +37,14 @@ class TopLevel extends Widget{
         this.setWidgetName("toplevel")
     }
 
+    generateCode(variableName, parent){
+
+        return [
+                `${variableName} = tk.TopLevel(root=${parent})`,
+                `${variableName}.title("${this.getAttrValue("title")}")`
+            ]
+    }
+
     getToolbarAttrs(){
         const toolBarAttrs = super.getToolbarAttrs()
 

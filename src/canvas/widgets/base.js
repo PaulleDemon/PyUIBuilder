@@ -171,6 +171,9 @@ class Widget extends React.Component {
 
         this.generateCode = this.generateCode.bind(this)
 
+        this.getImports = this.getImports.bind(this)
+        this.getRequirements = this.getRequirements.bind(this)
+
         // this.openRenaming = this.openRenaming.bind(this)
 
         this.isSelected = this.isSelected.bind(this)
@@ -334,11 +337,11 @@ class Widget extends React.Component {
         return this.constructor.widgetType
     }
 
-    getRequirements = () => {
+    getRequirements(){
         return this.constructor.requirements
     }
 
-    getImports = () => {
+    getImports(){
         return this.constructor.requiredImports
     }
 
