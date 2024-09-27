@@ -1,8 +1,9 @@
 import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
+import { TkinterBase } from "./base"
 
 
-class MainWindow extends Widget{
+class MainWindow extends TkinterBase{
 
     static widgetType = "main_window"
 
@@ -29,6 +30,7 @@ class MainWindow extends Widget{
 
             }
         }
+
     }
 
     componentDidMount(){

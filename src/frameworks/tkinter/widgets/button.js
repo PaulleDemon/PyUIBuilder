@@ -1,37 +1,21 @@
-import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
-import { removeKeyFromObject } from "../../../utils/common"
-import {TkinterBase} from "./base"
+import { convertObjectToKeyValueString } from "../../../utils/common"
+import { TkinterWidgetBase } from "./base"
 
 
-class Button extends TkinterBase{
+class Button extends TkinterWidgetBase{
 
     static widgetType = "button"
 
     constructor(props) {
         super(props)
 
-        this.droppableTags = null
-        const newAttrs = removeKeyFromObject("layout", this.state.attrs)
-
         this.state = {
             ...this.state,
             size: { width: 80, height: 40 },
             widgetName: "Button",
             attrs: {
-                ...newAttrs,
-                styling: {
-                    ...newAttrs.styling,
-                    foregroundColor: {
-                        label: "Foreground Color",
-                        tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
-                        value: "#000",
-                        onChange: (value) => {
-                            this.setWidgetInnerStyle("color", value)
-                            this.setAttrValue("styling.foregroundColor", value)
-                        }
-                    }
-                },
+                ...this.state.attrs,
                 buttonLabel: {
                     label: "Button Label",
                     tool: Tools.INPUT, // the tool to display, can be either HTML ELement or a constant string
@@ -53,11 +37,12 @@ class Button extends TkinterBase{
     generateCode(variableName, parent){
 
         const labelText = this.getAttrValue("buttonLabel")
-        const bg = this.getAttrValue("styling.backgroundColor")
-        const fg = this.getAttrValue("styling.foregroundColor")
+
+        const config = convertObjectToKeyValueString(this.getConfigCode())
+
         return [
                 `${variableName} = tk.Button(master=${parent}, text="${labelText}")`,
-                `${variableName}.config(bg="${bg}", fg="${fg}")`,
+                `${variableName}.config(${config})`,
                 `${variableName}.${this.getLayoutCode()}`
             ]
     }

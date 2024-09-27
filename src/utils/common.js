@@ -57,5 +57,16 @@ export function isNumeric(str) {
 	if (typeof str != "string") return false // we only process strings!  
 	return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
 		   !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
-  }
-  
+}
+
+
+/**
+ * given an object with key value returns key1=value1, key2=value2 format 
+ * @param {Object} obj 
+ * @returns 
+ */
+export function convertObjectToKeyValueString(obj){
+	return Object.entries(obj)
+					.map(([key, value]) => `${key}=${value}`)
+					.join(', ')
+}

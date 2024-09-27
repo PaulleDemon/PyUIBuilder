@@ -1,35 +1,32 @@
 import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
-import { removeKeyFromObject } from "../../../utils/common"
-import {TkinterBase} from "./base"
+import { convertObjectToKeyValueString, removeKeyFromObject } from "../../../utils/common"
+import {TkinterBase, TkinterWidgetBase} from "./base"
 
 
-class Slider extends TkinterBase{
+class Slider extends TkinterWidgetBase{
 
     static widgetType = "scale"
 
     constructor(props) {
         super(props)
 
-        this.droppableTags = null // disables drops
-
-        const newAttrs = removeKeyFromObject("layout", this.state.attrs)
-
         this.state = {
             ...this.state,
             widgetName: "Scale",
             size: { width: 'fit', height: 'fit' },
             attrs: {
-                ...newAttrs,
+                ...this.state.attrs,
                 styling: {
-                    ...newAttrs.styling,
-                    foregroundColor: {
-                        label: "Foreground Color",
-                        tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
-                        value: "#000",
+                    ...this.state.attrs.styling,
+                    // TODO: trough color
+                    troughColor: {
+                        label: "Trough Color",
+                        tool: Tools.COLOR_PICKER, 
+                        value: "#fff",
                         onChange: (value) => {
-                            this.setWidgetInnerStyle("color", value)
-                            this.setAttrValue("styling.foregroundColor", value)
+                            // this.setWidgetInnerStyle("color", value)
+                            this.setAttrValue("styling.troughColor", value)
                         }
                     }
                 },
@@ -73,6 +70,25 @@ class Slider extends TkinterBase{
     componentDidMount(){
         super.componentDidMount()
         this.setAttrValue("styling.backgroundColor", "#fff")
+    }
+
+    generateCode(variableName, parent){
+        // TODO: add orientation
+        
+        const config = this.getConfigCode()
+
+        config["_from"] = this.getAttrValue("scale.min")
+        config["to"] = this.getAttrValue("scale.max")
+        config["resolution"] = this.getAttrValue("scale.step")
+
+        const defaultValue = this.getAttrValue("defaultValue")
+
+        return [
+                `${variableName}_var = tk.DoubleVar(${defaultValue})`,
+                `${variableName} = tk.Scale(master=${parent}, variable=${variableName}_var)`,
+                `${variableName}.config(${config})`,
+                `${variableName}.${this.getLayoutCode()}`
+            ]
     }
 
     getToolbarAttrs(){

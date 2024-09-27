@@ -1,38 +1,21 @@
-import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
-import { removeKeyFromObject } from "../../../utils/common"
-import {TkinterBase} from "./base"
+import { convertObjectToKeyValueString } from "../../../utils/common"
+import { TkinterWidgetBase } from "./base"
 
 
-export class Input extends TkinterBase{
+export class Input extends TkinterWidgetBase{
 
     static widgetType = "entry"
     
     constructor(props) {
         super(props)
 
-        this.droppableTags = null // disables drops
-
-        const newAttrs = removeKeyFromObject("layout", this.state.attrs)
-
         this.state = {
             ...this.state,
             size: { width: 120, height: 40 },
             widgetName: "Entry",
             attrs: {
-                ...newAttrs,
-                styling: {
-                    ...newAttrs.styling,
-                    foregroundColor: {
-                        label: "Foreground Color",
-                        tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
-                        value: "#000",
-                        onChange: (value) => {
-                            this.setWidgetInnerStyle("color", value)
-                            this.setAttrValue("styling.foregroundColor", value)
-                        }
-                    }
-                },
+                ...this.state.attrs,
                 placeHolder: {
                     label: "PlaceHolder",
                     tool: Tools.INPUT, // the tool to display, can be either HTML ELement or a constant string
@@ -52,12 +35,13 @@ export class Input extends TkinterBase{
 
     generateCode(variableName, parent){
 
-        const placeHolderText = this.getAttrValue("labelWidget")
-        const bg = this.getAttrValue("styling.backgroundColor")
-        const fg = this.getAttrValue("styling.foregroundColor")
+        const placeHolderText = this.getAttrValue("placeHolder")
+        
+        const config = convertObjectToKeyValueString(this.getConfigCode())
+
         return [
                 `${variableName} = tk.Entry(master=${parent}, text="${placeHolderText}")`,
-                `${variableName}.config(bg="${bg}", fg="${fg}")`,
+                `${variableName}.config(${config})`,
                 `${variableName}.${this.getLayoutCode()}`
             ]
     }
@@ -92,34 +76,18 @@ export class Input extends TkinterBase{
 }
 
 
-export class Text extends TkinterBase{
+export class Text extends TkinterWidgetBase{
 
     static widgetType = "Text"
 
     constructor(props) {
         super(props)
 
-        this.droppableTags = null
-
-        const newAttrs = removeKeyFromObject("layout", this.state.attrs)
-
         this.state = {
             ...this.state,
             size: { width: 120, height: 80 },
             attrs: {
-                ...newAttrs,
-                styling: {
-                    ...newAttrs.styling,
-                    foregroundColor: {
-                        label: "Foreground Color",
-                        tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
-                        value: "#000",
-                        onChange: (value) => {
-                            this.setWidgetInnerStyle("color", value)
-                            this.setAttrValue("styling.foregroundColor", value)
-                        }
-                    }
-                },
+                ...this.state.attrs,
                 placeHolder: {
                     label: "PlaceHolder",
                     tool: Tools.INPUT, // the tool to display, can be either HTML ELement or a constant string
@@ -136,6 +104,19 @@ export class Text extends TkinterBase{
         super.componentDidMount()
         this.setAttrValue("styling.backgroundColor", "#fff")
         this.setWidgetName("text")
+    }
+
+    generateCode(variableName, parent){
+
+        const placeHolderText = this.getAttrValue("placeHolder")
+        
+        const config = convertObjectToKeyValueString(this.getConfigCode())
+
+        return [
+                `${variableName} = tk.Text(master=${parent}, text="${placeHolderText}")`,
+                `${variableName}.config(${config})`,
+                `${variableName}.${this.getLayoutCode()}`
+            ]
     }
 
     getToolbarAttrs(){

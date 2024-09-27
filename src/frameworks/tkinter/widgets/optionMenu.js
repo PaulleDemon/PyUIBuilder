@@ -1,47 +1,27 @@
-import Widget from "../../../canvas/widgets/base"
-
 import Tools from "../../../canvas/constants/tools"
-import { removeKeyFromObject } from "../../../utils/common"
-import { ArrowDownOutlined, DownOutlined } from "@ant-design/icons"
-import {TkinterBase} from "./base"
+import {  DownOutlined } from "@ant-design/icons"
+import { TkinterWidgetBase} from "./base"
+import { convertObjectToKeyValueString } from "../../../utils/common"
 
 
-class OptionMenu extends TkinterBase{
+class OptionMenu extends TkinterWidgetBase{
 
     static widgetType = "option_menu"
-    // FIXME: the radio buttons are not visible because of the default heigh provided
+
     constructor(props) {
         super(props)
 
-        this.droppableTags = null // disables drops
-
         // const {layout, ...newAttrs} = this.state.attrs // Removes the layout attribute
 
-        const newAttrs = removeKeyFromObject("layout", this.state.attrs)
-
         this.minSize = {width: 50, height: 30}
-        
-        
+                
         this.state = {
             ...this.state,
             isDropDownOpen: false,
             widgetName: "Option menu",
             size: { width: 120, height: 'fit' },
             attrs: {
-                ...newAttrs,
-                styling: {
-                    label: "styling",
-                    foregroundColor: {
-                        label: "Foreground Color",
-                        tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
-                        value: "#000",
-                        onChange: (value) => {
-                            this.setWidgetInnerStyle("color", value)
-                            this.setAttrValue("styling.foregroundColor", value)
-                        }
-                    }
-                },
-               
+                ...this.state.attrs,
                 defaultValue: {
                     label: "Default Value",
                     tool: Tools.INPUT,
@@ -50,17 +30,19 @@ class OptionMenu extends TkinterBase{
                         this.setAttrValue("options", {inputs, selectedRadio})
                     }
                 },
-                options: {
+                widgetOptions: {
                     label: "Options",
                     tool: Tools.INPUT_RADIO_LIST,
                     value: {inputs: ["option 1"], selectedRadio: -1},
                     onChange: ({inputs, selectedRadio}) => {
-                        this.setAttrValue("options", {inputs, selectedRadio})
+                        this.setAttrValue("widgetOptions", {inputs, selectedRadio})
                     }
                 }
 
             }
         }
+
+        console.log("attrs1: ", this.state.attrs)
     }
 
     componentDidMount(){
@@ -68,11 +50,28 @@ class OptionMenu extends TkinterBase{
         this.setWidgetInnerStyle("backgroundColor", "#fff")
     }
 
+    generateCode(variableName, parent){
+
+        
+        const config = convertObjectToKeyValueString(this.getConfigCode())
+
+        const defaultValue = this.getAttrValue("defaultValue")
+        const options = JSON.stringify(this.getAttrValue("widgetOptions").inputs)
+
+        return [
+                `${variableName}_options = ${options}`,
+                `${variableName} = tk.OptionMenu(master=${parent}, ${defaultValue}, *${variableName}_options)`,
+                `${variableName}.config(${config})`,
+                `${variableName}.${this.getLayoutCode()}`
+            ]
+    }
+
     getToolbarAttrs(){
 
         const toolBarAttrs = super.getToolbarAttrs()
 
         const attrs = this.state.attrs
+        console.log("attrs: ", attrs)
         return ({
             id: this.__id,
             widgetName: toolBarAttrs.widgetName,
@@ -90,7 +89,7 @@ class OptionMenu extends TkinterBase{
 
     renderContent(){
 
-        const {inputs, selectedRadio} = this.getAttrValue("options")
+        const {inputs, selectedRadio} = this.getAttrValue("widgetOptions")
 
         return (
             <div className="tw-flex tw-p-1 tw-w-full tw-h-full tw-rounded-md tw-overflow-hidden"

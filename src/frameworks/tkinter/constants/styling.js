@@ -6,3 +6,10 @@ export const RELIEF = [
     "GROOVE",
     "RIDGE"
 ]
+
+
+export const JUSTIFY = [
+    "LEFT",
+    "CENTER",
+    "RIGHT"
+]

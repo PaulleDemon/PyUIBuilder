@@ -1,39 +1,23 @@
 import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
-import { removeKeyFromObject } from "../../../utils/common"
+import { convertObjectToKeyValueString, removeKeyFromObject } from "../../../utils/common"
 import { DownOutlined, UpOutlined } from "@ant-design/icons"
-import {TkinterBase} from "./base"
+import {TkinterBase, TkinterWidgetBase} from "./base"
 
 
-class SpinBox extends TkinterBase{
+class SpinBox extends TkinterWidgetBase{
 
     static widgetType = "spin_box"
 
     constructor(props) {
         super(props)
 
-        this.droppableTags = null // disables drops
-
-        const newAttrs = removeKeyFromObject("layout", this.state.attrs)
-
         this.state = {
             ...this.state,
             size: { width: 70, height: 'fit' },
             widgetName: "Spin box",
             attrs: {
-                ...newAttrs,
-                styling: {
-                    ...newAttrs.styling,
-                    foregroundColor: {
-                        label: "Foreground Color",
-                        tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
-                        value: "#000",
-                        onChange: (value) => {
-                            this.setWidgetInnerStyle("color", value)
-                            this.setAttrValue("styling.foregroundColor", value)
-                        }
-                    }
-                },
+                ...this.state.attrs,
                 spinProps: {
                     label: "Properties",
                     display: "horizontal",
@@ -81,14 +65,27 @@ class SpinBox extends TkinterBase{
         const min = this.getAttrValue("spinProps.min")
         const max = this.getAttrValue("spinProps.max")
         const step = this.getAttrValue("spinProps.step")
-        const defaultValue = this.getAttrValue("spinProps.defaultValue")
+        const defaultValue = this.getAttrValue("spinProps.default")
 
-        const bg = this.getAttrValue("styling.backgroundColor")
-        const fg = this.getAttrValue("styling.foregroundColor")
+        const config = {
+            from_: min,
+            to: max,
+            increment: step,
+            value: defaultValue, 
+            ...this.getConfigCode()
+        }
+        
+        const code = []
+        let spinBox =  `${variableName} = tk.Spinbox(master=${parent})`
+        if (defaultValue){
+            code.push(`${variableName}_var = tk.IntVar(${defaultValue})`)
+            spinBox =  `${variableName} = tk.Spinbox(master=${parent}, textvariable=${variableName}_var)`
+        }
+        code.push(spinBox)
+
         return [
-                `${variableName} = tk.Spinbox(master=${parent})`,
-                `${variableName}.config(bg="${bg}", fg="${fg}", from_=${min}, to=${max}, 
-                                    increment=${step})`,
+               ...code,
+                `${variableName}.config(${convertObjectToKeyValueString(config)})`,
                 `${variableName}.${this.getLayoutCode()}`
             ]
     }

@@ -1,12 +1,11 @@
-import Widget from "../../../canvas/widgets/base"
 
 import Tools from "../../../canvas/constants/tools"
-import { removeKeyFromObject } from "../../../utils/common"
+import { convertObjectToKeyValueString, removeKeyFromObject } from "../../../utils/common"
 import { CheckSquareFilled } from "@ant-design/icons"
-import {TkinterBase} from "./base"
+import { TkinterWidgetBase } from "./base"
 
 
-export class CheckBox extends TkinterBase{
+export class CheckBox extends TkinterWidgetBase{
 
     static widgetType = "check_button"
     constructor(props) {
@@ -63,12 +62,11 @@ export class CheckBox extends TkinterBase{
     generateCode(variableName, parent){
 
         const labelText = this.getAttrValue("checkLabel")
-        const bg = this.getAttrValue("styling.backgroundColor")
-        const fg = this.getAttrValue("styling.foregroundColor")
-        
+        const config = convertObjectToKeyValueString(this.getConfigCode())
+
         const code = [
                 `${variableName} = tk.Checkbutton(master=${parent}, text="${labelText}")`,
-                `${variableName}.config(bg="${bg}", fg="${fg}")`,
+                `${variableName}.config(${config})`,
             ]
         
         if (this.getAttrValue("defaultChecked")){
@@ -122,43 +120,22 @@ export class CheckBox extends TkinterBase{
 }
 
 
-export class RadioButton extends TkinterBase{
+export class RadioButton extends TkinterWidgetBase{
+    // FIXME: the radio buttons are not visible because of the default heigh provided
 
     static widgetType = "radio_button"
     
     constructor(props) {
         super(props)
 
-        this.droppableTags = null // disables drops
-
-        // const {layout, ...newAttrs} = this.state.attrs // Removes the layout attribute
-
-        let newAttrs = removeKeyFromObject("layout", this.state.attrs)
-        newAttrs = removeKeyFromObject("styling.backgroundColor", newAttrs)
-
         this.minSize = {width: 50, height: 30}
-        
         
         this.state = {
             ...this.state,
             size: { width: 120, height: 'fit' },
             widgetName: "Radio button",
             attrs: {
-                ...newAttrs,
-                styling: {
-                    ...newAttrs.styling,
-                    foregroundColor: {
-                        label: "Foreground Color",
-                        tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
-                        value: "#000",
-                        onChange: (value) => {
-                            this.setWidgetInnerStyle("color", value)
-                            this.setAttrValue("styling.foregroundColor", value)
-                        }
-                    }
-                },
-               
-    
+                ...this.state.attrs,
                 radios: {
                     label: "Radio Group",
                     tool: Tools.INPUT_RADIO_LIST,
@@ -180,8 +157,8 @@ export class RadioButton extends TkinterBase{
 
     generateCode(variableName, parent){
 
-        const bg = this.getAttrValue("styling.backgroundColor")
-        const fg = this.getAttrValue("styling.foregroundColor")
+        const config = convertObjectToKeyValueString(this.getConfigCode())
+
         
         const code = [
             `${variableName}_var = tk.IntVar()`,
@@ -193,7 +170,7 @@ export class RadioButton extends TkinterBase{
             const radioBtnVariable = `${variableName}_${idx}`
             code.push(`\n`)
             code.push(`${radioBtnVariable} = tk.Radiobutton(master=${parent}, variable=${variableName}_var, text="${radio_text}")`)
-            code.push(`${radioBtnVariable}.config(bg="${bg}", fg="${fg}", value=${idx})`)
+            code.push(`${radioBtnVariable}.config(${config}, value=${idx})`)
             code.push(`${radioBtnVariable}.${this.getLayoutCode()}`)
         })
 

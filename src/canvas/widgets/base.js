@@ -20,7 +20,7 @@ import { isNumeric, removeKeyFromObject } from "../../utils/common"
 // FIXME: the drag drop indicator is not going invisible if the drop happens on the child
 
 // FIXME: once the width and height is set to fit-content, it can no longer be resized
-const ATTRS_KEYS = ['value', 'label', 'tool', 'onChange', 'toolProps'] // these are attrs keywords, don't use these keywords as keys while defining the attrs property
+const ATTRS_KEYS = ['value', 'label', 'tool', 'onChange', 'options', 'toolProps'] // these are attrs keywords, don't use these keywords as keys while defining the attrs property or serializing
 
 
 /**

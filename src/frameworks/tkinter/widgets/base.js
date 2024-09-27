@@ -4,7 +4,7 @@ import Widget from "../../../canvas/widgets/base"
 import { removeKeyFromObject } from "../../../utils/common"
 import { Tkinter_TO_WEB_CURSOR_MAPPING } from "../constants/cursor"
 import { Tkinter_To_GFonts } from "../constants/fontFamily"
-import { RELIEF } from "../constants/styling"
+import { JUSTIFY, RELIEF } from "../constants/styling"
 
 // TODO: add full width and full height in base widget
 // TODO: the pack should configure width and height of widgets
@@ -204,7 +204,7 @@ export class TkinterBase extends Widget {
             ...layoutUpdates
         }
         
-        console.log("new data: ", newData)
+        console.log("new data: ", newData, data)
 
         this.setState(newData,  () => {
             let layoutAttrs = this.setParentLayout(parentLayout) || {}
@@ -286,12 +286,66 @@ export class TkinterWidgetBase extends TkinterBase{
                         label: "Relief",
                         tool: Tools.SELECT_DROPDOWN,
                         options: RELIEF.map((val) => ({value: val, label: val})),
-                        value: "Arial",
+                        value: "",
                         onChange: (value) => {
-                            this.setWidgetInnerStyle("fontFamily", Tkinter_To_GFonts[value])
-                            this.setAttrValue("font.fontFamily", value)
+                            // this.setWidgetInnerStyle("fontFamily", Tkinter_To_GFonts[value])
+                            this.setAttrValue("styling.relief", value)
                         }
-                    }
+                    },
+                    // justify: {
+                    //     label: "Justify",
+                    //     tool: Tools.SELECT_DROPDOWN,
+                    //     options: JUSTIFY.map((val) => ({value: val, label: val})),
+                    //     value: "",
+                    //     onChange: (value) => {
+                    //         this.setWidgetInnerStyle("text-align", value)
+                    //         this.setAttrValue("styling.justify", value)
+                    //     }
+                    // }
+                },
+                padding: {
+                    label: "padding",
+                    padX: {
+                        label: "Pad X",
+                        tool: Tools.NUMBER_INPUT,
+                        toolProps: {min: 1, max: 140},
+                        value: null,
+                        onChange: (value) => {
+                            // this.setWidgetInnerStyle("paddingLeft", `${value}px`)
+                            // this.setWidgetInnerStyle("paddingRight", `${value}px`)
+
+                            const widgetStyle = {
+                                ...this.state.widgetInnerStyling,
+                                paddingLeft: `${value}px`,
+                                paddingRight: `${value}px`
+                            }
+                            this.setState({
+
+                                widgetInnerStyling: widgetStyle
+                            })
+
+
+                            this.setAttrValue("padding.padX", value)
+                        }
+                    },
+                    padY: {
+                        label: "Pad Y",
+                        tool: Tools.NUMBER_INPUT,
+                        toolProps: {min: 1, max: 140},
+                        value: null,
+                        onChange: (value) => {
+                            const widgetStyle = {
+                                ...this.state.widgetInnerStyling,
+                                paddingTop: `${value}px`,
+                                paddingBottom: `${value}px`
+                            }
+                            this.setState({
+
+                                widgetInnerStyling: widgetStyle
+                            })
+                            this.setAttrValue("padding.padX", value)
+                        }
+                    },
                 },
                 font: {
                     label: "font",
@@ -309,9 +363,8 @@ export class TkinterWidgetBase extends TkinterBase{
                         label: "font size",
                         tool: Tools.NUMBER_INPUT,
                         toolProps: {min: 1, max: 140},
-                        value: 14,
+                        value: null,
                         onChange: (value) => {
-                            console.log("font size: ", value)
                             this.setWidgetInnerStyle("fontSize", `${value}px`)
                             this.setAttrValue("font.fontSize", value)
                         }
@@ -321,7 +374,7 @@ export class TkinterWidgetBase extends TkinterBase{
                     label: "Cursor",
                     tool: Tools.SELECT_DROPDOWN, 
                     toolProps: {placeholder: "select cursor"},
-                    value: Tkinter_TO_WEB_CURSOR_MAPPING["arrow"],
+                    value: "",
                     options: Object.keys(Tkinter_TO_WEB_CURSOR_MAPPING).map((val) => ({value: val, label: val})),
                     onChange: (value) => {
                         this.setWidgetInnerStyle("cursor", Tkinter_TO_WEB_CURSOR_MAPPING[value])
@@ -330,6 +383,39 @@ export class TkinterWidgetBase extends TkinterBase{
                 },
             }
         }
+
+        this.getConfigCode = this.getConfigCode.bind(this)
+    }
+
+    getConfigCode(){
+
+        const code = {
+            bg: `"${this.getAttrValue("styling.backgroundColor")}"`,
+            fg: `"${this.getAttrValue("styling.foregroundColor")}"`,
+        }
+
+        if (this.getAttrValue("styling.borderWidth"))
+            code["bd"] = this.getAttrValue("styling.borderWidth")
+
+        if (this.getAttrValue("styling.relief"))
+            code["relief"] = `"${this.getAttrValue("styling.relief")}"`
+
+        if (this.getAttrValue("font.fontFamily") || this.getAttrValue("font.fontSize")){
+            code["font"] = [`"${this.getAttrValue("font.fontFamily")}"`, this.getAttrValue("font.fontSize"), ]
+        }
+
+        if (this.getAttrValue("cursor"))
+            code["cursor"] = `"${this.getAttrValue("cursor")}"`
+
+        if (this.getAttrValue("padding.padX")){
+            code["padx"] = this.getAttrValue("padding.padX")
+        }
+
+        if (this.getAttrValue("padding.padY")){
+            code["pady"] = this.getAttrValue("padding.padY")
+        }
+
+        return code
     }
 
 }
