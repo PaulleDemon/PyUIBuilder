@@ -312,7 +312,6 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
                 if (isFirstLevel && keys.length < 3) keys.push(keyName)
                 
                 if (isFirstLevel){
-
                     return (
                         <Collapse key={keyName} ghost defaultActiveKey={keys}>
                             <Collapse.Panel header={val.label} key={keyName}>

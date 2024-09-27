@@ -631,7 +631,6 @@ class Widget extends React.Component {
             widgetOuterStyling: widgetStyle
         })
 
-        console.log("widget styling: ", widgetStyle)
     }
 
     /**

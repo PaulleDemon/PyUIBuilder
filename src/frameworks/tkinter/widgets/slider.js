@@ -62,6 +62,27 @@ class Slider extends TkinterWidgetBase{
                         onChange: (value) => this.setAttrValue("scale.default", value)
                     }
                 },
+                orientation: {
+                    label: "Orientation",
+                    tool: Tools.SELECT_DROPDOWN, 
+                    toolProps: {placeholder: "select orientation"},
+                    value: "",
+                    options: [{value: "horizontal", label: "horizontal"}, {value: "vertical", label: "vertical"}],
+                    onChange: (value) => {
+
+                        // const widgetStyling = {
+                        //     transformOrigin: "0 0",
+                        //     transform: value === "horizontal" ? "rotate(0deg)" : "rotate(90deg)"
+                        // }
+
+                        // this.setState((prev) => ({
+                        //     widgetOuterStyling: {...prev, ...widgetStyling}
+                        // }))
+                        // this.setWidgetOuterStyle("transform-origin", "0 0")
+                        // this.setWidgetOuterStyle("transform", value === "horizontal" ? "rotate(0deg)" : "rotate(90deg)")
+                        this.setAttrValue("orientation", value)
+                    }
+                },
 
             }
         }
@@ -80,6 +101,10 @@ class Slider extends TkinterWidgetBase{
         config["_from"] = this.getAttrValue("scale.min")
         config["to"] = this.getAttrValue("scale.max")
         config["resolution"] = this.getAttrValue("scale.step")
+
+        if (this.getAttrValue("orientation")){
+            config["orientation"] = this.getAttrValue("orientation")
+        }
 
         const defaultValue = this.getAttrValue("defaultValue")
 
@@ -109,7 +134,8 @@ class Slider extends TkinterWidgetBase{
     renderContent(){
         return (
             <div className="tw-w-flex tw-flex-col tw-w-full tw-h-full tw-rounded-md tw-overflow-hidden">
-                <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+                <div className="flex flex-col items-center justify-center h-screen 
+                                bg-gray-100" style={this.state.widgetInnerStyling}>
                     <div className="w-full max-w-md">
                         <input
                             type="range"
@@ -117,6 +143,7 @@ class Slider extends TkinterWidgetBase{
                             max={this.getAttrValue("scale.max")}
                             step={this.getAttrValue("scale.step")}
                             value={this.getAttrValue("scale.default")}
+                            style={{backgroundColor: this.getAttrValue("styling.troughColor") }}
                             className="tw-pointer-events-none w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
                         />
                        

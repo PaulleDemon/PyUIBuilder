@@ -24,7 +24,8 @@ function Premium({ children, className = "" }) {
             {children}
             <Modal
                 title={<h3 className="tw-text-xl tw-font-medium">Fund development. Pre-order one Time License</h3>}
-                style={{ zIndex: 14000, gap: '10px', maxWidth: '80vw', placeItems: "center" }}
+                style={{ zIndex: 14000, gap: '5px', placeItems: "center" }}
+                className="max-xl:tw-max-w-full"
                 onCancel={onClose}
                 centered
                 onOk={onClose}
@@ -32,12 +33,12 @@ function Premium({ children, className = "" }) {
                 width={'auto'}
                 open={premiumModalOpen}
             >
-                <div className="tw-mt-5 tw-text-lg tw-max-w-[850px] tw-w-full ">
+                <div className="tw-mt-5 tw-text-lg tw-max-w-[850px]  tw-w-full ">
                     I am Paul, a self-funded open-source dev.
                     If you find this tool useful and want to fund and support it's development, consider buying a <b>one time license</b>.
                     <br />
                     <br />
-                    By buying pre-order license, you get advance features, priority support, early access, upcoming features, and more.
+                    By buying pre-order license, you get advance features, priority support, early access, upcoming features, and &nbsp;
                     <a
                         href="https://github.com/PaulleDemon/tab=readme-ov-file"
                         target="_blank"
@@ -189,7 +190,7 @@ function Premium({ children, className = "" }) {
                         </div>
 
                         {/* Paid Plan */}
-                        <div className="tw-flex tw-w-[380px] tw-flex-col tw-place-items-center tw-gap-2 tw-rounded-lg tw-border-2 tw-border-solid
+                        <div className="tw-flex tw-w-[380px] tw-flex-col tw-place-items-center tw-gap-2 tw-rounded-lg tw-border-3 tw-border-solid
                                          tw-border-green-600 tw-p-8 tw-shadow-xl max-lg:tw-w-[340px]">
                             <div className="tw-text-white tw-p-1 tw-px-3 tw-bg-blue-500 tw-rounded-full">
                                 Limited time offer

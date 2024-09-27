@@ -35,11 +35,21 @@ Build Python GUI's with the ease of Canva
 
 
 ## Features
+
+While there are a lot of features, here are few you need to know.
+
 * Framework agnostic - Can outputs code in multiple frameworks.
 * Easy to use.
-* Pre-built UI components
+* Pre-built UI widgets
 * Plugins to extend 3rd party UI libraries
 * Generates Code.
+
+## Supported Frameworks/Libraries
+
+- [x] Tkinter 
+- [x] CustomTkinter 
+- [ ] Kivy (work in progress)
+- [ ] PySide (work in progress)
 
 ## Roadmap
 Here are some of the upcoming features.
@@ -55,9 +65,9 @@ To stay in loop, subscribe to the free [newsletter](https://paulfreeman.substack
 
 ## License - Fund the development
 
-To support open-source and development of this tool and upcoming free open-source tools and libraries, consider buying a one-time license.
+Help fund open-source work and development of this and upcoming projects by purchasing a one-time license.
 
-Purchasing License will allow me to focus on this work and give you access to more advance features, early access and more.
+Purchasing License will allow me to focus on development of this tool and provide you access to more advance features, early access and more.
 
 The discount's will be available for limited time only on pre-orders.
 

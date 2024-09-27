@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 
-import { LayoutFilled, ProductFilled, CloudUploadOutlined } from "@ant-design/icons"
+import { LayoutFilled, ProductFilled, CloudUploadOutlined, DatabaseFilled } from "@ant-design/icons"
 // import { DndContext, useSensors, useSensor, PointerSensor, closestCorners, DragOverlay, rectIntersection } from '@dnd-kit/core'
 // import { snapCenterToCursor } from '@dnd-kit/modifiers'
 
@@ -17,6 +17,7 @@ import TkinterPluginWidgets from './frameworks/tkinter/sidebarPlugins'
 import FrameWorks from './constants/frameworks'
 import generateTkinterCode from './frameworks/tkinter/engine/code'
 import { FileUploadProvider, useFileUploadContext } from './contexts/fileUploadContext'
+import TemplatesContainer from './sidebar/templatesContainer'
 
 
 function App() {
@@ -51,6 +52,11 @@ function App() {
 			name: "Uploads",
 			icon: <CloudUploadOutlined />,
 			content: <UploadsContainer />
+		},
+		{
+			name: "Templates",
+			icon: <DatabaseFilled  />,
+			content: <TemplatesContainer />
 		}
 	]
 

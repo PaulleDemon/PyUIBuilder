@@ -31,28 +31,27 @@ export class TkinterBase extends Widget {
             const col = this.getAttrValue("gridManager.col")
             layoutManager = `grid(row=${row}, col=${col})`
         }else{
-            // FIXME: position may not be correct
             layoutManager = `place(x=${this.state.pos.x}, y=${this.state.pos.y})`
         }
 
         return layoutManager
     }
 
-    setParentLayout(parentLayout){
+    setParentLayout(layout){
 
-        if (!parentLayout){
+        if (!layout){
             return {}
         } 
 
-        const {layout, direction, gap} = parentLayout
+        const {layout: parentLayout, direction, gap} = layout
 
         // show attributes related to the layout manager
         let updates = {
-            parentLayout: parentLayout,
+            parentLayout: layout,
         }
         
         this.removeAttr("gridManager")
-        if (layout === Layouts.FLEX || layout === Layouts.GRID) {
+        if (parentLayout === Layouts.FLEX || parentLayout === Layouts.GRID) {
 
             updates = {
                 ...updates,
@@ -154,7 +153,7 @@ export class TkinterBase extends Widget {
 
             }
 
-        } else if (layout === Layouts.PLACE) {
+        } else if (parentLayout === Layouts.PLACE) {
             updates = {
                 ...updates,
                 positionType: PosType.ABSOLUTE
@@ -204,11 +203,10 @@ export class TkinterBase extends Widget {
             ...layoutUpdates
         }
         
-        console.log("new data: ", newData, data)
 
         this.setState(newData,  () => {
-            let layoutAttrs = this.setParentLayout(parentLayout) || {}
-
+            let layoutAttrs = this.setParentLayout(parentLayout).attrs || {}
+            
             // UPdates attrs
             let newAttrs = { ...this.state.attrs, ...layoutAttrs }
 
@@ -256,6 +254,8 @@ export class TkinterWidgetBase extends TkinterBase{
         this.droppableTags = null // disables drops
 
         const newAttrs = removeKeyFromObject("layout", this.state.attrs)
+
+        console.log("new attrs: ", newAttrs)
 
         this.state = {
             ...this.state,
