@@ -9,7 +9,8 @@ const Tools = {
     INPUT_LIST: "input_list",
     INPUT_RADIO_LIST: "input_radio_list",
 
-    LAYOUT_MANAGER: "layout_manager"
+    LAYOUT_MANAGER: "layout_manager",
+    UPLOADED_LIST: "uploaded_list",
 }
 
 

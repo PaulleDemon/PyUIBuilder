@@ -11,6 +11,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 
 import "./styles/tailwind.css";
 import "./styles/index.css";
+import { FileUploadProvider } from "./contexts/fileUploadContext";
 
 const originalSetItem = localStorage.setItem;
 // triggers itemsChaned event whenever the item in localstorage is chanegd.
@@ -67,7 +68,9 @@ root.render(
 		<React.StrictMode>
             <Provider store={store}>
                 <QueryClientProvider client={queryClient} >
-					<App />
+					<FileUploadProvider>
+						<App />
+					</FileUploadProvider>
 				</QueryClientProvider>
             </Provider>
 		</React.StrictMode>

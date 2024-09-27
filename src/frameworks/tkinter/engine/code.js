@@ -44,7 +44,7 @@ function generateTkinterCodeList(widgetList = [], widgetRefs = [], parentVariabl
         let widgetCode = widgetRef.generateCode(varName, currentParentVariable)
 
         if (!(widgetCode instanceof Array)) {
-            throw new Error("Generate code function should return array, each new line should be a new item")
+            throw new Error("generateCode() function should return array, each new line should be a new item")
         }
 
         // Add \n after every line

@@ -9,6 +9,7 @@ import { DraggableAssetCard } from "../components/cards.js"
 import { filterObjectListStartingWith } from "../utils/filter"
 import { getFileType } from "../utils/file.js"
 import { SearchComponent } from "../components/inputs.js"
+import { useFileUploadContext } from "../contexts/fileUploadContext.js"
 // import { update } from "../redux/assetSlice.js"
 
 
@@ -33,7 +34,7 @@ const props = {
  * DND for file uploads
  *  
  */
-function UploadsContainer({assets, onAssetUploadChange}) {
+function UploadsContainer() {
 
     // const dispatch = useDispatch()
     // const selector = useSelector(state => state.assets)
@@ -42,27 +43,38 @@ function UploadsContainer({assets, onAssetUploadChange}) {
     const [dragEnter, setDragEnter] = useState(false)
 
     const [searchValue, setSearchValue] = useState("")
-    const [uploadData, setUploadData] = useState(assets) // contains all the uploaded data
-    const [uploadResults, setUploadResults] = useState(assets) // sets search results
+    // const [uploadData, setUploadData] = useState(assets) // contains all the uploaded data
     
+    const {uploadedAssets, setUploadedAssets} = useFileUploadContext()
+
+    const [uploadResults, setUploadResults] = useState(uploadedAssets) // sets search results
+    
+    // useEffect(() => {
+    //     setUploadResults(uploadData)
+    // }, [uploadData])
+
     useEffect(() => {
-        setUploadResults(uploadData)
-    }, [uploadData])
+        setUploadResults(uploadedAssets)
+    }, [uploadedAssets])
 
     useEffect(() => {
 
         if (searchValue.length > 0) {
-            const searchData = filterObjectListStartingWith(uploadData, "name", searchValue)
+            const searchData = filterObjectListStartingWith(uploadedAssets, "name", searchValue)
             setUploadResults(searchData)
         } else {
-            setUploadResults(uploadData)
+            setUploadResults(uploadedAssets)
         }
 
     }, [searchValue])
 
     function onSearch(event) {
-
         setSearchValue(event.target.value)
+    }
+
+    function handleDelete(file){
+        // remove the file from the asset on delete
+        setUploadedAssets(prev => prev.filter(val => val.uid !== file.uid))
 
     }
 
@@ -101,11 +113,12 @@ function UploadsContainer({assets, onAssetUploadChange}) {
                                 const newFileData = {
                                     ...info.file,
                                     previewUrl,
-                                    fileType
+                                    fileType,
                                 }
-                                // dispatch(update([newFileData, ...uploadData]))
-                                setUploadData(prev => [newFileData, ...prev])
-                                onAssetUploadChange([newFileData, ...uploadData])
+
+                                // setUploadData(prev => [newFileData, ...prev])
+                                setUploadedAssets(prev => [newFileData, ...prev])
+                                // onAssetUploadChange([newFileData, ...uploadData])
                                 setDragEnter(false)
                                 
                                 message.success(`${info.file.name} file uploaded successfully.`)
@@ -126,6 +139,7 @@ function UploadsContainer({assets, onAssetUploadChange}) {
                         return (
                             <DraggableAssetCard key={file.uid}
                                 file={file}
+                                onDelete={handleDelete}
                             />
 
                         )

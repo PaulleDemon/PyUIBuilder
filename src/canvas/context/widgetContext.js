@@ -2,7 +2,7 @@ import React, { createContext, Component } from 'react'
 
 const WidgetContext = createContext()
 
-// NOTE: Don't use context provider
+// NOTE: Don't use this context provider
 
 class WidgetProvider extends Component {
     state = {

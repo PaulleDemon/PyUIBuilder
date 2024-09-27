@@ -4,7 +4,7 @@ const DragWidgetContext = createContext()
 
 export const useDragWidgetContext = () => useContext(DragWidgetContext)
 
-// Provider component to wrap around parts of your app that need drag-and-drop functionality
+// Provider component to wrap around parts that need drag-and-drop functionality
 export const DragWidgetProvider = ({ children }) => {
     const [draggedElement, setDraggedElement] = useState(null)
 

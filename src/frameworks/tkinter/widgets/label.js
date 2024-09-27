@@ -36,12 +36,18 @@ class Label extends TkinterBase{
                 },
                 labelWidget: {
                     label: "Text",
-                    tool: Tools.INPUT, // the tool to display, can be either HTML ELement or a constant string
+                    tool: Tools.INPUT, 
                     toolProps: {placeholder: "text", maxLength: 100}, 
                     value: "Label",
                     onChange: (value) => this.setAttrValue("labelWidget", value)
-                }
-
+                },
+                imageUpload: {
+                    label: "Image",
+                    tool: Tools.UPLOADED_LIST, 
+                    toolProps: {filterOptions: ["image/jpg", "image/jpeg", "image/png"]}, 
+                    value: "",
+                    onChange: (value) => this.setAttrValue("imageUpload", value)
+                },
             }
         }
     }
@@ -82,7 +88,7 @@ class Label extends TkinterBase{
 
     renderContent(){
         return (
-            <div className="tw-w-flex tw-flex-col tw-w-full tw-h-full tw-rounded-md tw-overflow-hidden">
+            <div className="tw-w-flex tw-flex-col tw-w-full tw-content-start tw-h-full tw-rounded-md tw-overflow-hidden">
                 <div className="tw-p-2 tw-w-full tw-h-full  tw-flex tw-place-content-center tw-place-items-center " style={this.state.widgetInnerStyling}>
                     {/* {this.props.children} */}
                     <div className="tw-text-sm" style={{color: this.getAttrValue("styling.foregroundColor")}}>

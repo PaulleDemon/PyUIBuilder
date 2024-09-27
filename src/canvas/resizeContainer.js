@@ -2,7 +2,10 @@ import Cursor from "./constants/cursor"
 import Widget from "./widgets/base"
 import { useEffect, useState } from "react"
 
-// FIXME: when using this if the widhet has invisible swappable area, this won't work
+
+// NOTE: Not in use
+
+// FIXME: when using this if the widget has invisible swappable area, this won't work
 /**
  * 
  * @param {Widget} - selectedWidget 

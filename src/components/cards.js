@@ -2,8 +2,11 @@ import { useEffect, useMemo, useRef } from "react"
 import Draggable from "./utils/draggableDnd"
 
 import { GithubOutlined, GitlabOutlined, LinkOutlined,
-            AudioOutlined, FileTextOutlined} from "@ant-design/icons"
+            AudioOutlined, FileTextOutlined,
+            DeleteFilled,
+            DeleteOutlined} from "@ant-design/icons"
 import DraggableWrapper from "./draggable/draggable"
+import { Button } from "antd"
 
 
 export function SidebarWidgetCard({ name, img, url, license, widgetClass, innerRef}){
@@ -75,7 +78,7 @@ export function SidebarWidgetCard({ name, img, url, license, widgetClass, innerR
 }
 
 
-export function DraggableAssetCard({file}){
+export function DraggableAssetCard({file, onDelete}){
 
     const videoRef = useRef()
 
@@ -106,36 +109,42 @@ export function DraggableAssetCard({file}){
 
 
     return (
-        <>
-            <div className="tw-w-full tw-h-[240px] tw-p-1 tw-flex tw-flex-col tw-rounded-md tw-overflow-hidden 
-                            tw-gap-2 tw-text-gray-600 tw-bg-[#ffffff44] tw-border-solid tw-border-[1px] 
-                            tw-border-blue-500 tw-shadow-md ">
-                <div className="tw-h-[200px] tw-w-full tw-flex tw-place-content-center tw-p-1 tw-text-3xl tw-overflow-hidden">
-                    { file.fileType === "image" &&
-                        <img src={file.previewUrl} alt={file.name} className="tw-object-contain tw-h-full tw-w-full tw-select-none" />
-                    }
+        <div draggable="false" className="tw-w-full tw-h-[240px] tw-p-1 tw-flex tw-flex-col tw-rounded-md tw-overflow-hidden 
+                        tw-gap-2 tw-text-gray-600 tw-bg-[#ffffff44] tw-border-solid tw-border-[1px] 
+                        tw-border-blue-500 tw-shadow-md ">
+            <div className="tw-h-[200px] tw-pointer-events-none tw-w-full tw-flex tw-place-content-center tw-p-1 tw-text-3xl tw-overflow-hidden">
+                { file.fileType === "image" &&
+                    <img src={file.previewUrl} alt={file.name} className="tw-object-contain tw-h-full tw-w-full tw-select-none" />
+                }
 
-                    {
-                        file.fileType === "video" &&
-                        <video className="tw-w-full tw-object-contain" ref={videoRef} muted>
-                            <source src={file.previewUrl} type={`${file.type || "video/mp4"}`} />
-                            Your browser does not support the video tag.
-                        </video>
-                    }
+                {
+                    file.fileType === "video" &&
+                    <video className="tw-w-full tw-object-contain" ref={videoRef} muted>
+                        <source src={file.previewUrl} type={`${file.type || "video/mp4"}`} />
+                        Your browser does not support the video tag.
+                    </video>
+                }
 
-                    {
-                        file.fileType === "audio" && 
-                            <AudioOutlined />
-                    } 
-                    {
-                        file.fileType === "others" && 
-                            <FileTextOutlined />
-                    }
+                {
+                    file.fileType === "audio" && 
+                        <AudioOutlined />
+                } 
+                {
+                    file.fileType === "others" && 
+                        <FileTextOutlined />
+                }
 
-                </div>
-                <span className="tw-text-sm tw-text-back">{file.name}</span>
             </div>
-        </>
+            <div className="tw-flex tw-justify-between tw-gap-1 tw-p-1">
+                <span onDragStart={() => false} draggable="false" 
+                    className="tw-text-sm tw-text-back tw-pointer-events-none">{file.name}</span>
+
+                <div className="tw-text-red-500 tw-cursor-pointer" 
+                        onClick={() => onDelete(file)} >
+                    <DeleteOutlined />
+                </div>
+            </div>
+        </div>
     )
 
 }

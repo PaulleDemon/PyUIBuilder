@@ -3,7 +3,7 @@ import React, { createContext, Component, useContext, useState, createRef, useMe
 
 
 // NOTE: using this context provider causes many re-rendering when the canvas is panned the toolbar updates unnecessarily
-
+// use draggable widgetcontext
 
 // Create the Context
 export const ActiveWidgetContext = createContext()

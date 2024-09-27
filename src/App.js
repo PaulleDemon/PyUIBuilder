@@ -16,6 +16,7 @@ import PluginsContainer from './sidebar/pluginsContainer'
 import TkinterPluginWidgets from './frameworks/tkinter/sidebarPlugins'
 import FrameWorks from './constants/frameworks'
 import generateTkinterCode from './frameworks/tkinter/engine/code'
+import { FileUploadProvider, useFileUploadContext } from './contexts/fileUploadContext'
 
 
 function App() {
@@ -28,18 +29,18 @@ function App() {
 	const [projectName, setProjectName] = useState('untitled project')
 	const [UIFramework, setUIFramework] = useState(FrameWorks.TKINTER)
 
-    const [uploadedAssets, setUploadedAssets] = useState([]) //  a global storage for assets, since redux can't store files(serialize files)
+    // const [uploadedAssets, setUploadedAssets] = useState([]) //  a global storage for assets, since redux can't store files(serialize files)
 
 	const [sidebarWidgets, setSidebarWidgets] = useState(TkinterWidgets || [])
 	
+	// NOTE: the below reference is no longer required
 	const [canvasWidgets, setCanvasWidgets] = useState([]) // contains the reference to the widgets inside the canvas
-	const [canvasWidgetRefs, setCanvasWidgetRefs] = useState([])
 
 	const sidebarTabs = [
 		{
 			name: "Widgets",
 			icon: <LayoutFilled />,
-			content: <WidgetsContainer sidebarContent={TkinterWidgets} onWidgetsUpdate={(widgets) => setSidebarWidgets(widgets)}/>
+			content: <WidgetsContainer sidebarContent={sidebarWidgets} onWidgetsUpdate={(widgets) => setSidebarWidgets(widgets)}/>
 		},
 		{
 			name: "Plugins",
@@ -49,8 +50,7 @@ function App() {
 		{
 			name: "Uploads",
 			icon: <CloudUploadOutlined />,
-			content: <UploadsContainer assets={uploadedAssets} 
-						onAssetUploadChange={(assets) => setUploadedAssets(assets)}/>
+			content: <UploadsContainer />
 		}
 	]
 
@@ -160,18 +160,16 @@ function App() {
                 <p>Are you sure you want to change the framework? This will clear the canvas.</p>
             </Modal> */}
 
-			<DragProvider>
-				<div className="tw-w-full tw-h-[94vh] tw-flex">
-					<Sidebar tabs={sidebarTabs}/>
-					
-					{/* <ActiveWidgetProvider> */}
-					<Canvas ref={canvasRef} widgets={canvasWidgets} onWidgetAdded={handleWidgetAddedToCanvas}/>
-					{/* </ActiveWidgetProvider> */}
-				</div>
-
-				{/* dragOverlay (dnd-kit) helps move items from one container to another */}
-
-			</DragProvider>
+				<DragProvider>
+					<div className="tw-w-full tw-h-[94vh] tw-flex">
+						<Sidebar tabs={sidebarTabs}/>
+						
+						{/* <ActiveWidgetProvider> */}
+						<Canvas ref={canvasRef} widgets={canvasWidgets} onWidgetAdded={handleWidgetAddedToCanvas}/>
+						{/* </ActiveWidgetProvider> */}
+					</div>
+					{/* dragOverlay (dnd-kit) helps move items from one container to another */}
+				</DragProvider>
 		</div>
 	)
 }

@@ -344,7 +344,7 @@ class Widget extends React.Component {
     }
 
     generateCode(){
-        throw new NotImplementedError("Get Code must be implemented by the subclass")
+        throw new NotImplementedError("generateCode() must be implemented by the subclass")
     }
 
     getAttributes() {

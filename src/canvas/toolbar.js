@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react"
+import { memo, useEffect, useMemo, useState } from "react"
 
 import {
     Checkbox, ColorPicker, Input,
@@ -10,6 +10,8 @@ import Tools from "./constants/tools.js"
 import { useActiveWidget } from "./activeWidgetContext.js"
 import { Layouts } from "./constants/layouts.js"
 import { DynamicRadioInputList } from "../components/inputs.js"
+import { useFileUploadContext } from "../contexts/fileUploadContext.js"
+import { AudioOutlined, FileImageOutlined, FileTextOutlined, VideoCameraOutlined } from "@ant-design/icons"
 
 
 // FIXME: Maximum recursion error
@@ -28,6 +30,56 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
     const [toolbarOpen, setToolbarOpen] = useState(isOpen)
     const [toolbarAttrs, setToolbarAttrs] = useState(attrs)
 
+    const {uploadedAssets} = useFileUploadContext()
+
+    const uploadItems = useMemo(() => {
+
+        const returnComponentBasedOnFileType = (file) => {
+            if (file.fileType === "image"){
+                return  (
+                    <div className="tw-w-flex tw-gap-2">
+                        <FileImageOutlined />
+                        <span className="tw-ml-1">{file.name}</span>
+                    </div>
+                )
+            }else if (file.fileType === "video"){
+                return (
+                    <div className="tw-w-flex tw-gap-2">
+                        <VideoCameraOutlined />
+                        <span className="tw-ml-1">{file.name}</span>
+                    </div>
+                )
+            }else if (file.fileType === "audio"){
+                       
+                return  (
+                    <div className="tw-w-flex tw-gap-2">
+                        <AudioOutlined />
+                        <span className="tw-ml-1">{file.name}</span>
+                    </div>
+                )
+
+            }else{
+                return  (
+                    <div className="tw-w-flex tw-gap-2">
+                        <FileTextOutlined />
+                        <span className="tw-ml-1">{file.name}</span>
+                    </div>
+                 )
+            }
+
+        }   
+
+        const uploadList = uploadedAssets.map((file, idx) => ({
+            value: file.name,
+            label: returnComponentBasedOnFileType(file),
+            fileType: file.fileType,
+            type: file.type,
+            // previewUrl: file.previewUrl,
+        }))
+
+        return uploadList
+
+    }, [uploadedAssets])
 
     useEffect(() => {
         setToolbarOpen(isOpen)
@@ -44,6 +96,33 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
         }
     }
 
+
+    const renderUploadDropDown = (val, filter) => {
+
+
+        let uploadOptions = [...uploadItems]
+
+        if (filter){
+            uploadOptions = uploadOptions.filter((value, idx) => filter.includes(value.type))
+        }
+
+        return (
+            <div className="tw-flex tw-w-full">
+
+                <Select 
+                    options={uploadOptions}
+                    size="large"
+                    placeholder="select content"
+                    showSearch
+                    className="tw-w-full"
+                    filterOption={(input, option) =>
+                        (option?.value ?? '').toLowerCase().includes(input.toLowerCase())
+                      }
+                    />
+            </div>
+        )
+
+    }
 
     const renderLayoutManager = (val) => {
 
@@ -196,6 +275,11 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
                 {
                     val.tool === Tools.LAYOUT_MANAGER && (
                         renderLayoutManager(val)
+                    )
+                }
+                {
+                    val.tool === Tools.UPLOADED_LIST && (
+                        renderUploadDropDown(val.value, val?.toolProps?.filterOptions || null)
                     )
                 }
 
