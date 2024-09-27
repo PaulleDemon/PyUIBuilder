@@ -18,6 +18,7 @@ class MainWindow extends Widget{
             size: { width: 700, height: 400 },
             attrs: {
                 ...this.state.attrs,
+                widgetName: "main",
                 title: {
                     label: "Window Title",
                     tool: Tools.INPUT, // the tool to display, can be either HTML ELement or a constant string
@@ -33,7 +34,7 @@ class MainWindow extends Widget{
     componentDidMount(){
         super.componentDidMount()
         this.setAttrValue("styling.backgroundColor", "#E4E2E2")
-        this.setWidgetName("main")
+        // this.setWidgetName("main") // Don't do this as this will cause conflicts while loading names
     }
 
     generateCode(variableName, parent){

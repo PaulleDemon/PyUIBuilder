@@ -3,32 +3,29 @@ import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
 import { removeKeyFromObject } from "../../../utils/common"
 import { CheckSquareFilled } from "@ant-design/icons"
-import TkinterBase from "./base"
+import {TkinterBase} from "./base"
 
 
 export class CheckBox extends TkinterBase{
 
     static widgetType = "check_button"
-    // TODO: remove layouts
     constructor(props) {
         super(props)
-
-        this.droppableTags = null // disables drops
 
         // const {layout, ...newAttrs} = this.state.attrs // Removes the layout attribute
 
         let newAttrs = removeKeyFromObject("layout", this.state.attrs)
-        newAttrs = removeKeyFromObject("styling.backgroundColor", newAttrs)
 
         this.minSize = {width: 50, height: 30}
 
         this.state = {
             ...this.state,
             size: { width: 120, height: 30 },
+            widgetName: "Check box",
             attrs: {
                 ...newAttrs,
                 styling: {
-                    label: "Styling",
+                    ...newAttrs.styling,
                     foregroundColor: {
                         label: "Foreground Color",
                         tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
@@ -60,7 +57,6 @@ export class CheckBox extends TkinterBase{
     componentDidMount(){
         super.componentDidMount()
         // this.setAttrValue("styling.backgroundColor", "#fff")
-        this.setWidgetName("Checkbox")
         this.setWidgetInnerStyle("backgroundColor", "#fff0")
     }
 
@@ -126,7 +122,7 @@ export class CheckBox extends TkinterBase{
 }
 
 
-export class RadioButton extends Widget{
+export class RadioButton extends TkinterBase{
 
     static widgetType = "radio_button"
     
@@ -146,10 +142,11 @@ export class RadioButton extends Widget{
         this.state = {
             ...this.state,
             size: { width: 120, height: 'fit' },
+            widgetName: "Radio button",
             attrs: {
                 ...newAttrs,
                 styling: {
-                    label: "styling",
+                    ...newAttrs.styling,
                     foregroundColor: {
                         label: "Foreground Color",
                         tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
@@ -178,7 +175,6 @@ export class RadioButton extends Widget{
     componentDidMount(){
         super.componentDidMount()
         // this.setAttrValue("styling.backgroundColor", "#fff")
-        this.setWidgetName("Radio button")
         this.setWidgetInnerStyle("backgroundColor", "#fff0")
     }
 
@@ -187,19 +183,26 @@ export class RadioButton extends Widget{
         const bg = this.getAttrValue("styling.backgroundColor")
         const fg = this.getAttrValue("styling.foregroundColor")
         
-        const radios = this.getAttrValue("radios")
-        // TODO: from here
         const code = [
-                `${variableName}_var = tk.IntVar()`,
-                `${variableName} = tk.Radiobutton(master=${parent}, text="")`,
-                `${variableName}.config(bg="${bg}", fg="${fg}")`,
-            ]
+            `${variableName}_var = tk.IntVar()`,
+        ]
+        const radios = this.getAttrValue("radios")
         
-        if (this.getAttrValue("defaultChecked")){
-            code.push(`${variableName}.select()`)
+        radios.inputs.forEach((radio_text, idx) => {
+
+            const radioBtnVariable = `${variableName}_${idx}`
+            code.push(`\n`)
+            code.push(`${radioBtnVariable} = tk.Radiobutton(master=${parent}, variable=${variableName}_var, text="${radio_text}")`)
+            code.push(`${radioBtnVariable}.config(bg="${bg}", fg="${fg}", value=${idx})`)
+            code.push(`${radioBtnVariable}.${this.getLayoutCode()}`)
+        })
+
+        const defaultSelected = radios.selectedRadio
+
+        if (defaultSelected !== -1){
+            code.push(`${variableName}_var.set(${defaultSelected})`)
         }
         
-        code.push(`${variableName}.${this.getLayoutCode()}`)
         
         return code
     }

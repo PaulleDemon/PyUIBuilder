@@ -2,7 +2,7 @@ import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
 import { removeKeyFromObject } from "../../../utils/common"
 import { DownOutlined, UpOutlined } from "@ant-design/icons"
-import TkinterBase from "./base"
+import {TkinterBase} from "./base"
 
 
 class SpinBox extends TkinterBase{
@@ -19,6 +19,7 @@ class SpinBox extends TkinterBase{
         this.state = {
             ...this.state,
             size: { width: 70, height: 'fit' },
+            widgetName: "Spin box",
             attrs: {
                 ...newAttrs,
                 styling: {
@@ -73,7 +74,6 @@ class SpinBox extends TkinterBase{
     componentDidMount(){
         super.componentDidMount()
         this.setAttrValue("styling.backgroundColor", "#fff")
-        this.setWidgetName("SpinBox")
     }
 
     generateCode(variableName, parent){

@@ -1,7 +1,7 @@
 import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
 import { removeKeyFromObject } from "../../../utils/common"
-import TkinterBase from "./base"
+import {TkinterBase} from "./base"
 
 
 class Slider extends TkinterBase{
@@ -17,6 +17,7 @@ class Slider extends TkinterBase{
 
         this.state = {
             ...this.state,
+            widgetName: "Scale",
             size: { width: 'fit', height: 'fit' },
             attrs: {
                 ...newAttrs,
@@ -72,7 +73,6 @@ class Slider extends TkinterBase{
     componentDidMount(){
         super.componentDidMount()
         this.setAttrValue("styling.backgroundColor", "#fff")
-        this.setWidgetName("Scale")
     }
 
     getToolbarAttrs(){

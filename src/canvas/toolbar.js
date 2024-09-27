@@ -252,6 +252,10 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
                         showSearch
                         value={val.value || ""}
                         placeholder={`${val.label}`}
+                        className="tw-w-full"
+                        filterOption={(input, option) =>
+                            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                        }
                         onChange={(value) => handleChange(value, val.onChange)}
                     />
                 )}

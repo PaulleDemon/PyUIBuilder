@@ -3,7 +3,7 @@ import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
 import { removeKeyFromObject } from "../../../utils/common"
 import { ArrowDownOutlined, DownOutlined } from "@ant-design/icons"
-import TkinterBase from "./base"
+import {TkinterBase} from "./base"
 
 
 class OptionMenu extends TkinterBase{
@@ -25,6 +25,7 @@ class OptionMenu extends TkinterBase{
         this.state = {
             ...this.state,
             isDropDownOpen: false,
+            widgetName: "Option menu",
             size: { width: 120, height: 'fit' },
             attrs: {
                 ...newAttrs,
@@ -64,8 +65,6 @@ class OptionMenu extends TkinterBase{
 
     componentDidMount(){
         super.componentDidMount()
-        // this.setAttrValue("styling.backgroundColor", "#fff")
-        this.setWidgetName("Option menu")
         this.setWidgetInnerStyle("backgroundColor", "#fff")
     }
 

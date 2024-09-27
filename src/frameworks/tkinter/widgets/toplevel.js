@@ -17,6 +17,7 @@ class TopLevel extends Widget{
         this.state = {
             ...this.state,
             size: { width: 450, height: 200 },
+            widgetName: "top level",
             attrs: {
                 ...this.state.attrs,
                 title: {
@@ -34,7 +35,6 @@ class TopLevel extends Widget{
     componentDidMount(){
         super.componentDidMount()
         this.setAttrValue("styling.backgroundColor", "#E4E2E2")
-        this.setWidgetName("toplevel")
     }
 
     generateCode(variableName, parent){

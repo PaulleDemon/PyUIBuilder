@@ -1,5 +1,5 @@
 import Widget from "../../../canvas/widgets/base"
-import TkinterBase from "./base"
+import {TkinterBase} from "./base"
 
 
 class Frame extends TkinterBase{
@@ -12,6 +12,17 @@ class Frame extends TkinterBase{
         this.droppableTags = {
             exclude: ["image", "video", "media", "toplevel", "main_window"]
         }
+
+        this.state = {
+            ...this.state,
+            widgetName: "Frame"
+        }
+
+    }
+
+    componentDidMount(){
+        super.componentDidMount()
+        this.setAttrValue("styling.backgroundColor", "#EDECEC")
     }
 
     generateCode(variableName, parent){
@@ -25,11 +36,7 @@ class Frame extends TkinterBase{
             ]
     }
 
-    componentDidMount(){
-        super.componentDidMount()
-        this.setAttrValue("styling.backgroundColor", "#EDECEC")
-        this.setWidgetName("frame")
-    }
+    
 
     renderContent(){
         // console.log("widget styling: ", this.state.widgetInnerStyling)

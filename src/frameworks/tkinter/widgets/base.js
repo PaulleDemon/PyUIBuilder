@@ -1,11 +1,15 @@
 import { Layouts, PosType } from "../../../canvas/constants/layouts"
 import Tools from "../../../canvas/constants/tools"
 import Widget from "../../../canvas/widgets/base"
+import { removeKeyFromObject } from "../../../utils/common"
+import { Tkinter_TO_WEB_CURSOR_MAPPING } from "../constants/cursor"
+import { Tkinter_To_GFonts } from "../constants/fontFamily"
+import { RELIEF } from "../constants/styling"
 
 // TODO: add full width and full height in base widget
 // TODO: the pack should configure width and height of widgets
 
-class TkinterBase extends Widget {
+export class TkinterBase extends Widget {
 
     static requiredImports = ['import tkinter as tk']
 
@@ -35,6 +39,10 @@ class TkinterBase extends Widget {
     }
 
     setParentLayout(parentLayout){
+
+        if (!parentLayout){
+            return {}
+        } 
 
         const {layout, direction, gap} = parentLayout
 
@@ -168,24 +176,26 @@ class TkinterBase extends Widget {
 
         data = {...data} // create a shallow copy
 
-        const {attrs, parentLayout, ...restData} = data
+        const {attrs, parentLayout=null, ...restData} = data
 
 
         let layoutUpdates = {
             parentLayout: parentLayout
         }
+        
+        if (parentLayout){
+            if (parentLayout.layout === Layouts.FLEX || parentLayout.layout === Layouts.GRID){
 
-        if (parentLayout.layout === Layouts.FLEX || parentLayout.layout === Layouts.GRID){
+                layoutUpdates = {
+                    ...layoutUpdates,
+                    positionType: PosType.NONE
+                }
 
-            layoutUpdates = {
-                ...layoutUpdates,
-                positionType: PosType.NONE
-            }
-
-        }else if (parentLayout.layout === Layouts.PLACE){
-            layoutUpdates = {
-                ...layoutUpdates,
-                positionType: PosType.ABSOLUTE
+            }else if (parentLayout.layout === Layouts.PLACE){
+                layoutUpdates = {
+                    ...layoutUpdates,
+                    positionType: PosType.ABSOLUTE
+                }
             }
         }
 
@@ -193,6 +203,8 @@ class TkinterBase extends Widget {
             ...restData,
             ...layoutUpdates
         }
+        
+        console.log("new data: ", newData)
 
         this.setState(newData,  () => {
             let layoutAttrs = this.setParentLayout(parentLayout) || {}
@@ -223,7 +235,7 @@ class TkinterBase extends Widget {
                 // TODO: find a better way to apply innerStyles
                 this.setWidgetInnerStyle("backgroundColor", newAttrs.styling.backgroundColor.value)
             }
-
+            
             this.updateState({ attrs: newAttrs }, callback)
 
         })  
@@ -235,4 +247,89 @@ class TkinterBase extends Widget {
 }
 
 
-export default TkinterBase
+// base for widgets that have common base properties such as bg, fg, cursor etc
+export class TkinterWidgetBase extends TkinterBase{
+
+    constructor(props) {
+        super(props)
+
+        this.droppableTags = null // disables drops
+
+        const newAttrs = removeKeyFromObject("layout", this.state.attrs)
+
+        this.state = {
+            ...this.state,
+            attrs: {
+                ...newAttrs,
+                styling: {
+                    ...newAttrs.styling,
+                    foregroundColor: {
+                        label: "Foreground Color",
+                        tool: Tools.COLOR_PICKER, 
+                        value: "#000",
+                        onChange: (value) => {
+                            this.setWidgetInnerStyle("color", value)
+                            this.setAttrValue("styling.foregroundColor", value)
+                        }
+                    },
+                    borderWidth: {
+                        label: "Border thickness",
+                        tool: Tools.NUMBER_INPUT, 
+                        toolProps: {min: 0, max: 10},
+                        value: 0,
+                        onChange: (value) => {
+                            this.setWidgetInnerStyle("border", `${value}px solid black`)
+                            this.setAttrValue("styling.borderWidth", value)
+                        }
+                    },
+                    relief: {
+                        label: "Relief",
+                        tool: Tools.SELECT_DROPDOWN,
+                        options: RELIEF.map((val) => ({value: val, label: val})),
+                        value: "Arial",
+                        onChange: (value) => {
+                            this.setWidgetInnerStyle("fontFamily", Tkinter_To_GFonts[value])
+                            this.setAttrValue("font.fontFamily", value)
+                        }
+                    }
+                },
+                font: {
+                    label: "font",
+                    fontFamily: {
+                        label: "font family",
+                        tool: Tools.SELECT_DROPDOWN,
+                        options: Object.keys(Tkinter_To_GFonts).map((val) => ({value: val, label: val})),
+                        value: "Arial",
+                        onChange: (value) => {
+                            this.setWidgetInnerStyle("fontFamily", Tkinter_To_GFonts[value])
+                            this.setAttrValue("font.fontFamily", value)
+                        }
+                    },
+                    fontSize: {
+                        label: "font size",
+                        tool: Tools.NUMBER_INPUT,
+                        toolProps: {min: 1, max: 140},
+                        value: 14,
+                        onChange: (value) => {
+                            console.log("font size: ", value)
+                            this.setWidgetInnerStyle("fontSize", `${value}px`)
+                            this.setAttrValue("font.fontSize", value)
+                        }
+                    }
+                },
+                cursor: {
+                    label: "Cursor",
+                    tool: Tools.SELECT_DROPDOWN, 
+                    toolProps: {placeholder: "select cursor"},
+                    value: Tkinter_TO_WEB_CURSOR_MAPPING["arrow"],
+                    options: Object.keys(Tkinter_TO_WEB_CURSOR_MAPPING).map((val) => ({value: val, label: val})),
+                    onChange: (value) => {
+                        this.setWidgetInnerStyle("cursor", Tkinter_TO_WEB_CURSOR_MAPPING[value])
+                        this.setAttrValue("cursor", value)
+                    }
+                },
+            }
+        }
+    }
+
+}

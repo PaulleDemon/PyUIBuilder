@@ -19,6 +19,7 @@ import { isNumeric, removeKeyFromObject } from "../../utils/common"
 
 // FIXME: the drag drop indicator is not going invisible if the drop happens on the child
 
+// FIXME: once the width and height is set to fit-content, it can no longer be resized
 const ATTRS_KEYS = ['value', 'label', 'tool', 'onChange', 'toolProps'] // these are attrs keywords, don't use these keywords as keys while defining the attrs property
 
 
@@ -532,7 +533,6 @@ class Widget extends React.Component {
     }
 
     setWidgetName(name) {
-        console.log("named: ", name)
         this.updateState({
             widgetName: name.length > 0 ? name : this.state.widgetName
         })
@@ -543,6 +543,11 @@ class Widget extends React.Component {
      * @param {Layouts} parentLayout 
      */
     setParentLayout(parentLayout){
+
+        if (!parentLayout){
+            // if parent layout is null (i,e the widget is on the canvas)
+            return {}
+        } 
 
         const {layout, direction, gap} = parentLayout
 

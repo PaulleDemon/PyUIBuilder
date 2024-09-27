@@ -1,11 +1,11 @@
 import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
 import { removeKeyFromObject } from "../../../utils/common"
-import TkinterBase from "./base"
+import {TkinterBase, TkinterWidgetBase} from "./base"
 import { Layouts } from "../../../canvas/constants/layouts"
 
 
-class Label extends TkinterBase{
+class Label extends TkinterWidgetBase{
 
     static widgetType = "label"
 
@@ -19,6 +19,7 @@ class Label extends TkinterBase{
 
         this.state = {
             ...this.state,
+            widgetName: "Label",
             size: { width: 80, height: 40 },
             attrs: {
                 ...newAttrs,
@@ -50,12 +51,16 @@ class Label extends TkinterBase{
                 },
             }
         }
+        
     }
 
     componentDidMount(){
         super.componentDidMount()
+        
+        
         this.setAttrValue("styling.backgroundColor", "#E4E2E2")
-        this.setWidgetName("label")
+        // this.setWidgetName("label") // Don't do this this causes issues while loading data
+
     }
 
 
@@ -89,9 +94,10 @@ class Label extends TkinterBase{
     renderContent(){
         return (
             <div className="tw-w-flex tw-flex-col tw-w-full tw-content-start tw-h-full tw-rounded-md tw-overflow-hidden">
-                <div className="tw-p-2 tw-w-full tw-h-full  tw-flex tw-place-content-center tw-place-items-center " style={this.state.widgetInnerStyling}>
+                <div className="tw-p-2 tw-w-full tw-h-full  tw-flex tw-place-content-center tw-place-items-center " 
+                        style={this.state.widgetInnerStyling}>
                     {/* {this.props.children} */}
-                    <div className="tw-text-sm" style={{color: this.getAttrValue("styling.foregroundColor")}}>
+                    <div className="" style={{color: this.getAttrValue("styling.foregroundColor")}}>
                         {this.getAttrValue("labelWidget")}
                     </div>
                 </div>

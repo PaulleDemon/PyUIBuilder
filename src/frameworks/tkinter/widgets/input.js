@@ -1,7 +1,7 @@
 import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
 import { removeKeyFromObject } from "../../../utils/common"
-import TkinterBase from "./base"
+import {TkinterBase} from "./base"
 
 
 export class Input extends TkinterBase{
@@ -18,6 +18,7 @@ export class Input extends TkinterBase{
         this.state = {
             ...this.state,
             size: { width: 120, height: 40 },
+            widgetName: "Entry",
             attrs: {
                 ...newAttrs,
                 styling: {
@@ -47,7 +48,6 @@ export class Input extends TkinterBase{
     componentDidMount(){
         super.componentDidMount()
         this.setAttrValue("styling.backgroundColor", "#fff")
-        this.setWidgetName("Entry")
     }
 
     generateCode(variableName, parent){
