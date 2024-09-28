@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Font Tester - Test and pick from over 1000+ fonts</title>
+        <meta name="description" content="Font tester a browser extension to help you pick font from over 1000+ fonts" />
+        <link
+            rel="shortcut icon"
+            href="./assets/logo/icon48.png"
+            type="image/x-icon"
+        />
+
+        <!-- Open Graph / Facebook -->
+        <meta property="og:title" content="Font Tester - Test and pick from over 1000+ fonts" />
+        <meta property="og:description" content="Font tester a browser extension to help you pick font from over 1000+ font" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://github.com/PaulleDemon/font-tester-chrome" />
+        <!--Replace with the current website url-->
+        <meta property="og:image" content="" />
+
+        <link rel="stylesheet" href="../tailwind/tailwind-runtime.css" />
+        <!-- <link rel="stylesheet" href="./css/tailwind-build.css"> -->
+        <link rel="stylesheet" href="css/index.css" />
+
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"
+            integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        />
+
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-');
+        </script>
+    </head>
+    <body
+        class="tw-flex tw-min-h-[100vh] tw-flex-col tw-bg-white tw-text-black"
+    >
+        <header
+            class="tw-max-w-lg:tw-px-4 tw-max-w-lg:tw-mr-auto tw-absolute tw-top-0 tw-z-20 tw-flex tw-h-[60px] tw-w-full tw-bg-opacity-0 tw-px-[5%] lg:tw-justify-around"
+        >
+            <a class="tw-h-[50px] tw-w-[50px] tw-p-[4px]" href="">
+                <img
+                    src="./assets/logo/logo.png"
+                    alt="logo"
+                    class="tw-object tw-h-full tw-w-full"
+                />
+            </a>
+            <div
+                class="collapsible-header animated-collapse max-lg:tw-shadow-md"
+                id="collapsed-header-items"
+            >
+                <div
+                    class="tw-flex tw-h-full tw-w-max tw-gap-5 tw-text-base max-lg:tw-mt-[30px] max-lg:tw-flex-col max-lg:tw-place-items-end max-lg:tw-gap-5 lg:tw-mx-auto lg:tw-place-items-center"
+                >
+                    <a class="header-links" href="https://github.com/PaulleDemon/PyUIBuilder"> About </a>
+                    <a class="header-links" href="https://github.com/PaulleDemon/PyUIBuilder#license"> License </a>
+                    <a class="header-links" href="https://github.com/PaulleDemon/PyUIBuilder#features"> Features </a>
+                    <a class="header-links" href="https://github.com/PaulleDemon/PyUIBuilder"> Github </a>
+                </div>
+                <div
+                    class="tw-mx-4 tw-flex tw-place-items-center tw-gap-[20px] tw-text-base max-md:tw-w-full max-md:tw-flex-col max-md:tw-place-content-center"
+                >
+                    <a
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href="https://github.com/PaulleDemon/PyUIBuilder"
+                        aria-label="redirect"
+                        class="tw-rounded-md tw-border-[1px] tw-border-black tw-bg-transparent tw-px-3 tw-py-2 tw-text-black tw-transition-colors tw-duration-[0.3s] hover:tw-bg-black hover:tw-text-white"
+                    >
+                        <span>Open PyUiBuilder</span>
+                        <i class="bi bi-arrow-up-right"></i>
+                    </a>
+                </div>
+            </div>
+            <button
+                class="bi bi-list tw-absolute tw-right-3 tw-top-3 tw-z-50 tw-text-3xl tw-text-black lg:tw-hidden"
+                onclick="toggleHeader()"
+                aria-label="menu"
+                id="collapse-btn"
+            ></button>
+        </header>
+
+        <section
+            class="tw-relative tw-mt-20 tw-flex  tw-min-h-[100vh] tw-h-full tw-w-full 
+                        tw-max-w-[100vw] tw-flex-col tw-overflow-hidden max-md:tw-mt-[50px]
+                        tw-place-items-center  tw-gap-5 tw-p-2
+                        "
+        >   
+
+            <div class="tw-mt-20 tw-text-8xl max-lg:tw-text-4xl" id="buildinpublic">
+                #BuildInPublic
+            </div>
+
+            <div>
+                Documented journey of me building PyUIBuilder
+            </div>
+
+            <a href="https://x.com/pauls_freeman" target="_blank" 
+                rel="noopener noreferrer" class="tw-mt-3 tw-text-lg tw-text-blue-600">
+                View on Twitter
+            </a>
+
+            <div class="tw-flex tw-flex-col tw-place-items-center tw-gap-4">
+
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Guess what I am building??? <a href="https://t.co/S21rqVhOR2">pic.twitter.com/S21rqVhOR2</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1820097630992740720?ref_src=twsrc%5Etfw">August 4, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <hr>
+                ...
+                <div class="tw-text-lg tw-max-w-[450px]">
+                    I stopped working on this after making the base because I ran out of funds, was looking for clients...
+                </div>
+                <hr>
+                ...
+                <div class="tw-text-lg tw-max-w-[450px]">
+                    After working on the clients project client refused to pay up :(. I took some time off to build another small tool...
+                </div>
+                ...
+                <hr>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">I am building a tool to help you select the right font for your landing page. You&#39;ll be able to browser 1000+ fonts right on your website and copy the code for it.<br><br>Let me know what you think!<br><br>watch the demo 👇️<a href="https://twitter.com/hashtag/buildinpublic?src=hash&amp;ref_src=twsrc%5Etfw">#buildinpublic</a> <a href="https://twitter.com/hashtag/uiux?src=hash&amp;ref_src=twsrc%5Etfw">#uiux</a> <a href="https://t.co/MTYoVFIHWt">pic.twitter.com/MTYoVFIHWt</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1826882583868641329?ref_src=twsrc%5Etfw">August 23, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                ...
+                <hr>
+                <div class="tw-text-lg tw-max-w-[450px]">
+                    The client refused to Pay up, so I tried raising funds, but no luck :(
+                </div>
+                ...
+                <hr>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">I am starting a kickstarter campaign to fund a python GUI builder and 3 other open-source tools. If interested feel free to sponsor via <a href="https://twitter.com/kofi_button?ref_src=twsrc%5Etfw">@kofi_button</a> <a href="https://t.co/DobD69p1BN">https://t.co/DobD69p1BN</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1831898781107065134?ref_src=twsrc%5Etfw">September 6, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                ...
+                <hr>
+                <div class="tw-text-lg tw-max-w-[450px]">
+                    Again not luck. So I decided to go all in with the little money left...
+                </div>
+                ...
+                <hr>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">$5 for open-source from <a href="https://twitter.com/buymeacoffee?ref_src=twsrc%5Etfw">@buymeacoffee</a> team 🥳. Now just $3495 to go 🚀. For every $5 raised, I&#39;ll show a preview of what I am working on now. <a href="https://t.co/Tr5bvcNr89">https://t.co/Tr5bvcNr89</a> <a href="https://t.co/LLLaialgSi">pic.twitter.com/LLLaialgSi</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1833046032374014091?ref_src=twsrc%5Etfw">September 9, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                ...
+                <hr>
+                <div class="tw-text-lg tw-max-w-[450px]">
+                    No more money raised after this point...
+                </div>
+                ...
+                <hr>
+                <a href="https://x.com/pauls_freeman/status/1833051999950037273" class="tw-border-[1px] tw-rounded-md tw-border-solid tw-max-w-[550px]">
+                    <img src="./assets/images/home/open-source.png" class="tw-w-full tw-object-contain">
+                </a>
+                ...
+                <hr>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Still in early development.<a href="https://twitter.com/hashtag/buildinpublic?src=hash&amp;ref_src=twsrc%5Etfw">#buildinpublic</a> <a href="https://t.co/PGxrcPo82Q">pic.twitter.com/PGxrcPo82Q</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1834911213345526117?ref_src=twsrc%5Etfw">September 14, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Aaaahhh... going to rewrite dragging using the html drag API instead of the react dnd-kit. Hope it doesn&#39;t mess up everything.</p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1835267097829523466?ref_src=twsrc%5Etfw">September 15, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Only top 1% of the programmers can solve this 🙀. <br><br>There are two divs, one inner and outer. The inner div is responsible for zoom and pan (css transforms). <br><br>Now, during drop event you get client(x, y) position, now using this find the correct drop position relative to inner div <a href="https://t.co/iyb3E2fHpb">pic.twitter.com/iyb3E2fHpb</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1835310458057662902?ref_src=twsrc%5Etfw">September 15, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">The base is almost done, but still very early in development.<a href="https://twitter.com/hashtag/buildinpublic?src=hash&amp;ref_src=twsrc%5Etfw">#buildinpublic</a> <a href="https://t.co/3zsBAVi8aI">pic.twitter.com/3zsBAVi8aI</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1835932762370375832?ref_src=twsrc%5Etfw">September 17, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">One of the hardest UI project I am working on seems to take for ever. A lot of thinking.... <a href="https://t.co/PxlorbXOvy">pic.twitter.com/PxlorbXOvy</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1836035334221525193?ref_src=twsrc%5Etfw">September 17, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Building hard things are hard.<br>For more such wisdom, follow 🥴</p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1836293831123439861?ref_src=twsrc%5Etfw">September 18, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Still long way to go... <a href="https://t.co/InhfOxNeWe">pic.twitter.com/InhfOxNeWe</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1836401651235602438?ref_src=twsrc%5Etfw">September 18, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Had a unidentifiable bug, was trying to find the source for hours, got tired, went to sleep.<br><br>The answer came to me at 3 AM when I was sleeping -&gt; woke up -&gt; wrote it on a piece of paper -&gt; went back to sleep. <br><br>Fixed the bug when I woke up again.</p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1836810798938869769?ref_src=twsrc%5Etfw">September 19, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">TODO and FIXME in my codebase<a href="https://twitter.com/hashtag/buildinpublic?src=hash&amp;ref_src=twsrc%5Etfw">#buildinpublic</a> <a href="https://t.co/7IF0SF4UNV">pic.twitter.com/7IF0SF4UNV</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1837071069057863695?ref_src=twsrc%5Etfw">September 20, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">I finished working on Drag and drop, look what I made using the prototype of DND 🤩<a href="https://twitter.com/hashtag/buildinpublic?src=hash&amp;ref_src=twsrc%5Etfw">#buildinpublic</a> <a href="https://t.co/PnY4UTxCC1">pic.twitter.com/PnY4UTxCC1</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1837113765029990494?ref_src=twsrc%5Etfw">September 20, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">A React component in my code has gone over 900+ lines 😵‍💫. Will have to refactor after putting out the MVP. <a href="https://t.co/hftJer5MSO">pic.twitter.com/hftJer5MSO</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1837438712516419921?ref_src=twsrc%5Etfw">September 21, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Swappable and droppable layout is kinda ready. The program switch between swap and drop by checking if the drop is in the black rect or the colorful rect. (black rect swap, else drop)<br><br>Ofc, now this isn&#39;t ideal, but prototype I think its fine.<br>(self note)<a href="https://twitter.com/hashtag/buildinpublic?src=hash&amp;ref_src=twsrc%5Etfw">#buildinpublic</a> <a href="https://t.co/L3TRtj3Gw1">pic.twitter.com/L3TRtj3Gw1</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1837478419908403385?ref_src=twsrc%5Etfw">September 21, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Planning on fixing this FIXME&#39;s today. <br><br>Hard parts will be done, tomorrow will be working on much simpler parts. <a href="https://t.co/Go7xNOyxQk">pic.twitter.com/Go7xNOyxQk</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1837489359349862765?ref_src=twsrc%5Etfw">September 21, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">The first window is ready <a href="https://t.co/E52SLDIlqj">pic.twitter.com/E52SLDIlqj</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1837834224771997795?ref_src=twsrc%5Etfw">September 22, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">I made this colorful boxes with the tool I am building 🤩 <a href="https://t.co/Y41R72oM86">pic.twitter.com/Y41R72oM86</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1837889634442817864?ref_src=twsrc%5Etfw">September 22, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Made some more progress... <a href="https://t.co/XI8QTajdvt">pic.twitter.com/XI8QTajdvt</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1838266668386038094?ref_src=twsrc%5Etfw">September 23, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Still work in progress..... :), pretty soon will release the initial version <a href="https://t.co/5SFnAdgKEd">pic.twitter.com/5SFnAdgKEd</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1838483503677157693?ref_src=twsrc%5Etfw">September 24, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Working on layout manager today, tomorrow will start with code generation :)</p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1838615175676506473?ref_src=twsrc%5Etfw">September 24, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Updated toolbar styling. Now collapsible toolbar headings. :) <a href="https://t.co/jThwx7Qcpz">pic.twitter.com/jThwx7Qcpz</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1838638131525947425?ref_src=twsrc%5Etfw">September 24, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">I should definitely rewrite my project in TS. Will do it as soon as I release the initial version. <br><br>Should have started in TS, never thought the project would get too complicated :(</p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1838912561909006415?ref_src=twsrc%5Etfw">September 25, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">spent most of my time building and debugging the grid layout today :(. Should speed things up</p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1838914722193604866?ref_src=twsrc%5Etfw">September 25, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Aaaa here are the grid monkeys...... 😵‍💫.<br><br>I worked on making the grid layout work 🤩 <a href="https://t.co/99Ff7yMdGU">pic.twitter.com/99Ff7yMdGU</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1838937968909717943?ref_src=twsrc%5Etfw">September 25, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Added smoother toolbar animation. If none of the widgets is selected the toolbar moves to the side :) <a href="https://t.co/ZVaf98NalB">pic.twitter.com/ZVaf98NalB</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1839205864307032269?ref_src=twsrc%5Etfw">September 26, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="de" dir="ltr">Code generation :) <a href="https://t.co/IF8A4EgBZ0">pic.twitter.com/IF8A4EgBZ0</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1839345452397019578?ref_src=twsrc%5Etfw">September 26, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Added file upload dropdown on the toolbar 🚀 <a href="https://t.co/P0bitfWO6N">pic.twitter.com/P0bitfWO6N</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1839546101113688441?ref_src=twsrc%5Etfw">September 27, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">added more attributes + added a delete button to uploaded media, which can now be deleted. :&gt; <a href="https://t.co/xosXYlBzaL">pic.twitter.com/xosXYlBzaL</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1839635737060294897?ref_src=twsrc%5Etfw">September 27, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">added more attributes to plugins <a href="https://t.co/i2Gy9ZB4V5">pic.twitter.com/i2Gy9ZB4V5</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1840040718762438716?ref_src=twsrc%5Etfw">September 28, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">I am sooo tired....</p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1840060874339299370?ref_src=twsrc%5Etfw">September 28, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <blockquote class="twitter-tweet"><p lang="en" dir="ltr">I made doggo :) <a href="https://t.co/Nnmx5D4Xga">pic.twitter.com/Nnmx5D4Xga</a></p>&mdash; Paul (@pauls_freeman) <a href="https://twitter.com/pauls_freeman/status/1840063792115281944?ref_src=twsrc%5Etfw">September 28, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+            </div>
+            ...
+            <hr>
+            <div class="tw-mt-8 tw-text-2xl tw-max-w-[450px]">
+                That's it for now 😅. For more updates <a href="https://x.com/intent/follow?screen_name=pauls_freeman" 
+                                rel="noopener noreferrer" class="tw-text-blue-400" target="_blank">Follow me</a>
+            </div>
+
+        </section>
+
+        
+        <section
+            class="tw-flex tw-w-full tw-flex-col tw-place-content-center tw-place-items-center tw-gap-[10%] tw-p-[5%] tw-px-[10%]"
+        >
+            <h3
+                class="tw-text-4xl tw-font-medium tw-text-gray-800 max-md:tw-text-2xl"
+            >
+                Faq
+            </h3>
+            <div
+                class="tw-mt-5 tw-flex tw-min-h-[300px] tw-w-full tw-max-w-[850px] tw-flex-col tw-gap-4"
+            >
+                <div
+                    class="faq tw-w-full"
+                >
+                    <div
+                        class="faq-accordion tw-flex tw-w-full tw-select-none tw-text-xl max-md:tw-text-lg"
+                    >
+                        <span>Is the source code available?</span>
+                        <i class="bi bi-plus tw-ml-auto tw-font-semibold"></i>
+                    </div>
+                    <div class="content">
+                        Yes, this is an open-source project, you can visit the 
+                        source code on 
+                        <a  target="_blank"
+                            rel="noopener noreferrer"
+                            href="https://github.com/PaulleDemon/PyUIBuilder" 
+                            class="tw-underline">Github</a>
+                    </div>
+                </div>
+
+                <div
+                    class="faq tw-w-full"
+                >
+                    <div
+                        class="faq-accordion tw-flex tw-w-full tw-select-none tw-text-xl max-md:tw-text-lg"
+                    >
+                        <span>Can I try the PyUIbuilder for free?</span>
+                        <i class="bi bi-plus tw-ml-auto tw-font-semibold"></i>
+                    </div>
+                    <div class="content">
+                        Yes, the PyUIbuilder is free to use forever, however to support 
+                        open-source development, some features are only available to premium users.
+                    </div>
+                </div>
+
+                <div
+                    class="faq tw-w-full"
+                >
+                    <div
+                        class="faq-accordion tw-flex tw-w-full tw-select-none tw-text-xl max-md:tw-text-lg"
+                    >
+                        <span>What frameworks and UI libraries are supported?</span>
+                        <i class="bi bi-plus tw-ml-auto tw-font-semibold"></i>
+                    </div>
+                    <div class="content">
+                        For now Tkinter and CustomTk are supported soon there will be support for Kivy and Pyside
+                    </div>
+                </div>
+
+                <div
+                    class="faq tw-w-full"
+                >
+                    <div
+                        class="faq-accordion tw-flex tw-w-full tw-select-none tw-text-xl max-md:tw-text-lg"
+                    >
+                        <span>Where can I find the upcoming features?</span>
+                        <i class="bi bi-plus tw-ml-auto tw-font-semibold"></i>
+                    </div>
+                    <div class="content">
+                        You can find the upcoming features on the
+                        <a
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href="https://github.com/PaulleDemon/font-tester-chrome/blob/main/roadmap.md"
+                            class="tw-underline"
+                            >Roadmap</a
+                        >
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+       
+
+        <footer
+            class="tw-mt-auto tw-flex tw-w-full tw-place-content-around tw-gap-3 tw-p-[5%] tw-px-[10%] tw-text-black max-md:tw-flex-col"
+        >
+            <div
+                class="tw-flex tw-h-full tw-w-[250px] tw-flex-col tw-place-items-center tw-gap-6 max-md:tw-w-full"
+            >
+                <img
+                    src="./assets/logo/logo.png"
+                    alt="logo"
+                    srcset=""
+                    class="tw-max-w-[120px]"
+                />
+              
+                <div class="tw-mt-3 tw-text-lg tw-font-semibold">Follow</div>
+                <div class="tw-flex tw-gap-4 tw-text-2xl">
+                    <a href="https://www.youtube.com/@paultalkstech" 
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        aria-label="Youtube">
+                        <i class="bi bi-youtube"></i>
+                    </a>
+                    <a
+                        href="https://twitter.com/@pauls_freeman"
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        aria-label="Twitter"
+                    >
+                        <i class="bi bi-twitter"></i>
+                    </a>
+                    <a
+                        href="https://github.com/PaulleDemon"
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        class="tw-h-[40px] tw-w-[40px]"
+                        aria-label="Github"
+                    >
+                        <i class="bi bi-github"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="tw-flex tw-h-full tw-w-[250px] tw-flex-col tw-gap-4">
+                <!-- <h2 class="tw-text-3xl max-md:tw-text-xl">Company</h2> -->
+                <div class="tw-flex tw-flex-col tw-gap-3 max-md:tw-text-sm">
+                    <a href="#features" class="footer-link">Features</a>
+                    <a href="#pricing" class="footer-link">Pricing</a>
+                    <a href="https://github.com/PaulleDemon/PyUIBuilder/blob/main/roadmap.md" class="footer-link">Roadmap</a>
+                </div>
+            </div>
+
+            <div class="tw-flex tw-h-full tw-w-[250px] tw-flex-col tw-gap-4">
+                <div class="tw-flex tw-flex-col tw-gap-3 max-md:tw-text-sm">
+                    <a href="" class="footer-link">About</a>
+                    <a href="#faq" class="footer-link">FAQ</a>
+                    <a href="https://github.com/PaulleDemon/PyUIBuilder" class="footer-link">Github</a>
+                    <a href="https://github.com/PaulleDemon/PyUIBuilder" class="footer-link">Report issue</a>
+                </div>
+            </div>
+        </footer>
+    </body>
+
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/gsap.min.js"
+        integrity="sha512-B1lby8cGcAUU3GR+Fd809/ZxgHbfwJMp0jLTVfHiArTuUt++VqSlJpaJvhNtRf3NERaxDNmmxkdx2o+aHd4bvw=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+    ></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/ScrollTrigger.min.js"
+        integrity="sha512-AY2+JxnBETJ0wcXnLPCcZJIJx0eimyhz3OJ55k2Jx4RtYC+XdIi2VtJQ+tP3BaTst4otlGG1TtPJ9fKrAUnRdQ=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+    ></script>
+
+   
+    <script src="./index.js"></script>
+
+
+</html>
