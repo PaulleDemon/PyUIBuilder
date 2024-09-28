@@ -7,11 +7,19 @@ import { removeKeyFromObject } from "../../../utils/common"
 
 import MapImage from "./assets/map.png"
 import { MinusOutlined, PlayCircleFilled, PlusOutlined } from "@ant-design/icons"
+import { TkinterBase } from "../widgets/base"
 
 
-class MapView extends Widget{
+class MapView extends TkinterBase{
 
     static widgetType = "map_view"
+
+    static requiredImports = [
+        ...TkinterBase.requiredImports, 
+        "import tkintermapview"
+    ]
+
+    static requirements = ["tkintermapview"]
 
     constructor(props) {
         super(props)
@@ -21,16 +29,25 @@ class MapView extends Widget{
         const newAttrs = removeKeyFromObject("layout", this.state.attrs)
 
         this.state = {
-            ...this.state,
+            ...this.state,  
+            widgetName: "Map viewer",
             size: { width: 400, height: 250 },
         }
     }
 
-    componentDidMount(){
-        super.componentDidMount()
-        this.setWidgetName("Map viewer")
-        this.setAttrValue("styling.backgroundColor", "#E4E2E2")
+    // componentDidMount(){
+    //     super.componentDidMount()
+    // }
+
+    generateCode(variableName, parent){
+
+
+        return [
+                `${variableName} = tkintermapview.TkinterMapView(master=${parent})`,
+                `${variableName}.${this.getLayoutCode()}`
+            ]
     }
+
 
     getToolbarAttrs(){
 

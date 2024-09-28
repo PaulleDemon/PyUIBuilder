@@ -9,6 +9,9 @@ import { removeKeyFromObject } from "../../../utils/common"
 
 import MapImage from "./assets/map.png"
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons"
+import { TkinterBase } from "../widgets/base"
+import Tools from "../../../canvas/constants/tools"
+import { getPythonAssetPath } from "../../utils/pythonFilePath"
 
 
 const ResizableTable = ({minRows=5, minCols=5}) => {
@@ -64,9 +67,18 @@ const ResizableTable = ({minRows=5, minCols=5}) => {
 }
 
 
-class PandasTable extends Widget{
+class PandasTable extends TkinterBase{
 
     static widgetType = "pandas_table"
+
+    static requiredImports = [
+        ...TkinterBase.requiredImports, 
+        "import os",
+        "from pandastable import Table",
+    ]
+
+    static requirements = ["pandastable"]
+
 
     constructor(props) {
         super(props)
@@ -77,14 +89,98 @@ class PandasTable extends Widget{
 
         this.state = {
             ...this.state,
+            widgetName: "Pandas Table",
             size: { width: 400, height: 250 },
+            attrs: {
+                ...newAttrs,
+                styling: {
+                    ...newAttrs.styling,
+                    textColor: {
+                        label: "Text Color",
+                        tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
+                        value: "",
+                        onChange: (value) => {
+                            this.setAttrValue("styling.textColor", value)
+                        }
+                    },
+                    cellBg: {
+                        label: "Cell background",
+                        tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
+                        value: "",
+                        onChange: (value) => {
+                            this.setAttrValue("styling.textColor", value)
+                        }
+                    },
+                    outlineColor: {
+                        label: "Box outline color",
+                        tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
+                        value: "",
+                        onChange: (value) => {
+                            this.setAttrValue("styling.textColor", value)
+                        }
+                    },
+                },
+                defaultTable: {
+                    label: "Default table",
+                    tool: Tools.UPLOADED_LIST, 
+                    toolProps: {filterOptions: ["text/csv"]}, 
+                    value: "",
+                    onChange: (value) => this.setAttrValue("defaultTable", value)
+                },
+                enableEdit: {
+                    label: "Enable editing",
+                    tool: Tools.CHECK_BUTTON,
+                    value: false,
+                    onChange: (value) => {
+                        this.setAttrValue("enableEdit", value)
+                    }
+                        
+                },
+            }
         }
     }
 
-    componentDidMount(){
-        super.componentDidMount()
-        this.setWidgetName("Pandas Table")
-        this.setAttrValue("styling.backgroundColor", "#E4E2E2")
+    // componentDidMount(){
+    //     super.componentDidMount()
+    //     this.setWidgetName("Pandas Table")
+    //     this.setAttrValue("styling.backgroundColor", "#E4E2E2")
+    // }
+
+    generateCode(variableName, parent){
+
+        const defaultTable = this.getAttrValue("defaultTable")
+
+        const textColor = this.getAttrValue("styling.textColor")
+        const cellBg = this.getAttrValue("styling.cellBg")
+        const outlineColor = this.getAttrValue("styling.outlineColor")
+        
+        const enableEdit = this.getAttrValue("enableEdit")
+
+        const code = [
+            `${variableName} = Table(master=${parent})`,
+            `${variableName}.editable = ${enableEdit ? "True" : "False"}`,
+        ]
+
+        if (textColor){
+            code.push(`${variableName}.textColor = "${textColor}"`)
+        }
+        if (cellBg){
+            code.push(`${variableName}.cellbackgr = "${cellBg}"`)
+        }
+
+        if (outlineColor){
+            code.push(`${variableName}.boxoutlinecolor = "${outlineColor}"`)
+        }
+
+        if (defaultTable){
+            code.push(`${variableName}.importCSV(${getPythonAssetPath(defaultTable, "text/csv")})`)
+        }
+        
+        return [
+                ...code,
+                `${variableName}.show()`,
+                `${variableName}.${this.getLayoutCode()}`
+            ]
     }
 
     getToolbarAttrs(){

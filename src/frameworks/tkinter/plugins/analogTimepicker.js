@@ -41,6 +41,7 @@ class AnalogTimePicker extends TkinterBase{
 
         this.state = {
             ...this.state,
+            widgetName: "Timepicker",
             size: { width: 'fit', height: 'fit' },
             attrs: {
                 ...newAttrs,
@@ -115,9 +116,6 @@ class AnalogTimePicker extends TkinterBase{
 
     componentDidMount(){
         super.componentDidMount()
-        this.setWidgetName("Time picker")
-        this.setAttrValue("styling.backgroundColor", "#E4E2E2")
-
         this.timePicker = timePicker({
                                 element: this.timePickerRef.current,
                                 mode: "12"

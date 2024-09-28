@@ -38,8 +38,8 @@ const TkinterPluginWidgets = [
         link: "https://github.com/TomSchimansky/TkinterMapView",
         widgetClass: MapView,
         license: {
-            name: "MIT",
-            url: ""
+            name: "CC0 1.0",
+            url: "https://github.com/TomSchimansky/TkinterMapView/blob/main/LICENSE.txt"
         }
     },
     {

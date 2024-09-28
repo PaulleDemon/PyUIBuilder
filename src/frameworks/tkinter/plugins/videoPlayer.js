@@ -6,6 +6,7 @@ import { removeKeyFromObject } from "../../../utils/common"
 import VideoImage from "./assets/video.jpg"
 import { PlayCircleFilled } from "@ant-design/icons"
 import { TkinterBase } from "../widgets/base"
+import { getPythonAssetPath } from "../../utils/pythonFilePath"
 
 
 class VideoPlayer extends TkinterBase{
@@ -14,7 +15,8 @@ class VideoPlayer extends TkinterBase{
 
     static requiredImports = [
         ...TkinterBase.requiredImports, 
-        'from tkVideoPlayer import TkinterVideo'
+        "import os",
+        "from tkVideoPlayer import TkinterVideo"
     ]
 
     static requirements = ["tkvideoplayer"]
@@ -30,6 +32,7 @@ class VideoPlayer extends TkinterBase{
         this.state = {
             ...this.state,
             size: { width: 'fit', height: 'fit' },
+            widgetName: "Video player",
             attrs: {
                 ...newAttrs,
                 play: {
@@ -46,7 +49,7 @@ class VideoPlayer extends TkinterBase{
                     tool: Tools.UPLOADED_LIST, 
                     toolProps: {filterOptions: ["video/mp4", "video/webm", "video/m4v"]}, 
                     value: "",
-                    onChange: (value) => {console.log("Value: ", value);this.setAttrValue("defaultVideo", value)}
+                    onChange: (value) => this.setAttrValue("defaultVideo", value)
                 },
             }
         }
@@ -54,8 +57,7 @@ class VideoPlayer extends TkinterBase{
 
     componentDidMount(){
         super.componentDidMount()
-        this.setWidgetName("Video Player")
-        this.setAttrValue("styling.backgroundColor", "#E4E2E2")
+        // this.setAttrValue("styling.backgroundColor", "#E4E2E2")
     }
 
     generateCode(variableName, parent){
@@ -68,9 +70,8 @@ class VideoPlayer extends TkinterBase{
             `${variableName} = TkinterVideo(master=${parent}, scaled=True)`,
         ]
 
-        // FIXME: correct the asset path (windows and unix are different paths)
         if (defaultVideo){
-            code.push(`${variableName}.load("${defaultVideo}")`)
+            code.push(`${variableName}.load(${getPythonAssetPath(defaultVideo, "video")})`)
         }
 
         if (play){

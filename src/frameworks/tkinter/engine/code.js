@@ -170,7 +170,7 @@ async function generateTkinterCode(projectName, widgetList=[], widgetRefs=[], as
             createFileList.push({
                 fileData: asset.originFileObj,
                 fileName: asset.name,
-                folder: "assets/media"
+                folder: "assets/others"
             })
         }
 
