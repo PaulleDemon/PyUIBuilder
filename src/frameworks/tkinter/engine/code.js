@@ -138,8 +138,6 @@ async function generateTkinterCode(projectName, widgetList=[], widgetRefs=[], as
         }
     ]
 
-    // TODO: Zip asset files
-
     if (requirements.length > 0){
         createFileList.push({
             fileData: requirements.join("\n"),
