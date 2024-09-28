@@ -255,8 +255,6 @@ export class TkinterWidgetBase extends TkinterBase{
 
         const newAttrs = removeKeyFromObject("layout", this.state.attrs)
 
-        console.log("new attrs: ", newAttrs)
-
         this.state = {
             ...this.state,
             attrs: {

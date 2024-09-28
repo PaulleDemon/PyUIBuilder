@@ -109,7 +109,7 @@ export function DraggableAssetCard({file, onDelete}){
 
 
     return (
-        <div draggable="false" className="tw-w-full tw-h-[240px] tw-p-1 tw-flex tw-flex-col tw-rounded-md tw-overflow-hidden 
+        <div draggable="false" className="tw-w-full tw-h-[220px] tw-flex-shrink-0 tw-p-1 tw-flex tw-flex-col tw-rounded-md tw-overflow-hidden 
                         tw-gap-2 tw-text-gray-600 tw-bg-[#ffffff44] tw-border-solid tw-border-[1px] 
                         tw-border-blue-500 tw-shadow-md ">
             <div className="tw-h-[200px] tw-pointer-events-none tw-w-full tw-flex tw-place-content-center tw-p-1 tw-text-3xl tw-overflow-hidden">

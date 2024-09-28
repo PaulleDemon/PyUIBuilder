@@ -17,6 +17,7 @@ class MainWindow extends TkinterBase{
         this.state = {
             ...this.state,
             size: { width: 700, height: 400 },
+            widgetName: "main",
             attrs: {
                 ...this.state.attrs,
                 widgetName: "main",

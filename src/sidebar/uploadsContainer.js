@@ -92,7 +92,7 @@ function UploadsContainer() {
 
             <SearchComponent onSearch={onSearch} searchValue={searchValue} 
                                         onClear={() => setSearchValue("")} />
-            <div className="tw-flex tw-relative tw-flex-col tw-gap-2 tw-h-full tw-p-1 tw-pb-4">
+            <div className="tw-flex tw-relative tw-flex-col tw-place-items-center tw-gap-2 tw-h-full tw-p-1 tw-pb-4">
                 <Dragger className={`${dragEnter && "!tw-h-[80vh] !tw-opacity-100 !tw-bg-[#fafafa] tw-absolute tw-top-0 tw-z-10"} tw-w-full !tw-min-w-[250px]`}
                     {...props}
                     ref={fileUploadRef}

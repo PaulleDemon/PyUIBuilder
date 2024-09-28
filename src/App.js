@@ -33,7 +33,9 @@ function App() {
     // const [uploadedAssets, setUploadedAssets] = useState([]) //  a global storage for assets, since redux can't store files(serialize files)
 
 	const [sidebarWidgets, setSidebarWidgets] = useState(TkinterWidgets || [])
-	
+
+	const {uploadedAssets} = useFileUploadContext()
+
 	// NOTE: the below reference is no longer required
 	const [canvasWidgets, setCanvasWidgets] = useState([]) // contains the reference to the widgets inside the canvas
 
@@ -140,7 +142,7 @@ function App() {
 	const handleCodeGen = () => {
 
 		if (UIFramework === FrameWorks.TKINTER){
-			generateTkinterCode(projectName, canvasRef.current.getWidgets() || [], canvasRef.current.widgetRefs || [])
+			generateTkinterCode(projectName, canvasRef.current.getWidgets() || [], canvasRef.current.widgetRefs || [], uploadedAssets)
 		}
 	}
 

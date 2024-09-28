@@ -1,4 +1,4 @@
-import { memo, useState } from "react"
+import { memo, useEffect, useState } from "react"
 import { useDragContext } from "./draggableContext"
 
 
@@ -15,11 +15,19 @@ const DroppableWrapper = memo(({onDrop, droppableTags={}, ...props}) => {
                                                             allow: false
                                                         })
     
+    useEffect(() => {
+
+        if (draggedElement === null){
+            setShowDroppable({
+                show: false, 
+                allow: false
+            })
+        }
+
+    }, [draggedElement])
 
     const handleDragEnter = (e) => {
         
-        console.log("Drag enter")
-
         if (!draggedElement || !draggedElement.getAttribute("data-drag-start-within")){
             // if the drag is starting from outside (eg: file drop) or if drag doesn't exist
             return
@@ -71,6 +79,11 @@ const DroppableWrapper = memo(({onDrop, droppableTags={}, ...props}) => {
 
     const handleDropEvent = (e) => {
 
+        setShowDroppable({
+            allow: false, 
+            show: false
+        })
+
         if (!draggedElement || !draggedElement.getAttribute("data-drag-start-within")){
             // if the drag is starting from outside (eg: file drop) or if drag doesn't exist
             return
@@ -78,10 +91,7 @@ const DroppableWrapper = memo(({onDrop, droppableTags={}, ...props}) => {
 
         e.stopPropagation()
 
-        setShowDroppable({
-            allow: false, 
-            show: false
-        })
+
         const dragElementType = draggedElement.getAttribute("data-draggable-type")
 
 

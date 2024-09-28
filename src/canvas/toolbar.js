@@ -15,7 +15,7 @@ import { AudioOutlined, FileImageOutlined, FileTextOutlined, VideoCameraOutlined
 
 
 // FIXME: Maximum recursion error
-
+// FIXME: Every time the parent attrs are changed a remount happens, which causes input cursor to go to the end
 /**
  * 
  * @param {boolean} isOpen 
