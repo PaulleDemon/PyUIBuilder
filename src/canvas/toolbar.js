@@ -96,6 +96,11 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
         }
     }
 
+    function getUploadFileFromName(name){
+
+        return uploadedAssets.find(val => val.name === name)
+    }
+
 
     const renderUploadDropDown = (val, filter) => {
 
@@ -114,8 +119,13 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
                     placeholder="select content"
                     showSearch
                     className="tw-w-full"
-                    value={val.value}
-                    onChange={(value) =>  handleChange(value, val.onChange)}
+                    value={val.value?.name || ""}
+                    onChange={(value) =>  {
+
+                        const file = getUploadFileFromName(value)
+
+                        handleChange({name: value, previewUrl: file.previewUrl}, val.onChange)
+                    }}
                     filterOption={(input, option) =>
                         (option?.value ?? '').toLowerCase().includes(input.toLowerCase())
                       }

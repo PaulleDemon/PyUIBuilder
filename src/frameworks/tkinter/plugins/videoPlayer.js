@@ -65,13 +65,13 @@ class VideoPlayer extends TkinterBase{
 
         const defaultVideo = this.getAttrValue("defaultVideo")
         const play = this.getAttrValue("play")
-        
+
         const code = [
             `${variableName} = TkinterVideo(master=${parent}, scaled=True)`,
         ]
 
         if (defaultVideo){
-            code.push(`${variableName}.load(${getPythonAssetPath(defaultVideo, "video")})`)
+            code.push(`${variableName}.load(${getPythonAssetPath(defaultVideo.name, "video")})`)
         }
 
         if (play){
@@ -100,6 +100,9 @@ class VideoPlayer extends TkinterBase{
     }
 
     renderContent(){
+
+        // const defaultVideo = this.getAttrValue("defaultVideo")
+
         return (
             <div className="tw-w-flex tw-flex-col tw-w-full tw-h-full tw-rounded-md 
                             tw-border tw-border-solid tw-border-gray-400 tw-overflow-hidden">

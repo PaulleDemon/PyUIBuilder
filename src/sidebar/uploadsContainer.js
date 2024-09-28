@@ -75,8 +75,24 @@ function UploadsContainer() {
     function handleDelete(file){
         // remove the file from the asset on delete
         setUploadedAssets(prev => prev.filter(val => val.uid !== file.uid))
-
     }
+
+    function generateUniqueFileName(fileName) {
+        const existingFiles = uploadedAssets.map(asset => asset.name)
+        let uniqueName = fileName
+        let counter = 1
+
+        // if a file with the same name exists, append a counter to the file name
+        while (existingFiles.includes(uniqueName)) {
+            const nameWithoutExtension = fileName.replace(/\.[^/.]+$/, "") // Remove extension
+            const extension = fileName.split('.').pop() // Get extension
+            uniqueName = `${nameWithoutExtension} (${counter}).${extension}`
+            counter++
+        }
+
+        return uniqueName
+    }
+
 
     return (
         <div className="tw-w-full tw-p-2 tw-gap-4 tw-flex tw-flex-col"
@@ -109,11 +125,16 @@ function UploadsContainer() {
                                 if (fileType === "image" || fileType === "video"){
                                     previewUrl = URL.createObjectURL(info.file.originFileObj)
                                 }
+
+                                // Check if a file with the same name already exists, and generate a unique name
+                                const uniqueFileName = generateUniqueFileName(info.file.name)
+
                                 
                                 const newFileData = {
                                     ...info.file,
                                     previewUrl,
                                     fileType,
+                                    name: uniqueFileName
                                 }
 
                                 // setUploadData(prev => [newFileData, ...prev])

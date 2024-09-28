@@ -19,7 +19,7 @@ const Themes = {
 
 class AnalogTimePicker extends TkinterBase{
 
-    static widgetType = "analogue_timepicker"
+    static widgetType = "analog_timepicker"
 
     static requiredImports = [
                                 ...TkinterBase.requiredImports, 

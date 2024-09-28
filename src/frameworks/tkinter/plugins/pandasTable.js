@@ -173,7 +173,7 @@ class PandasTable extends TkinterBase{
         }
 
         if (defaultTable){
-            code.push(`${variableName}.importCSV(${getPythonAssetPath(defaultTable, "text/csv")})`)
+            code.push(`${variableName}.importCSV(${getPythonAssetPath(defaultTable.name, "text/csv")})`)
         }
         
         return [
