@@ -99,7 +99,6 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
 
     const renderUploadDropDown = (val, filter) => {
 
-
         let uploadOptions = [...uploadItems]
 
         if (filter){
@@ -115,6 +114,8 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
                     placeholder="select content"
                     showSearch
                     className="tw-w-full"
+                    value={val.value}
+                    onChange={(value) =>  handleChange(value, val.onChange)}
                     filterOption={(input, option) =>
                         (option?.value ?? '').toLowerCase().includes(input.toLowerCase())
                       }
@@ -283,7 +284,7 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
                 }
                 {
                     val.tool === Tools.UPLOADED_LIST && (
-                        renderUploadDropDown(val.value, val?.toolProps?.filterOptions || null)
+                        renderUploadDropDown(val, val?.toolProps?.filterOptions || null)
                     )
                 }
 

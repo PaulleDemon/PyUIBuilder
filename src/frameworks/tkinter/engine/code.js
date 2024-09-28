@@ -18,8 +18,8 @@ function generateTkinterCodeList(widgetList = [], widgetRefs = [], parentVariabl
         let varName = widgetRef.getVariableName()
 
         // Add imports and requirements to sets
-        widgetRef.getImports().forEach(importItem => imports.add(importItem));
-        widgetRef.getRequirements().forEach(requirementItem => requirements.add(requirementItem));
+        widgetRef.getImports().forEach(importItem => imports.add(importItem))
+        widgetRef.getRequirements().forEach(requirementItem => requirements.add(requirementItem))
 
         // Set main variable if the widget is MainWindow
         if (widget.widgetType === MainWindow) {
@@ -126,7 +126,7 @@ async function generateTkinterCode(projectName, widgetList=[], widgetRefs=[], as
         `${mainVariable}.mainloop()`,
     ]
 
-    console.log("Code: ", code.join(""), "\n", requirements.join("\n"))
+    console.log("Code: ", code.join(""), "\n\n requirements:", requirements.join("\n"))
 
     message.info("starting zipping files, download will start in a few seconds")
 

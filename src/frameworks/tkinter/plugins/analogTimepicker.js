@@ -10,13 +10,20 @@ import { TkinterBase } from "../widgets/base"
 import "./styles/timepickerStyle.css"
 
 
+const Themes = {
+    NAVY_BLUE: "Navy Blue",
+    DRACULA: "Dracula",
+    PURPLE: "Purple",
+    NONE: ""
+}
+
 class AnalogTimePicker extends TkinterBase{
 
     static widgetType = "analogue_timepicker"
 
     static requiredImports = [
                                 ...TkinterBase.requiredImports, 
-                                'from tktimepicker import AnalogPicker, AnalogThemes'
+                                'from tktimepicker import AnalogPicker, AnalogThemes, constants'
                             ]
     
     static requirements = ["tkTimePicker"]
@@ -43,7 +50,7 @@ class AnalogTimePicker extends TkinterBase{
                         tool: Tools.SELECT_DROPDOWN, 
                         toolProps: {placeholder: "select theme"},
                         value: "",
-                        options: ["Dracula", "Navy blue", "Purple"].map(val => ({value: val, label: val})),
+                        options: Object.values(Themes).map(val => ({value: val, label: val})),
                         onChange: (value) => this.handleThemeChange(value)
                     },
                     ...newAttrs.styling,
@@ -130,19 +137,19 @@ class AnalogTimePicker extends TkinterBase{
     handleThemeChange(value){
         this.setAttrValue("styling.theme", value)
 
-        if (value === "Navy blue"){
+        if (value === Themes.NAVY_BLUE){
             this.setAttrValue("styling.handleColor", "#009688")
             this.setAttrValue("styling.displayColor", "#009688")
             this.setAttrValue("styling.backgroundColor", "#fff")
             this.setAttrValue("styling.clockColor", "#EEEEEE")
             this.setAttrValue("styling.numberColor", "#000")
-        }else if (value === "Dracula"){
+        }else if (value === Themes.DRACULA){
             this.setAttrValue("styling.handleColor", "#863434")
             this.setAttrValue("styling.displayColor", "#404040")
             this.setAttrValue("styling.backgroundColor", "#404040")
             this.setAttrValue("styling.clockColor", "#363636")
             this.setAttrValue("styling.numberColor", "#fff")
-        }else if (value === "Purple"){
+        }else if (value === Themes.PURPLE){
             this.setAttrValue("styling.handleColor", "#EE333D")
             this.setAttrValue("styling.displayColor", "#71135C")
             this.setAttrValue("styling.backgroundColor", "#4E0D3A")
@@ -163,11 +170,47 @@ class AnalogTimePicker extends TkinterBase{
         const numColor = this.getAttrValue("styling.numberColor")
         const handleColor = this.getAttrValue("styling.handleColor")
 
-        const config = convertObjectToKeyValueString(this.getConfigCode())
+        const code = [
+            `${variableName} = AnalogPicker(master=${parent}, type=${mode===12 ? "constants.HOURS12" : "constants.HOURS24"})`,
+        ]
+
+        if (theme){
+
+            code.push(`${variableName}_theme = AnalogThemes(${variableName})`)
+            if (theme === Themes.NAVY_BLUE){
+                code.push(`${variableName}_theme.setNavyBlue()`)
+            }else if (theme === Themes.DRACULA){
+                code.push(`${variableName}_theme.setDracula()`)
+            }else if (theme === Themes.PURPLE){
+                code.push(`${variableName}_theme.setPurple()`)
+            }
+
+        }else{
+
+            const configAnalog = {
+                "canvas_bg": `"${bgColor}"`,
+                "textcolor": `"${numColor}"`,
+                "bg": `"${clockColor}"`,
+                "handlecolor": `"${handleColor}"`,
+                "headcolor": `"${handleColor}"`
+            }
+
+            const displayConfig = {
+                bg: `"${displayColor}"`
+            }
+
+            code.push(`${variableName}.configAnalog(${convertObjectToKeyValueString(configAnalog)})`)
+            code.push(`${variableName}.configSpin(${convertObjectToKeyValueString(displayConfig)})`)
+
+
+            // code.push(`configAnalog(canvas_bg="${bgColor}", textcolor="${numColor}", 
+            //                         bg="${clockColor}", handcolor="${handleColor}", headcolor="${handleColor}")`)
+
+            // code.push(`configSpin(bg="${displayColor}"`)
+        }
 
         return [
-                `${variableName} = AnalogPicker(master=${parent})`,
-                `${variableName}.config(${config})`,
+                ...code,
                 `${variableName}.${this.getLayoutCode()}`
             ]
     }
