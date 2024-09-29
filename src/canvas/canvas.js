@@ -189,7 +189,9 @@ class Canvas extends React.Component {
                 break
             }
 
-            if (ref.current.getElement().contains(target)) {
+            // console.log("refs: ", ref)
+            // TODO: remove the ref.current? if there are bugs it would become hard to debug
+            if (ref.current?.getElement().contains(target)) {
 
                 if (!innerWidget) {
                     innerWidget = ref.current
@@ -657,7 +659,7 @@ class Canvas extends React.Component {
       handleDropEvent = (e, draggedElement, widgetClass = null) => {
 
         e.preventDefault()
-        console.log("Drop event")
+        // console.log("Drop event")
 
         this.setState({ isWidgetDragging: false })
 
@@ -790,7 +792,7 @@ class Canvas extends React.Component {
                 x: (clientX - parentRect.left) / this.state.zoom,
                 y: (clientY - parentRect.top) / this.state.zoom,
             }
-            console.log("Swapp: ", swap)
+            
             // TODO: fix swapping for grid layouts
             if (swap) {
                 // If swapping, we need to find the common parent

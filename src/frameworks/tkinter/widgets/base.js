@@ -1,14 +1,12 @@
 import { Layouts, PosType } from "../../../canvas/constants/layouts"
 import Tools from "../../../canvas/constants/tools"
 import Widget from "../../../canvas/widgets/base"
-import { removeKeyFromObject } from "../../../utils/common"
+import { convertObjectToKeyValueString, removeKeyFromObject } from "../../../utils/common"
 import { Tkinter_TO_WEB_CURSOR_MAPPING } from "../constants/cursor"
 import { Tkinter_To_GFonts } from "../constants/fontFamily"
 import { JUSTIFY, RELIEF } from "../constants/styling"
 
-// TODO: add full width and full height in base widget
-// TODO: the pack should configure width and height of widgets
-// FIXME: the font code is not correctly generated 
+
 
 export class TkinterBase extends Widget {
 
@@ -23,16 +21,60 @@ export class TkinterBase extends Widget {
     getLayoutCode(){
         const {layout: parentLayout, direction, gap} = this.getParentLayout()
 
+        const absolutePositioning = this.getAttrValue("positioning")  
+
         let layoutManager = `pack()`
 
-        if (parentLayout === Layouts.FLEX){
-            layoutManager = `pack(side=${direction === "row" ? "tk.LEFT" : "tk.TOP"})`
+        if (parentLayout === Layouts.PLACE || absolutePositioning){
+
+            const config = {
+                x: this.state.pos.x,
+                y: this.state.pos.y,
+            }
+
+            if (!this.state.fitContent.width){
+                config["width"] = this.state.size.width
+            }
+            if (!this.state.fitContent.height){
+                config["height"] = this.state.size.height
+            }
+
+            const configStr = convertObjectToKeyValueString(config)
+
+            layoutManager = `place(${configStr})`
+
+        }if (parentLayout === Layouts.FLEX){
+
+            const config = {
+                side: direction === "row" ? "tk.LEFT" : "tk.TOP",
+            }
+
+            const fillX = this.getAttrValue("flexManager.fillX")
+            const fillY = this.getAttrValue("flexManager.fillY")
+            const expand = this.getAttrValue("flexManager.expand")
+
+            if (fillX){
+                config['fill'] = "'x'"
+            }
+
+            if (fillY){
+                config['fill'] = "'y'"
+            }
+
+            if (fillX && fillY){
+                config['fill'] = "'both'"
+            }
+
+            if (expand){
+                config['expand'] = 'True'
+            }
+
+            layoutManager = `pack(${convertObjectToKeyValueString(config)})`
+
         }else if (parentLayout === Layouts.GRID){
             const row = this.getAttrValue("gridManager.row")
             const col = this.getAttrValue("gridManager.col")
             layoutManager = `grid(row=${row}, col=${col})`
-        }else{
-            layoutManager = `place(x=${this.state.pos.x}, y=${this.state.pos.y})`
         }
 
         return layoutManager
@@ -53,18 +95,36 @@ export class TkinterBase extends Widget {
         
         this.removeAttr("gridManager")
         this.removeAttr("flexManager")
+        this.removeAttr("positioning")
         if (parentLayout === Layouts.FLEX || parentLayout === Layouts.GRID) {
 
             updates = {
                 ...updates,
-                positionType: PosType.NONE
+                positionType: PosType.NONE,
+            }
+            // Allow optional absolute positioning if the parent layout is flex or grid
+            const updateAttrs = {
+                ...this.state.attrs,
+                positioning: {
+                    label: "Absolute positioning",
+                    tool: Tools.CHECK_BUTTON,
+                    value: false,
+                    onChange: (value) => {
+                        this.setAttrValue("positioning", value)
+                        
+                        this.updateState({
+                            positionType: value ? PosType.ABSOLUTE : PosType.NONE,
+                        })
+                        
+                    }
+                }
             }
 
             if (parentLayout === Layouts.FLEX){
                 updates = {
                     ...updates,
                     attrs: {
-                        ...this.state.attrs,
+                        ...updateAttrs,
                         flexManager: {
                             label: "Flex Manager",
                             display: "horizontal",
@@ -77,9 +137,8 @@ export class TkinterBase extends Widget {
                                     const widgetStyle = {
                                         ...this.state.widgetOuterStyling,
                                         flexGrow: value ? 1 : 0,
-                                        minWidth: 0
                                     }
-                                    
+
                                     this.updateState({
                                         widgetOuterStyling: widgetStyle,
                                     })
@@ -129,7 +188,7 @@ export class TkinterBase extends Widget {
                 updates = {
                     ...updates,
                     attrs: {
-                        ...this.state.attrs,
+                        ...updateAttrs,
                         gridManager: {
                             label: "Grid manager",
                             display: "horizontal",
@@ -229,6 +288,34 @@ export class TkinterBase extends Widget {
         this.updateState(updates)
 
         return updates
+    }
+
+    getInnerRenderStyling(){
+        let {width, height, minWidth, minHeight} = this.getRenderSize()
+
+        const {layout: parentLayout, direction, gap} = this.getParentLayout() || {}
+
+        if (parentLayout === Layouts.FLEX){
+            const fillX = this.getAttrValue("flexManager.fillX")
+            const fillY = this.getAttrValue("flexManager.fillY")
+
+            // This is needed if fillX or fillY is true, as the parent is applied flex-grow
+
+            if (fillX || fillY){
+                width = "100%"
+                height = "100%"
+            }
+
+        }
+
+        const styling = {
+            ...this.state.widgetInnerStyling,
+            width, 
+            height,
+            minWidth, 
+            minHeight
+        }
+        return styling
     }
 
     /**
@@ -465,7 +552,7 @@ export class TkinterWidgetBase extends TkinterBase{
             code["relief"] = `"${this.getAttrValue("styling.relief")}"`
 
         if (this.getAttrValue("font.fontFamily") || this.getAttrValue("font.fontSize")){
-            code["font"] = [`"${this.getAttrValue("font.fontFamily")}"`, this.getAttrValue("font.fontSize"), ]
+            code["font"] = `("${this.getAttrValue("font.fontFamily")}", ${this.getAttrValue("font.fontSize") || 12}, )`
         }
 
         if (this.getAttrValue("cursor"))

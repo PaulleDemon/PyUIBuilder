@@ -79,7 +79,8 @@ class MainWindow extends TkinterBase{
                         </div>
                     </div>
                 </div>
-                <div className="tw-p-2 tw-w-full tw-relative tw-h-full tw-overflow-hidden tw-content-start" style={this.state.widgetInnerStyling}>
+                <div className="tw-p-2 tw-w-full tw-relative tw-h-full tw-overflow-hidden tw-content-start" 
+                        style={this.state.widgetInnerStyling}>
                     {this.props.children}
                 </div>
             </div>

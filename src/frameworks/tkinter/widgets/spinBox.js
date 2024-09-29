@@ -108,7 +108,8 @@ class SpinBox extends TkinterWidgetBase{
     renderContent(){
         return (
             <div className="tw-w-flex tw-flex-col tw-w-full tw-h-full tw-rounded-md tw-overflow-hidden">
-                <div className="tw-p-2 tw-w-full tw-h-full tw-flex tw-place-items-center tw-justify-between" style={this.state.widgetInnerStyling}>
+                <div className="tw-p-2 tw-w-full tw-h-full tw-flex tw-place-items-center tw-justify-between" 
+                        style={this.getInnerRenderStyling()}>
                     <div className="tw-text-sm ">
                         {this.getAttrValue("spinProps.default")}
                     </div>

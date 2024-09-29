@@ -1133,7 +1133,7 @@ class Widget extends React.Component {
                             >
                                 {/* FIXME: Swappable when the parent layout is flex/grid and gap is more, this trick won't work, add bg color to check */}
                                 {/* FIXME: Swappable, when the parent layout is gap is 0, it doesn't work well */}
-                                <div className="tw-relative tw-w-full tw-bg-red-500  tw-h-full tw-top-0 tw-left-0"
+                                <div className="tw-relative tw-w-full  tw-h-full tw-top-0 tw-left-0"
                                         
                                     >
                                     
@@ -1151,7 +1151,7 @@ class Widget extends React.Component {
                                         {/* helps with swappable: if the mouse is in this area while hovering/dropping, then swap */}
                                     </div>
 
-                                    <div className="tw-relative tw-top-0 tw-left-0 tw-bg-blue-500 tw-w-full tw-h-full" ref={this.innerAreaRef}
+                                    <div className="tw-relative tw-top-0 tw-left-0 tw-w-full tw-h-full" ref={this.innerAreaRef}
                                         >
                                         {this.renderContent()}
                                     </div>

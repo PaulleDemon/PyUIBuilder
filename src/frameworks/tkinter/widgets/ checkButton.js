@@ -95,7 +95,7 @@ export class CheckBox extends TkinterWidgetBase{
     renderContent(){
         return (
             <div className="tw-flex tw-p-1 tw-w-full tw-h-full tw-rounded-md tw-overflow-hidden"
-                style={this.state.widgetInnerStyling}
+                style={this.getInnerRenderStyling()}
                 >
                 
                 <div className="tw-flex tw-gap-2 tw-w-full tw-h-full tw-place-items-center tw-place-content-center">
@@ -132,7 +132,8 @@ export class RadioButton extends TkinterWidgetBase{
         
         this.state = {
             ...this.state,
-            size: { width: 120, height: 'fit' },
+            size: { width: 80, height: 30 },
+            fitContent: { width: true, height: true },
             widgetName: "Radio button",
             attrs: {
                 ...this.state.attrs,
@@ -204,33 +205,34 @@ export class RadioButton extends TkinterWidgetBase{
 
         return (
             <div className="tw-flex tw-p-1 tw-w-full tw-h-full tw-rounded-md tw-overflow-hidden"
-                style={this.state.widgetInnerStyling}
+                style={this.getInnerRenderStyling()}
                 >
-                
-                {
-                    inputs.map((value, index) => {
-                        return (
-                            <div key={index} className="tw-flex tw-gap-2 tw-w-full tw-h-full tw-place-items-center ">
-                                <div className="tw-border-solid tw-border-[#D9D9D9] tw-border-2
-                                                tw-min-w-[20px] tw-min-h-[20px] tw-w-[20px] tw-h-[20px] 
-                                                tw-text-blue-600 tw-flex tw-items-center tw-justify-center
-                                                tw-rounded-full tw-overflow-hidden tw-p-1">
-                                    
-                                    {
-                                        selectedRadio === index &&
-                                            <div className="tw-rounded-full tw-bg-blue-600 tw-w-full tw-h-full">
+                <div className="tw-flex tw-flex-col tw-gap-2 tw-w-fit tw-h-fit">
+                    {
+                        inputs.map((value, index) => {
+                            return (
+                                <div key={index} className="tw-flex tw-gap-2 tw-w-full tw-h-full tw-place-items-center ">
+                                    <div className="tw-border-solid tw-border-[#D9D9D9] tw-border-2
+                                                    tw-min-w-[20px] tw-min-h-[20px] tw-w-[20px] tw-h-[20px] 
+                                                    tw-text-blue-600 tw-flex tw-items-center tw-justify-center
+                                                    tw-rounded-full tw-overflow-hidden tw-p-1">
+                                        
+                                        {
+                                            selectedRadio === index &&
+                                                <div className="tw-rounded-full tw-bg-blue-600 tw-w-full tw-h-full">
 
-                                            </div>
-                                    }
+                                                </div>
+                                        }
+                                    </div>
+                                    <span className="tw-text-base" style={{color: this.state.widgetInnerStyling.foregroundColor}}>
+                                        {value}
+                                    </span>
                                 </div>
-                                <span className="tw-text-base" style={{color: this.state.widgetInnerStyling.foregroundColor}}>
-                                    {value}
-                                </span>
-                            </div>
-                        )
-                    })
-                    
-                }
+                            )
+                        })
+                        
+                    }
+                </div>
             </div>
         )
     }

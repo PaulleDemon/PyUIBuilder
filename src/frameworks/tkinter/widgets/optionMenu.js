@@ -93,7 +93,7 @@ class OptionMenu extends TkinterWidgetBase{
 
         return (
             <div className="tw-flex tw-p-1 tw-w-full tw-h-full tw-rounded-md tw-overflow-hidden"
-                style={this.state.widgetInnerStyling}
+                style={this.getInnerRenderStyling()}
                 onClick={this.toggleDropDownOpen}
                 >
                 <div className="tw-flex tw-justify-between tw-gap-1">

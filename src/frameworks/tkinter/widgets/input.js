@@ -64,7 +64,8 @@ export class Input extends TkinterWidgetBase{
     renderContent(){
         return (
             <div className="tw-w-flex tw-flex-col tw-w-full tw-h-full tw-rounded-md tw-overflow-hidden">
-                <div className="tw-p-2 tw-w-full tw-h-full tw-flex tw-place-items-center" style={this.state.widgetInnerStyling}>
+                <div className="tw-p-2 tw-w-full tw-h-full tw-flex tw-place-items-center" 
+                        style={this.getInnerRenderStyling()}>
                     <div className="tw-text-sm tw-text-gray-300">
                         {this.getAttrValue("placeHolder")}
                     </div>
@@ -136,7 +137,8 @@ export class Text extends TkinterWidgetBase{
     renderContent(){
         return (
             <div className="tw-w-flex tw-flex-col tw-w-full tw-h-full tw-rounded-md tw-overflow-hidden">
-                <div className="tw-p-2 tw-w-full tw-h-full tw-content-start " style={this.state.widgetInnerStyling}>
+                <div className="tw-p-2 tw-w-full tw-h-full tw-content-start " 
+                        style={this.getInnerRenderStyling()}>
                     <div className="tw-text-sm tw-text-gray-300">
                         {this.getAttrValue("placeHolder")}
                     </div>
