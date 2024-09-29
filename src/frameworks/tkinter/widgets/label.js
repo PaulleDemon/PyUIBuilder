@@ -57,7 +57,7 @@ class Label extends TkinterWidgetBase{
     }
 
     getRequirements(){
-        const requirements = super.getImports()
+        const requirements = super.getRequirements()
         
         if (this.getAttrValue("imageUpload"))
             requirements.push(`pillow`)
