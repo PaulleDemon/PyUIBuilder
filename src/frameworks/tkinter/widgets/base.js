@@ -54,19 +54,19 @@ export class TkinterBase extends Widget {
             const expand = this.getAttrValue("flexManager.expand")
 
             if (fillX){
-                config['fill'] = "'x'"
+                config['fill'] = `"x"`
             }
 
             if (fillY){
-                config['fill'] = "'y'"
+                config['fill'] = `"y"`
             }
 
             if (fillX && fillY){
-                config['fill'] = "'both'"
+                config['fill'] = `"both"`
             }
 
             if (expand){
-                config['expand'] = 'True'
+                config['expand'] = "True"
             }
 
             layoutManager = `pack(${convertObjectToKeyValueString(config)})`

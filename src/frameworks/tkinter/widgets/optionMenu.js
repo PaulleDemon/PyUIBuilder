@@ -42,7 +42,6 @@ class OptionMenu extends TkinterWidgetBase{
             }
         }
 
-        console.log("attrs1: ", this.state.attrs)
     }
 
     componentDidMount(){
@@ -71,7 +70,7 @@ class OptionMenu extends TkinterWidgetBase{
         const toolBarAttrs = super.getToolbarAttrs()
 
         const attrs = this.state.attrs
-        console.log("attrs: ", attrs)
+        
         return ({
             id: this.__id,
             widgetName: toolBarAttrs.widgetName,

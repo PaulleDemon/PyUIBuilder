@@ -58,9 +58,10 @@ class Label extends TkinterWidgetBase{
 
     getRequirements(){
         const requirements = super.getRequirements()
+
         
         if (this.getAttrValue("imageUpload"))
-            requirements.push(`pillow`)
+            requirements.push("pillow")
 
         return requirements
     }
@@ -72,14 +73,15 @@ class Label extends TkinterWidgetBase{
         const config = convertObjectToKeyValueString(this.getConfigCode())
         const image = this.getAttrValue("imageUpload")
 
-        let labelInitialization = `tk.Label(master=${parent}, text="${labelText}")`
+        let labelInitialization = `${variableName} = tk.Label(master=${parent}, text="${labelText}")`
 
         const code = []
 
-        if (image.name){
+        if (image?.name){
             code.push(`${variableName}_img = Image.open(${getPythonAssetPath(image.name, "image")})`)
             code.push(`${variableName}_img = ImageTk.PhotoImage(${variableName}_img)`)
-            labelInitialization = `tk.Label(master=${parent}, image="${variableName}_img", text="${labelText}")`
+            // code.push("\n")
+            labelInitialization = `${variableName} = tk.Label(master=${parent}, image="${variableName}_img", text="${labelText}")`
         }
 
         // code.push("\n")
