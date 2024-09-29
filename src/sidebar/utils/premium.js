@@ -34,7 +34,7 @@ function Premium({ children, className = "" }) {
                 open={premiumModalOpen}
             >
                 <div className="tw-mt-5 tw-text-lg tw-max-w-[850px]  tw-w-full ">
-                    I am Paul, a self-funded open-source dev.
+                    I am Paul, a indie open-source dev.
                     If you find this tool useful and want to fund and support it's development, consider buying a <b>one time license</b>.
                     <br />
                     <br />

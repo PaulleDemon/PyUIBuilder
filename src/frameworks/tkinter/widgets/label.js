@@ -109,11 +109,17 @@ class Label extends TkinterWidgetBase{
     renderContent(){
 
         const image = this.getAttrValue("imageUpload")
-
+        
         return (
-            <div className="tw-w-flex tw-flex-col tw-w-full tw-content-start tw-h-full tw-rounded-md tw-overflow-hidden">
+            <div className="tw-w-flex tw-flex-col tw-w-full tw-content-start tw-h-full tw-rounded-md tw-overflow-hidden"
+                    style={{
+                        flexGrow: 1, // Ensure the content grows to fill the parent
+                        minWidth: '100%', // Force the width to 100% of the parent
+                        minHeight: '100%', // Force the height to 100% of the parent
+                    }}
+                >
                 <div className="tw-p-2 tw-w-full tw-h-full  tw-flex tw-place-content-center tw-place-items-center " 
-                        style={this.state.widgetInnerStyling}>
+                        style={this.getInnerRenderStyling()}>
                     {/* {this.props.children} */}
                     {
                         image && (

@@ -3,7 +3,7 @@ import React from "react"
 // import { DndContext } from '@dnd-kit/core'
 
 import { DeleteOutlined, EditOutlined, FileImageOutlined, ReloadOutlined } from "@ant-design/icons"
-import { Button, Tooltip, Dropdown } from "antd"
+import { Button, Tooltip, Dropdown, message } from "antd"
 
 import domtoimage from "dom-to-image-more"
 import { saveAs } from 'file-saver'
@@ -31,7 +31,7 @@ import ResizeWidgetContainer from "./resizeContainer"
 
 // const DotsBackground = require("../assets/background/dots.svg")
 
-
+// FIXME: once the items is selected and deleted , the toolbar doesn't disappear
 const CanvasModes = {
     DEFAULT: 0,
     PAN: 1,
@@ -401,6 +401,13 @@ class Canvas extends React.Component {
         const widget = this.state.selectedWidget
 
         if (!widget) return
+
+        if (widget.state.fitContent?.width && widget.state.fitContent?.height){
+            this.setState({widgetResizing: ""}) // Disable resizing if this is true, since the user will have to uncheck fit width and height
+            message.warning("both width and height are set to fit-content, unset it to start resizing")
+            return
+        }
+
         const resizeCorner = this.state.widgetResizing
         const size = widget.getSize()
         const pos = widget.getPos()
@@ -783,6 +790,7 @@ class Canvas extends React.Component {
                 x: (clientX - parentRect.left) / this.state.zoom,
                 y: (clientY - parentRect.top) / this.state.zoom,
             }
+            console.log("Swapp: ", swap)
             // TODO: fix swapping for grid layouts
             if (swap) {
                 // If swapping, we need to find the common parent
@@ -808,7 +816,7 @@ class Canvas extends React.Component {
 
                         // Update the state with the new widget hierarchy
                         this.setState((prevState) => ({
-                            widgets: this.updateWidgetRecursively(prevState.widgets, updatedGrandParentWidget)
+                            widgets: this.updateWidgetRecursively(prevState.widgets, updatedGrandParentWidget, dragWidgetObj)
                         }))
                     }
                 }

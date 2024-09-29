@@ -20,7 +20,6 @@ class MainWindow extends TkinterBase{
             widgetName: "main",
             attrs: {
                 ...this.state.attrs,
-                widgetName: "main",
                 title: {
                     label: "Window Title",
                     tool: Tools.INPUT, // the tool to display, can be either HTML ELement or a constant string
@@ -42,8 +41,11 @@ class MainWindow extends TkinterBase{
 
     generateCode(variableName, parent){
 
+        const backgroundColor = this.getAttrValue("styling.backgroundColor")
+
         return [
                 `${variableName} = tk.Tk()`,
+                `${variableName}.config(bg="${backgroundColor}")`,
                 `${variableName}.title("${this.getAttrValue("title")}")`
             ]
     }

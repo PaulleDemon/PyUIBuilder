@@ -8,6 +8,7 @@ import { JUSTIFY, RELIEF } from "../constants/styling"
 
 // TODO: add full width and full height in base widget
 // TODO: the pack should configure width and height of widgets
+// FIXME: the font code is not correctly generated 
 
 export class TkinterBase extends Widget {
 
@@ -51,6 +52,7 @@ export class TkinterBase extends Widget {
         }
         
         this.removeAttr("gridManager")
+        this.removeAttr("flexManager")
         if (parentLayout === Layouts.FLEX || parentLayout === Layouts.GRID) {
 
             updates = {
@@ -58,7 +60,71 @@ export class TkinterBase extends Widget {
                 positionType: PosType.NONE
             }
 
-            if (parentLayout === Layouts.GRID) {
+            if (parentLayout === Layouts.FLEX){
+                updates = {
+                    ...updates,
+                    attrs: {
+                        ...this.state.attrs,
+                        flexManager: {
+                            label: "Flex Manager",
+                            display: "horizontal",
+                            fillX: {
+                                label: "Fill X",
+                                tool: Tools.CHECK_BUTTON,
+                                value: false,
+                                onChange: (value) => {
+                                    this.setAttrValue("flexManager.fillX", value)
+                                    const widgetStyle = {
+                                        ...this.state.widgetOuterStyling,
+                                        flexGrow: value ? 1 : 0,
+                                        minWidth: 0
+                                    }
+                                    
+                                    this.updateState({
+                                        widgetOuterStyling: widgetStyle,
+                                    })
+                                    
+                                }
+                            },
+                            fillY: {
+                                label: "Fill Y",
+                                tool: Tools.CHECK_BUTTON,
+                                value: false,
+                                onChange: (value) => {
+                                    this.setAttrValue("flexManager.fillY", value)
+                                    
+                                    const widgetStyle = {
+                                        ...this.state.widgetOuterStyling,
+                                        flexGrow: value ? 1 : 0,
+                                    }
+                                    this.updateState({
+                                        widgetOuterStyling: widgetStyle,
+                                    })
+                                }
+                            },
+                            expand: {
+                                label: "Expand",
+                                tool: Tools.CHECK_BUTTON,
+                                value: false,
+                                onChange: (value) => {
+                                    this.setAttrValue("flexManager.expand", value)
+                                    
+                                    const widgetStyle = {
+                                        ...this.state.widgetOuterStyling,
+                                        flexGrow: value ? 1 : 0,
+                                    }
+                                    this.updateState({
+                                        widgetOuterStyling: widgetStyle,
+                                    })
+                                }
+                            },
+                            
+                        }
+                    }
+                }
+            }
+
+            else if (parentLayout === Layouts.GRID) {
                 // Set attributes related to grid layout manager
                 updates = {
                     ...updates,
@@ -351,7 +417,7 @@ export class TkinterWidgetBase extends TkinterBase{
                         label: "font family",
                         tool: Tools.SELECT_DROPDOWN,
                         options: Object.keys(Tkinter_To_GFonts).map((val) => ({value: val, label: val})),
-                        value: "Arial",
+                        value: "",
                         onChange: (value) => {
                             this.setWidgetInnerStyle("fontFamily", Tkinter_To_GFonts[value])
                             this.setAttrValue("font.fontFamily", value)
@@ -360,7 +426,7 @@ export class TkinterWidgetBase extends TkinterBase{
                     fontSize: {
                         label: "font size",
                         tool: Tools.NUMBER_INPUT,
-                        toolProps: {min: 1, max: 140},
+                        toolProps: {min: 3, max: 140},
                         value: null,
                         onChange: (value) => {
                             this.setWidgetInnerStyle("fontSize", `${value}px`)

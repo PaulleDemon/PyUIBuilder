@@ -11,6 +11,8 @@ import EditableDiv from "../../components/editableDiv"
 import WidgetContainer from "../constants/containers"
 import { DragContext } from "../../components/draggable/draggableContext"
 import { isNumeric, removeKeyFromObject } from "../../utils/common"
+import { info } from "autoprefixer"
+import { message } from "antd"
 
 
 // TODO: make it possible to apply widgetInnerStyle on load
@@ -85,6 +87,7 @@ class Widget extends React.Component {
 
             pos: { x: 0, y: 0 },
             size: { width: 100, height: 100 },
+            fitContent: {width: false, height: false},
             positionType: PosType.ABSOLUTE,
 
             widgetOuterStyling: {
@@ -187,6 +190,9 @@ class Widget extends React.Component {
 
         this.hideDroppableIndicator = this.hideDroppableIndicator.bind(this)
 
+        this.getRenderSize = this.getRenderSize.bind(this)
+        this.getInnerRenderStyling = this.getInnerRenderStyling.bind(this)
+
     }
 
     componentDidMount() {
@@ -265,45 +271,21 @@ class Widget extends React.Component {
                 fitWidth: {
                     label: "Fit width",
                     tool: Tools.CHECK_BUTTON,
-                    value: this.state.size?.width === 'fit-content' || false,
+                    value: this.state.fitContent.width,
                     onChange: (value) => {  
-                        if (value === true){
-                            this.updateState({
-                                    size: {
-                                        ...this.state.size,
-                                        width: 'fit-content'
-                                    }
-                                })
-                        }else{
-                            this.updateState({
-                                size: {
-                                    ...this.state.size,
-                                    width: Math.floor(this.getBoundingRect().width)
-                                }
-                            })
-                        }
+                        this.updateState((prev) => ({
+                            fitContent: {...prev.fitContent, width: value}
+                        }))
                     }
                 },
                 fitHeight: {
                     label: "Fit height",
                     tool: Tools.CHECK_BUTTON,
-                    value: this.state.size?.height === 'fit-content' || false,
+                    value: this.state.fitContent.height,
                     onChange: (value) => {  
-                        if (value === true){
-                            this.updateState({
-                                    size: {
-                                        ...this.state.size,
-                                        height: 'fit-content'
-                                    }
-                                })
-                        }else{
-                            this.updateState({
-                                size: {
-                                    ...this.state.size,
-                                    height: Math.floor(this.getBoundingRect().height)
-                                }
-                            })
-                        }
+                        this.updateState((prev) => ({
+                            fitContent: {...prev.fitContent, height: value}
+                        }))
                     }
                 },
             },
@@ -662,6 +644,14 @@ class Widget extends React.Component {
      * @param {number|null} height 
      */
     setWidgetSize(width, height) {
+
+        const fitWidth = this.state.fitContent.width || true
+        const fitHeight = this.state.fitContent.height || true
+
+        if (fitWidth && fitHeight){
+            message.warning("both width and height are set to fit-content, unset it to start resizing")
+            return
+        }
 
         const newSize = {
             width: Math.max(this.minSize.width, Math.min(width || this.state.size.width, this.maxSize.width)),
@@ -1049,6 +1039,42 @@ class Widget extends React.Component {
         )
     }
 
+    getInnerRenderStyling(){
+        const {width, height, minWidth, minHeight} = this.getRenderSize()
+
+        const styling = {
+            ...this.state.widgetInnerStyling,
+            width, 
+            height,
+            minWidth, 
+            minHeight
+        }
+        return styling
+    }
+
+    getRenderSize(){
+
+        let width = isNumeric(this.state.size.width) ? `${this.state.size.width}px` : this.state.size.width
+        let height = isNumeric(this.state.size.height) ? `${this.state.size.height}px` : this.state.size.height
+
+        let fitWidth = this.state.fitContent.width
+        let fitHeight = this.state.fitContent.height
+        
+        if (fitWidth){
+            width = "max-content"
+        }
+
+        if (fitHeight){
+            height = "max-content"
+        }
+
+        // if fit width is enabled then the minsize is the resizable size
+        let minWidth = fitWidth ? this.state.size.width : this.minSize.width
+        let minHeight = fitHeight ? this.state.size.height : this.minSize.height
+        
+        return {width, height, minWidth, minHeight}
+
+    }
 
     /**
      * This is an internal methods don't override
@@ -1056,8 +1082,9 @@ class Widget extends React.Component {
      */
     render() {  
 
-        const width = isNumeric(this.state.size.width) ? `${this.state.size.width}px` : this.state.size.width
-        const height = isNumeric(this.state.size.height) ? `${this.state.size.height}px` : this.state.size.height
+        const {width, height, minWidth, minHeight} = this.getRenderSize()
+        
+        // NOTE: first check tkinter behaviour with the width and height
 
         let outerStyle = {
             ...this.state.widgetOuterStyling,
@@ -1068,6 +1095,8 @@ class Widget extends React.Component {
             left: `${this.state.pos.x}px`,
             width: width,
             height: height,
+            minWidth: minWidth, 
+            minHeight: minHeight,
             opacity: this.state.isDragging ? 0.3 : 1,
         }
 
@@ -1081,7 +1110,8 @@ class Widget extends React.Component {
                     ({ draggedElement, widgetClass, onDragStart, onDragEnd, overElement, setOverElement }) => {
 
                         
-                        return ( <div data-widget-id={this.__id}
+                        return ( 
+                            <div data-widget-id={this.__id}
                                 ref={this.elementRef}
                                 className="tw-shadow-xl tw-w-fit tw-h-fit"
                                 style={outerStyle}
@@ -1103,8 +1133,10 @@ class Widget extends React.Component {
                             >
                                 {/* FIXME: Swappable when the parent layout is flex/grid and gap is more, this trick won't work, add bg color to check */}
                                 {/* FIXME: Swappable, when the parent layout is gap is 0, it doesn't work well */}
-                                <div className="tw-relative tw-w-full tw-h-full tw-top-0 tw-left-0"
-                                >
+                                <div className="tw-relative tw-w-full tw-bg-red-500  tw-h-full tw-top-0 tw-left-0"
+                                        
+                                    >
+                                    
                                     <div className={`tw-absolute tw-top-[-5px] tw-left-[-5px] 
                                                         tw-border-1 tw-opacity-0 tw-border-solid tw-border-black
                                                         tw-w-full tw-h-full tw-bg-red-400
@@ -1118,7 +1150,9 @@ class Widget extends React.Component {
                                     >
                                         {/* helps with swappable: if the mouse is in this area while hovering/dropping, then swap */}
                                     </div>
-                                    <div className="tw-relative tw-w-full tw-h-full" ref={this.innerAreaRef}>
+
+                                    <div className="tw-relative tw-top-0 tw-left-0 tw-bg-blue-500 tw-w-full tw-h-full" ref={this.innerAreaRef}
+                                        >
                                         {this.renderContent()}
                                     </div>
                                     {

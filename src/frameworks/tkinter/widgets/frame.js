@@ -15,6 +15,7 @@ class Frame extends TkinterBase{
 
         this.state = {
             ...this.state,
+            fitContent: {width: true, height: true},
             widgetName: "Frame"
         }
 
@@ -39,10 +40,12 @@ class Frame extends TkinterBase{
     
 
     renderContent(){
+        // console.log("bounding rect: ", this.getBoundingRect())
+
         // console.log("widget styling: ", this.state.widgetInnerStyling)
         return (
             <div className="tw-w-flex tw-flex-col tw-w-full tw-h-full tw-relative tw-rounded-md tw-overflow-hidden">
-                <div className="tw-p-2 tw-w-full tw-h-full tw-content-start" style={this.state.widgetInnerStyling}>
+                <div className="tw-p-2 tw-w-full tw-h-full tw-content-start" style={this.getInnerRenderStyling()}>
                     {this.props.children}
                 </div>
             </div>
