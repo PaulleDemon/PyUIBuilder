@@ -94,7 +94,7 @@ function Sidebar({tabs}){
                     <Share className="tw-cursor-pointer tw-text-xl">
                         <ShareAltOutlined />
                     </Share>
-                    <a href="https://github.com/PaulleDemon/tkbuilder" className="tw-text-2xl tw-cursor-pointer tw-text-black">
+                    <a href="https://github.com/PaulleDemon/PyUIBuilder" className="tw-text-2xl tw-cursor-pointer tw-text-black">
                         <GithubFilled />
                     </a>
                     <a href="https://ko-fi.com/artpaul" className="tw-cursor-pointer ">
