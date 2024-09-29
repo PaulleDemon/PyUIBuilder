@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="description" content="Description">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <!-- <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/LIGMATV/docsify-theme-github/github.css"> -->
+  <!-- <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css"> -->
+  <!-- <link rel="stylesheet" href="//unpkg.com/docsify/themes/dark.css">  -->
+  <link 
+    rel="stylesheet"
+    href="//cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/dist/style.min.css"
+    title="docsify-darklight-theme"
+    type="text/css"
+  />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+  <nav>
+    <a href="https://github.com/PaulleDemon/PyUIBuilder" target="_blank" rel="noopener noreferrer">
+      <!-- Github page -->
+      <i class="bi bi-github icon"></i>
+    </a>
+  </nav>
+  <div id="app"></div>
+ 
+  <script>
+    window.$docsify = {
+      name: '',
+      repo: '',
+      homepage: 'intro.md',  // You can set this to any file
+      // loadSidebar: true,  // Ensure _sidebar.md is loaded if you want to use it
+      loadNavbar: true,
+      search: {
+        maxAge: 86400, // Expiration time, the default one day
+        paths: 'auto',
+        placeholder: 'Type to search',
+        noData: 'No Results!',
+        depth: 6,
+      }
+    }
+  </script>
+  <!-- Docsify v4 -->
+  <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  <script src="//unpkg.com/docsify@4.13.1/lib/plugins/search.min.js"></script>
+  <script 
+    src="//cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/dist/index.min.js"
+    type="text/javascript">
+  </script>
+  <style>
+
+    .icon{
+      font-size: 30px;
+    }
+
+    img{
+      max-width: 850px;
+    }
+
+    body{
+      font-size: 16px;
+    }
+
+    h1 {
+            font-size: 2em; /* H1 size */
+        }
+
+    h2 {
+        font-size: 1.75em; /* H2 size */
+    }
+
+    h3 {
+        font-size: 1.5em; /* H3 size */
+    }
+
+
+    /* Common styling for all alerts */
+    .alert {
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+      /* background-color: #f6f8fa; */
+      border-left: 4px solid;
+    }
+    
+    /* NOTE style (info) */
+    .alert-note {
+      border-color: #0366d6;
+    }
+    .alert-note .alert-title {
+      color: #0366d6;
+    }
+    
+    /* WARNING style */
+    .alert-warning {
+      border-color: #ffd33d;
+    }
+    .alert-warning .alert-title {
+      color: #e36209;
+    }
+    
+    /* DANGER style */
+    .alert-danger {
+      border-color: #d73a49;
+    }
+    .alert-danger .alert-title {
+      color: #d73a49;
+    }
+    
+    /* Title for each alert type */
+    .alert-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    
+    /* Ensure the text color is readable */
+    .alert p {
+      margin: 0;
+      color: #24292e;
+    }
+  </style>
+
+  <style>
+
+    .app-nav {
+      position: fixed;
+      background-color: var(--background, transparent);
+      width: 100%;
+      margin: 0;
+      margin-right: 0 !important;
+      padding: 12px;
+      color: var(--textColor, #fff);
+      transition: 0.2s;
+    }
+
+    .app-nav li {
+      padding: 0;
+    }
+
+    .app-nav p img:nth-child(1) {
+      width: 24px;
+      float: left;
+    }
+
+    .app-nav p:nth-child(2) {
+      float: left;
+      font-weight: 600;
+      margin-left: 16px;
+    }
+
+    .app-nav li ul {
+      color: #000000;
+    }
+
+    .app-nav .badge {
+      min-width: 85px !important;
+      max-width: 85px;
+      float: right !important;
+      margin-left: 10px;
+    }
+
+    .search input, .search .clear-button {
+      margin-top: 15%;
+    }
+
+    section.cover img:first-child {
+      margin-top: 4%;
+    }
+
+    .markdown-section h1 {
+      font-size: 2rem;
+      padding: 40px 0 1rem;
+      margin: 0 !important;
+    }
+    .markdown-section h2 {
+      font-size: 1.75rem;
+      padding: 45px 0 0.8rem;
+      margin: 0 !important;
+    }
+    .markdown-section h3 {
+      font-size: 1.5rem;
+      padding: 40px 0 0.6rem;
+      margin: 0 !important;
+    }
+
+    @media screen and (max-width: 770px) {
+      .search input, .search .clear-button {
+        margin-top: 0%;
+      }
+    }
+  </style>
+
+</body>
+</html>

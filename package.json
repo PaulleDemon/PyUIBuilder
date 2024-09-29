@@ -34,9 +34,9 @@
     "build": "GENERATE_SOURCEMAP=false env-cmd -e production react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-
     "start:tailwind": "cross-env NODE_ENV=development tailwindcss --postcss -i ./landingpages/tailwind/tailwind.css -o ./landingpages/tailwind/tailwind-runtime.css -w",
-    "build:tailwind": "cross-env NODE_ENV=production tailwindcss --postcss -i ./landingpages/tailwind/tailwind.css -o ./landingpages/tailwind/tailwind-build.css --minify"
+    "build:tailwind": "cross-env NODE_ENV=production tailwindcss --postcss -i ./landingpages/tailwind/tailwind.css -o ./landingpages/tailwind/tailwind-build.css --minify",
+    "docs:serve": "docsify serve ./docs/"
   },
   "eslintConfig": {
     "extends": [
@@ -57,6 +57,7 @@
     ]
   },
   "devDependencies": {
-    "ajv": "^7.2.4"
+    "ajv": "^7.2.4",
+    "docsify-cli": "^4.4.4"
   }
 }

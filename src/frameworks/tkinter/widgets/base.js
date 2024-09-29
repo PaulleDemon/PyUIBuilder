@@ -93,9 +93,13 @@ export class TkinterBase extends Widget {
             parentLayout: layout,
         }
         
-        this.removeAttr("gridManager")
-        this.removeAttr("flexManager")
-        this.removeAttr("positioning")
+        // this.removeAttr("gridManager")
+        // this.removeAttr("flexManager")
+        // this.removeAttr("positioning")
+
+        // remove gridManager, flexManager positioning 
+        const {gridManager, flexManager, positioning, ...restAttrs} =  this.state.attrs
+
         if (parentLayout === Layouts.FLEX || parentLayout === Layouts.GRID) {
 
             updates = {
@@ -104,7 +108,7 @@ export class TkinterBase extends Widget {
             }
             // Allow optional absolute positioning if the parent layout is flex or grid
             const updateAttrs = {
-                ...this.state.attrs,
+                ...restAttrs,
                 positioning: {
                     label: "Absolute positioning",
                     tool: Tools.CHECK_BUTTON,
