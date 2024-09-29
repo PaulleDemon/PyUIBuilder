@@ -11,8 +11,8 @@ function Share({children, className=""}){
     const shareInfo = useMemo(() => {
 
         return {
-            url: encodeURI("https://github.com/PaulleDemon/font-tester-chrome"),
-            text: "Check out Framework agnostic GUI builder for python"
+            url: encodeURI("https://github.com/PaulleDemon/PyUIBuilder"),
+            text: "Check out this GUI builder for python"
         }
     }, [])
 

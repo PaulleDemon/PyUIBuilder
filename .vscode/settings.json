@@ -1,3 +1,5 @@
 {
     "prettier.configPath": ".vscode/.prettierrc",
+    "markdown.extension.toc.updateOnSave": false
+
 }

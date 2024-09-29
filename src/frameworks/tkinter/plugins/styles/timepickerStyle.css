@@ -1,0 +1,28 @@
+
+.atp-time {
+    background-color:  var(--time-display, black) !important;
+    text-align: center !important;
+    font-size: 35px;
+}
+
+.atp-clock-cnt {
+	background-color: var(--bg, white) !important;
+}
+
+.atp-face-color {
+	background-color: var(--clock-color, #EEEEEE) !important;
+}
+
+.atp-n {
+	color: var(--number-color, #000) !important;
+}
+
+/* .atp-color--primary {
+	background-color: var(--main-handle-color, #000000c0) !important;
+} */
+
+
+.atp-h-cnt-cnt .atp-h-ctn, .atp-h, .atp-b, .atp-h-dot{
+	/* affects only the handle*/
+	background-color: var(--main-handle-color, #000000c0) !important;
+}

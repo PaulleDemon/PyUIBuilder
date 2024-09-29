@@ -1,8 +1,11 @@
-import { memo, useState } from "react"
+import { memo, useEffect, useState } from "react"
 import { useDragContext } from "./draggableContext"
 
 
-const DroppableWrapper = memo(({onDrop, droppableTags=["widget"], ...props}) => {
+/**
+ * @param {{include: [], exclude: []} || {} || null} - droppableTags - if empty object, allows everything to be dropped, if null nothing can be dropped, define include to allow only included widgets, define exclude to exclude
+ */
+const DroppableWrapper = memo(({onDrop, droppableTags={}, ...props}) => {
 
 
     const { draggedElement, overElement, setOverElement, widgetClass } = useDragContext()
@@ -12,16 +15,35 @@ const DroppableWrapper = memo(({onDrop, droppableTags=["widget"], ...props}) => 
                                                             allow: false
                                                         })
     
+    useEffect(() => {
+
+        if (draggedElement === null){
+            setShowDroppable({
+                show: false, 
+                allow: false
+            })
+        }
+
+    }, [draggedElement])
 
     const handleDragEnter = (e) => {
         
+        if (!draggedElement || !draggedElement.getAttribute("data-drag-start-within")){
+            // if the drag is starting from outside (eg: file drop) or if drag doesn't exist
+            return
+        }
+
         const dragElementType = draggedElement.getAttribute("data-draggable-type")
 
-        // console.log("Current target: ", e.currentTarget)
 
         setOverElement(e.currentTarget)
 
-        if (droppableTags.length === 0 || droppableTags.includes(dragElementType)){
+        const allowDrop = (droppableTags && droppableTags !== null && (Object.keys(droppableTags).length === 0 || 
+                            (droppableTags.include?.length > 0 && droppableTags.include?.includes(dragElementType)) || 
+                            (droppableTags.exclude?.length > 0 && !droppableTags.exclude?.includes(dragElementType))
+                        ))
+
+        if (allowDrop){
             setShowDroppable({
                 allow: true, 
                 show: true
@@ -35,24 +57,50 @@ const DroppableWrapper = memo(({onDrop, droppableTags=["widget"], ...props}) => 
     }
 
     const handleDragOver = (e) => {
+
+        if (!draggedElement || !draggedElement.getAttribute("data-drag-start-within")){
+            // if the drag is starting from outside (eg: file drop) or if drag doesn't exist
+            return
+        }
+
         // console.log("Drag over: ", e.dataTransfer.getData("text/plain"), e.dataTransfer)
         const dragElementType = draggedElement.getAttribute("data-draggable-type")
-        
-        if (droppableTags.length === 0 || droppableTags.includes(dragElementType)){
+
+        const allowDrop = (droppableTags && droppableTags !== null && (Object.keys(droppableTags).length === 0 || 
+                            (droppableTags.include?.length > 0 && droppableTags.include?.includes(dragElementType)) || 
+                            (droppableTags.exclude?.length > 0 && !droppableTags.exclude?.includes(dragElementType))
+                        ))
+
+        if (allowDrop){
             e.preventDefault() // this is necessary to allow drop to take place
         }
         
     }
 
     const handleDropEvent = (e) => {
-        e.stopPropagation()
 
         setShowDroppable({
             allow: false, 
             show: false
         })
 
-        if(onDrop){
+        if (!draggedElement || !draggedElement.getAttribute("data-drag-start-within")){
+            // if the drag is starting from outside (eg: file drop) or if drag doesn't exist
+            return
+        }
+
+        e.stopPropagation()
+
+
+        const dragElementType = draggedElement.getAttribute("data-draggable-type")
+
+
+        const allowDrop = (droppableTags && droppableTags !== null && (Object.keys(droppableTags).length === 0 || 
+                            (droppableTags.include?.length > 0 && droppableTags.include?.includes(dragElementType)) || 
+                            (droppableTags.exclude?.length > 0 && !droppableTags.exclude?.includes(dragElementType))
+                        ))
+
+        if(onDrop && allowDrop){
             onDrop(e, draggedElement, widgetClass)
         }
     }

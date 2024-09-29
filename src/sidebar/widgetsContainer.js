@@ -8,6 +8,7 @@ import ButtonWidget from "../assets/widgets/button.png"
 
 import { filterObjectListStartingWith } from "../utils/filter"
 import Widget from "../canvas/widgets/base"
+import { SearchComponent } from "../components/inputs"
 
 
 /**
@@ -52,20 +53,9 @@ function WidgetsContainer({sidebarContent, onWidgetsUpdate}){
     return (
         <div className="tw-w-full tw-p-2 tw-gap-4 tw-flex tw-flex-col tw-overflow-x-hidden">
 
-            <div className="tw-flex tw-gap-2 input tw-place-items-center">
-                <SearchOutlined />
-                <input type="text" placeholder="Search" className="tw-outline-none tw-w-full tw-border-none" 
-                    id="" onInput={onSearch} value={searchValue}/>
-                <div className="">
-                    {
-                        searchValue.length > 0 && 
-                                    <div className="tw-cursor-pointer tw-text-gray-600" onClick={() => setSearchValue("")}>
-                                        <CloseCircleFilled />
-                                    </div>
-                    }
-                </div>
-            </div>
-            <div className="tw-flex tw-flex-col tw-gap-2 tw-h-full tw-p-1">
+            <SearchComponent onSearch={onSearch} searchValue={searchValue} 
+                            onClear={() => setSearchValue("")} />
+            <div className="tw-flex tw-flex-col tw-place-items-center tw-gap-2 tw-h-full tw-p-1">
                 
                 {
                     widgetData.map((widget, index) => {
@@ -81,6 +71,7 @@ function WidgetsContainer({sidebarContent, onWidgetsUpdate}){
                     })
                 }
             </div>
+            
         </div>
     )
 

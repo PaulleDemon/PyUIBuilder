@@ -1,5 +1,5 @@
 {
-  "name": "tkbuilder",
+  "name": "pyuibuilder",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -11,9 +11,13 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "analogue-time-picker": "^1.0.2",
     "antd": "^5.20.0",
     "autoprefixer": "^10.4.20",
+    "dom-to-image-more": "^3.4.5",
     "fabric": "^6.1.0",
+    "file-saver": "^2.0.5",
+    "jszip": "^3.10.1",
     "postcss-cli": "^11.0.0",
     "re-resizable": "^6.9.17",
     "react": "^18.3.1",
@@ -29,7 +33,10 @@
     "start": "react-scripts start",
     "build": "GENERATE_SOURCEMAP=false env-cmd -e production react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+
+    "start:tailwind": "cross-env NODE_ENV=development tailwindcss --postcss -i ./landingpages/tailwind/tailwind.css -o ./landingpages/tailwind/tailwind-runtime.css -w",
+    "build:tailwind": "cross-env NODE_ENV=production tailwindcss --postcss -i ./landingpages/tailwind/tailwind.css -o ./landingpages/tailwind/tailwind-build.css --minify"
   },
   "eslintConfig": {
     "extends": [

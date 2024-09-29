@@ -8,6 +8,8 @@ import { CloseCircleFilled, InboxOutlined, SearchOutlined } from "@ant-design/ic
 import { DraggableAssetCard } from "../components/cards.js"
 import { filterObjectListStartingWith } from "../utils/filter"
 import { getFileType } from "../utils/file.js"
+import { SearchComponent } from "../components/inputs.js"
+import { useFileUploadContext } from "../contexts/fileUploadContext.js"
 // import { update } from "../redux/assetSlice.js"
 
 
@@ -32,7 +34,7 @@ const props = {
  * DND for file uploads
  *  
  */
-function UploadsContainer({assets, onAssetUploadChange}) {
+function UploadsContainer() {
 
     // const dispatch = useDispatch()
     // const selector = useSelector(state => state.assets)
@@ -41,56 +43,72 @@ function UploadsContainer({assets, onAssetUploadChange}) {
     const [dragEnter, setDragEnter] = useState(false)
 
     const [searchValue, setSearchValue] = useState("")
-    const [uploadData, setUploadData] = useState(assets) // contains all the uploaded data
-    const [uploadResults, setUploadResults] = useState(assets) // sets search results
+    // const [uploadData, setUploadData] = useState(assets) // contains all the uploaded data
     
+    const {uploadedAssets, setUploadedAssets} = useFileUploadContext()
+
+    const [uploadResults, setUploadResults] = useState(uploadedAssets) // sets search results
+    
+    // useEffect(() => {
+    //     setUploadResults(uploadData)
+    // }, [uploadData])
+
     useEffect(() => {
-        setUploadResults(uploadData)
-    }, [uploadData])
+        setUploadResults(uploadedAssets)
+    }, [uploadedAssets])
 
     useEffect(() => {
 
         if (searchValue.length > 0) {
-            const searchData = filterObjectListStartingWith(uploadData, "name", searchValue)
+            const searchData = filterObjectListStartingWith(uploadedAssets, "name", searchValue)
             setUploadResults(searchData)
         } else {
-            setUploadResults(uploadData)
+            setUploadResults(uploadedAssets)
         }
 
     }, [searchValue])
 
     function onSearch(event) {
-
         setSearchValue(event.target.value)
-
     }
+
+    function handleDelete(file){
+        // remove the file from the asset on delete
+        setUploadedAssets(prev => prev.filter(val => val.uid !== file.uid))
+    }
+
+    function generateUniqueFileName(fileName) {
+        const existingFiles = uploadedAssets.map(asset => asset.name)
+        let uniqueName = fileName
+        let counter = 1
+
+        // if a file with the same name exists, append a counter to the file name
+        while (existingFiles.includes(uniqueName)) {
+            const nameWithoutExtension = fileName.replace(/\.[^/.]+$/, "") // Remove extension
+            const extension = fileName.split('.').pop() // Get extension
+            uniqueName = `${nameWithoutExtension} (${counter}).${extension}`
+            counter++
+        }
+
+        return uniqueName
+    }
+
 
     return (
         <div className="tw-w-full tw-p-2 tw-gap-4 tw-flex tw-flex-col"
-            onDragEnter={() => { setDragEnter(true) }}
-            onDragLeave={(e) => {
-                // Ensure the drag leave is happening on the container and not on a child element
-                if (e.currentTarget.contains(e.relatedTarget)) {
-                    return
-                }
-                setDragEnter(false)
-            }}
-        >
+                    onDragEnter={() => { setDragEnter(true) }}
+                    onDragLeave={(e) => {
+                        // Ensure the drag leave is happening on the container and not on a child element
+                        if (e.currentTarget.contains(e.relatedTarget)) {
+                            return
+                        }
+                        setDragEnter(false)
+                    }}
+                >
 
-            <div className="tw-flex tw-gap-2 input tw-place-items-center">
-                <SearchOutlined />
-                <input type="text" placeholder="Search" className="tw-outline-none tw-w-full tw-border-none"
-                    id="" onInput={onSearch} value={searchValue} />
-                <div className="">
-                    {
-                        searchValue.length > 0 &&
-                        <div className="tw-cursor-pointer tw-text-gray-600" onClick={() => setSearchValue("")}>
-                            <CloseCircleFilled />
-                        </div>
-                    }
-                </div>
-            </div>
-            <div className="tw-flex tw-relative tw-flex-col tw-gap-2 tw-h-full tw-p-1 tw-pb-4">
+            <SearchComponent onSearch={onSearch} searchValue={searchValue} 
+                                        onClear={() => setSearchValue("")} />
+            <div className="tw-flex tw-relative tw-flex-col tw-place-items-center tw-gap-2 tw-h-full tw-p-1 tw-pb-4">
                 <Dragger className={`${dragEnter && "!tw-h-[80vh] !tw-opacity-100 !tw-bg-[#fafafa] tw-absolute tw-top-0 tw-z-10"} tw-w-full !tw-min-w-[250px]`}
                     {...props}
                     ref={fileUploadRef}
@@ -107,15 +125,21 @@ function UploadsContainer({assets, onAssetUploadChange}) {
                                 if (fileType === "image" || fileType === "video"){
                                     previewUrl = URL.createObjectURL(info.file.originFileObj)
                                 }
+
+                                // Check if a file with the same name already exists, and generate a unique name
+                                const uniqueFileName = generateUniqueFileName(info.file.name)
+
                                 
                                 const newFileData = {
                                     ...info.file,
                                     previewUrl,
-                                    fileType
+                                    fileType,
+                                    name: uniqueFileName
                                 }
-                                // dispatch(update([newFileData, ...uploadData]))
-                                setUploadData(prev => [newFileData, ...prev])
-                                onAssetUploadChange([newFileData, ...uploadData])
+
+                                // setUploadData(prev => [newFileData, ...prev])
+                                setUploadedAssets(prev => [newFileData, ...prev])
+                                // onAssetUploadChange([newFileData, ...uploadData])
                                 setDragEnter(false)
                                 
                                 message.success(`${info.file.name} file uploaded successfully.`)
@@ -136,6 +160,7 @@ function UploadsContainer({assets, onAssetUploadChange}) {
                         return (
                             <DraggableAssetCard key={file.uid}
                                 file={file}
+                                onDelete={handleDelete}
                             />
 
                         )
