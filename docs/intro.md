@@ -132,6 +132,16 @@ You can use position absolute for specific widget by checking the absolute posit
 
 ![Absolute positioning](./assets/absolute-position.png)
 
+### Swapping widgets on flex layout
+
+You can swap widget by bringing the widget near the edge of the other widget. 
+
+<div class="alert alert-warning">
+  <div class="alert-title">Warning ⚠️</div>
+  This feature is still work in progress and sometimes may not work as expected
+</div>
+
+![Swappy](./assets/swappy.gif)
 
 ## Plugins
 
