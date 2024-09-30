@@ -39,10 +39,12 @@ class AnalogTimePicker extends TkinterBase{
 
         this.timePickerRef = React.createRef()
 
+        this.minSize = {width: 100, height: 100}
+
         this.state = {
             ...this.state,
             widgetName: "Timepicker",
-            size: { width: 'fit', height: 'fit' },
+            size: { width: 250, height: 350 },
             attrs: {
                 ...newAttrs,
                 styling: {
@@ -118,7 +120,9 @@ class AnalogTimePicker extends TkinterBase{
         super.componentDidMount()
         this.timePicker = timePicker({
                                 element: this.timePickerRef.current,
-                                mode: "12"
+                                mode: "12",
+                                width: this.state.size.width,
+                                // height: this.state.size.height
                             })
         
         // used to remove ok and cancel buttons
@@ -130,6 +134,11 @@ class AnalogTimePicker extends TkinterBase{
 
     componentWillUnmount(){
         this.timePicker.dispose()
+    }
+
+    setResize(pos, size){
+        super.setResize(pos, size)
+        this.timePicker.setWidth(size.width)
     }
 
     handleThemeChange(value){
@@ -241,7 +250,7 @@ class AnalogTimePicker extends TkinterBase{
         return (
             <div className="tw-w-flex tw-flex-col tw-w-full tw-h-full tw-rounded-md 
                             tw-border tw-border-solid tw-border-gray-400 tw-overflow-hidden">
-                <div className="tw-p-2 tw-w-full tw-h-full tw-content-start tw-pointer-events-none" 
+                <div className="tw-p-2 tw-w-full tw-h-full tw-flex tw-content-start tw-pointer-events-none" 
                         style={timePickerStyling} 
                         ref={this.timePickerRef}>
                     

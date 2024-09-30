@@ -25,6 +25,11 @@ Things you can do on canvas.
 3. zoom using `+`/`-` keys
 4. Delete widgets using `del` key or right clicking on the widget
 
+## Project name
+By default all project's are named untitled project, you can change this from the header input next to export code.
+
+## Selecting a UI library
+You can select the UI library from the header dropdown. Once selected changing the UI library in between your work, will erase the canvas.
 
 ## Widgets
 
@@ -64,7 +69,9 @@ or right-click -> delete
 ### Variable names
 
 To modify variable name, change the widget name attributes, if there are duplicate names, 
-the code generation engine will automatically add a count. Every widget name will be converted
+the code generation engine will automatically add a count to the the variable name, eg: var1, var2. 
+
+Every widget name will be converted
 to snake case.
 
 ![widget name](./assets/widgetname.png)
@@ -82,6 +89,20 @@ To add image to label first go to sidebar -> uploads -> upload a image file.
 Now under the label attributes you'll be able to see image upload option. Select the image from the dropdown
 
 ![image label](./assets/label-image.png)
+
+### Adding options to radio button
+
+To add more option to radio button click on the radio button widget then on the toolbar ->
+under radio group -> add input
+
+![radio btn](./assets/radio-btn.png)
+
+### Adding options to select dropdown.
+
+Adding more options to select dropdown is similar to radio buttons as shown above. 
+
+![select options](./assets/drop-down.png)
+
 
 ## Layouts
 
@@ -110,3 +131,21 @@ Grid is a 2d layout manager, you can position each widget by clicking on widget 
 You can use position absolute for specific widget by checking the absolute positing attribute
 
 ![Absolute positioning](./assets/absolute-position.png)
+
+
+## Plugins
+
+Plugins are third party UI libraries. You can drag and drop the plugins just like widgets onto the canvas. The plugin card on the sidebar contains information about the library, such as library repo and license.
+
+![plugins](./assets/plugins.png)
+
+
+## Exporting code
+Once you are happy with the UI, you can click on export code from the header.
+
+## Requirements.txt
+The requirements.txt files are auto generated, before running the code ensure you have installed the dependencies.
+
+## Saving the file
+
+Files are not saved or stored. However this is an upcoming feature for the [Premium users](https://github.com/PaulleDemon/PyUIBuilder?tab=readme-ov-file#license---fund-the-development)

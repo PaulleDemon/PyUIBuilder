@@ -645,8 +645,8 @@ class Widget extends React.Component {
      */
     setWidgetSize(width, height) {
 
-        const fitWidth = this.state.fitContent.width || true
-        const fitHeight = this.state.fitContent.height || true
+        const fitWidth = this.state.fitContent?.width
+        const fitHeight = this.state.fitContent?.height
 
         if (fitWidth && fitHeight){
             message.warning("both width and height are set to fit-content, unset it to start resizing")
