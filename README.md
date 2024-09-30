@@ -24,15 +24,22 @@ Build Python GUI's with the ease of Canva
 
 ## Table of contents
 
+- [Docs - Getting started](#docs---getting-started)
 - [Features](#features)
+- [Supported Frameworks/Libraries](#supported-frameworkslibraries)
 - [Roadmap](#roadmap)
-- [License](#license)
+- [License - Fund the development](#license---fund-the-development)
 - [Newsletter](#newsletter)
+    - [Keep yourself updated](#keep-yourself-updated)
+- [Tested on](#tested-on)
 - [FAQ](#faq)
 - [License Information](#license-information)
     - [Webbased Editor](#webbased-editor)
     - [Electron App - Hobbyist License](#electron-app---hobbyist-license)
     - [Electron App - Commercial License](#electron-app---commercial-license)
+- [Some of my other open-source](#some-of-my-other-open-source)
+- [Author](#author)
+
 
 
 ## Docs - Getting started
