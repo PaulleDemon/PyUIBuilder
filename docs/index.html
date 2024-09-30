@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Document</title>
+  <link rel="icon" href="_media/favicon.ico">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="description" content="Description">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
@@ -18,21 +19,24 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
-  <nav>
+  <!-- <nav>
     <a href="https://github.com/PaulleDemon/PyUIBuilder" target="_blank" rel="noopener noreferrer">
-      <!-- Github page -->
       <i class="bi bi-github icon"></i>
     </a>
-  </nav>
+  </nav> -->
   <div id="app"></div>
  
   <script>
     window.$docsify = {
-      name: '',
-      repo: '',
+      name: 'PyUIBuilder',
+      repo: 'https://github.com/PaulleDemon/PyUIBuilder',
+      coverpage: true,
+      // themeColor: '#3F51B5',
+      // mergeNavbar: true,
       homepage: 'intro.md',  // You can set this to any file
       // loadSidebar: true,  // Ensure _sidebar.md is loaded if you want to use it
-      loadNavbar: true,
+      // loadNavbar: true,
+      autoHeader: true,
       search: {
         maxAge: 86400, // Expiration time, the default one day
         paths: 'auto',
@@ -53,6 +57,13 @@
 
     .icon{
       font-size: 30px;
+    }
+
+    .cover.show {
+    }
+
+    .cover-main, .cover-main h1 span{
+      color: #000 !important;
     }
 
     img{
@@ -125,7 +136,7 @@
   <style>
 
     .app-nav {
-      position: fixed;
+      /* position: fixed; */
       background-color: var(--background, transparent);
       width: 100%;
       margin: 0;
