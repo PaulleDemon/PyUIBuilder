@@ -779,7 +779,7 @@ class Canvas extends React.Component {
      */
     handleAddWidgetChild = ({event, parentWidgetId, dragElementID, swap = false }) => {
 
-        console.log("event: ", event)
+        // console.log("event: ", event)
         // widgets data structure { id, widgetType: widgetComponentType, children: [], parent: "" }
         const dropWidgetObj = this.findWidgetFromListById(parentWidgetId)
         // Find the dragged widget object

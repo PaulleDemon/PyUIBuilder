@@ -19,7 +19,8 @@ class OptionMenu extends TkinterWidgetBase{
             ...this.state,
             isDropDownOpen: false,
             widgetName: "Option menu",
-            size: { width: 120, height: 'fit' },
+            size: { width: 120, height: 30 },
+            fitContent: { width: true, height: true },
             attrs: {
                 ...this.state.attrs,
                 defaultValue: {
@@ -55,11 +56,11 @@ class OptionMenu extends TkinterWidgetBase{
         const config = convertObjectToKeyValueString(this.getConfigCode())
 
         const defaultValue = this.getAttrValue("defaultValue")
-        const options = JSON.stringify(this.getAttrValue("widgetOptions").inputs)
+        const options = this.getAttrValue("widgetOptions").inputs
 
         const code = [
-            `${variableName}_options = ${options}`,
-            `${variableName}_var = tk.StringVar(value="${defaultValue || options.at(1) || ""}")`,
+            `${variableName}_options = ${JSON.stringify(options)}`,
+            `${variableName}_var = tk.StringVar(value="${options.at(1) || defaultValue || ''}")`,
             `${variableName} = tk.OptionMenu(${parent}, ${variableName}_var, *${variableName}_options)`
         ]
 

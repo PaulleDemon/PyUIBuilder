@@ -32,7 +32,7 @@ class Frame extends CustomTkBase{
 
         return [
                 `${variableName} = ctk.CTkFrame(master=${parent})`,
-                `${variableName}.configure(bg="${bg}")`,
+                `${variableName}.configure(fg_color="${bg}")`,
                 `${variableName}.${this.getLayoutCode()}`
             ]
     }

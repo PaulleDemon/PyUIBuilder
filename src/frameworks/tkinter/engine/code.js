@@ -85,7 +85,7 @@ function generateTkinterCodeList(widgetList = [], widgetRefs = [], parentVariabl
 
 async function generateTkinterCode(projectName, widgetList=[], widgetRefs=[], assetFiles){
 
-    console.log("widgetList and refs", projectName, widgetList, widgetRefs, assetFiles)
+    // console.log("widgetList and refs", projectName, widgetList, widgetRefs, assetFiles)
 
     let mainWindowCount = 0
 

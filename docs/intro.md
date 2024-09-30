@@ -66,6 +66,11 @@ or right-click -> delete
 
 ![deleted widget](./assets/delete.gif)
 
+
+### Resizing widgets
+You can resize the widgets by dragging the widgets. If the fit-width/fit-height is set to true, make sure to uncheck it before resizing.
+
+
 ### Variable names
 
 To modify variable name, change the widget name attributes, if there are duplicate names, 

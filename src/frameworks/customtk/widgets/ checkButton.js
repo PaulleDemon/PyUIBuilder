@@ -62,11 +62,11 @@ export class CheckBox extends CustomTkWidgetBase{
     generateCode(variableName, parent){
 
         const labelText = this.getAttrValue("checkLabel")
-        const config = convertObjectToKeyValueString(this.getConfigCode())
+        const config = this.getConfigCode()
 
         const code = [
                 `${variableName} = ctk.CTkCheckBox(master=${parent}, text="${labelText}")`,
-                `${variableName}.configure(${config})`,
+                `${variableName}.configure(${convertObjectToKeyValueString(config)})`,
             ]
         
         if (this.getAttrValue("defaultChecked")){
@@ -158,20 +158,26 @@ export class RadioButton extends CustomTkWidgetBase{
 
     generateCode(variableName, parent){
 
-        const config = convertObjectToKeyValueString(this.getConfigCode())
+        const {border_width, ...config} = this.getConfigCode()
+
+        if (border_width){
+            // there is no border width in RadioButton
+            config["border_width_checked"] = border_width
+        }
 
         
         const code = [
             `${variableName}_var = ctk.IntVar()`,
         ]
         const radios = this.getAttrValue("radios")
-        
+        // FIXME: Error: ValueError: ['value'] are not supported arguments. Look at the documentation for supported arguments.
+
         radios.inputs.forEach((radio_text, idx) => {
 
             const radioBtnVariable = `${variableName}_${idx}`
             code.push(`\n`)
-            code.push(`${radioBtnVariable} = ctk.CTkRadioButton(master=${parent}, variable=${variableName}_var, text="${radio_text}")`)
-            code.push(`${radioBtnVariable}.configure(${config}, value=${idx})`)
+            code.push(`${radioBtnVariable} = ctk.CTkRadioButton(master=${parent}, variable=${variableName}_var, text="${radio_text}", value=${idx})`)
+            code.push(`${radioBtnVariable}.configure(${convertObjectToKeyValueString(config)})`)
             code.push(`${radioBtnVariable}.${this.getLayoutCode()}`)
         })
 

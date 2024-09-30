@@ -34,7 +34,7 @@ class TopLevel extends Widget{
 
     componentDidMount(){
         super.componentDidMount()
-        this.setAttrValue("styling.backgroundColor", "#E4E2E2")
+        this.setAttrValue("styling.backgroundColor", "#23272D")
     }
 
     generateCode(variableName, parent){
@@ -43,7 +43,7 @@ class TopLevel extends Widget{
 
         return [
                 `${variableName} = ctk.CTkToplevel(master=${parent})`,
-                `${variableName}.configure(bg="${backgroundColor}")`,
+                `${variableName}.configure(fg_color="${backgroundColor}")`,
                 `${variableName}.title("${this.getAttrValue("title")}")`
             ]
     }

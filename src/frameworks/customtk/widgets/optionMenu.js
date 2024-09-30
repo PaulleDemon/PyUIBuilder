@@ -1,7 +1,7 @@
 import Tools from "../../../canvas/constants/tools"
 import {  DownOutlined } from "@ant-design/icons"
 import { CustomTkWidgetBase} from "./base"
-import { convertObjectToKeyValueString } from "../../../utils/common"
+import { convertObjectToKeyValueString, removeKeyFromObject } from "../../../utils/common"
 
 
 class OptionMenu extends CustomTkWidgetBase{
@@ -14,14 +14,18 @@ class OptionMenu extends CustomTkWidgetBase{
         // const {layout, ...newAttrs} = this.state.attrs // Removes the layout attribute
 
         this.minSize = {width: 50, height: 30}
-                
+        
+        let newAttrs = removeKeyFromObject("styling.borderColor", this.state.attrs)
+        newAttrs = removeKeyFromObject("styling.borderWidth", newAttrs)
+
         this.state = {
             ...this.state,
             isDropDownOpen: false,
             widgetName: "Option menu",
-            size: { width: 120, height: 'fit' },
+            size: { width: 120, height: 30 },
+            fitContent: { width: true, height: true },
             attrs: {
-                ...this.state.attrs,
+                ...newAttrs,
                 defaultValue: {
                     label: "Default Value",
                     tool: Tools.INPUT,
@@ -52,21 +56,21 @@ class OptionMenu extends CustomTkWidgetBase{
     generateCode(variableName, parent){
 
         
-        const config = convertObjectToKeyValueString(this.getConfigCode())
+        const config = this.getConfigCode()
 
         const defaultValue = this.getAttrValue("defaultValue")
-        const options = JSON.stringify(this.getAttrValue("widgetOptions").inputs)
+        const options = this.getAttrValue("widgetOptions").inputs
 
         const code = [
-            `${variableName}_options = ${options}`,
-            `${variableName}_var = ctk.StringVar(value="${defaultValue || options.at(1) || ""}")`,
-            `${variableName} = ctk.CTkOptionMenu(${parent}, ${variableName}_var, *${variableName}_options)`
+            `${variableName}_options = ${JSON.stringify(options)}`,
+            `${variableName}_var = ctk.StringVar(value="${options.at(1) || defaultValue || ''}")`,
+            `${variableName} = ctk.CTkOptionMenu(${parent}, variable=${variableName}_var, values=${variableName}_options)`
         ]
 
 
         return [
                 ...code,
-                `${variableName}.configure(${config})`,
+                `${variableName}.configure(${convertObjectToKeyValueString(config)})`,
                 `${variableName}.${this.getLayoutCode()}`
             ]
     }

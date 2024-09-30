@@ -40,7 +40,7 @@ export class Input extends CustomTkWidgetBase{
         const config = convertObjectToKeyValueString(this.getConfigCode())
 
         return [
-                `${variableName} = ctk.CTkEntry(master=${parent}, text="${placeHolderText}")`,
+                `${variableName} = ctk.CTkEntry(master=${parent}, placeholder_text="${placeHolderText}")`,
                 `${variableName}.configure(${config})`,
                 `${variableName}.${this.getLayoutCode()}`
             ]

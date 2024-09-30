@@ -31,7 +31,8 @@ class Button extends CustomTkWidgetBase{
 
     componentDidMount(){
         super.componentDidMount()
-        this.setAttrValue("styling.backgroundColor", "#E4E2E2")
+        this.setAttrValue("styling.backgroundColor", "#029CFF")
+        this.setAttrValue("styling.foregroundColor", "#fff")
     }
 
     generateCode(variableName, parent){
@@ -42,7 +43,7 @@ class Button extends CustomTkWidgetBase{
 
         return [
                 `${variableName} = ctk.CTkButton(master=${parent}, text="${labelText}")`,
-                `${variableName}.config(${config})`,
+                `${variableName}.configure(${config})`,
                 `${variableName}.${this.getLayoutCode()}`
             ]
     }

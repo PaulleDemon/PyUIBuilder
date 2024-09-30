@@ -14,7 +14,8 @@ class Slider extends TkinterWidgetBase{
         this.state = {
             ...this.state,
             widgetName: "Scale",
-            size: { width: 'fit', height: 'fit' },
+            size: { width: 120, height: 10 },
+            fitContent: {width: true, height: true},
             attrs: {
                 ...this.state.attrs,
                 styling: {

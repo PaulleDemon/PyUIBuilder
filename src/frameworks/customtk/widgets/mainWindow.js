@@ -35,7 +35,7 @@ class MainWindow extends CustomTkBase{
 
     componentDidMount(){
         super.componentDidMount()
-        this.setAttrValue("styling.backgroundColor", "#E4E2E2")
+        this.setAttrValue("styling.backgroundColor", "#23272D")
         // this.setWidgetName("main") // Don't do this as this will cause conflicts while loading names
     }
 
@@ -45,7 +45,7 @@ class MainWindow extends CustomTkBase{
 
         return [
                 `${variableName} = ctk.CTk()`,
-                `${variableName}.configure(bg="${backgroundColor}")`,
+                `${variableName}.configure(fg_color="${backgroundColor}")`,
                 `${variableName}.title("${this.getAttrValue("title")}")`
             ]
     }

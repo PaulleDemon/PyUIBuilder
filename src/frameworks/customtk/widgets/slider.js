@@ -11,22 +11,26 @@ class Slider extends CustomTkWidgetBase{
     constructor(props) {
         super(props)
 
+        let newAttrs = removeKeyFromObject("styling.foregroundColor", this.state.attrs)
+
+
         this.state = {
             ...this.state,
             widgetName: "Scale",
-            size: { width: 'fit', height: 'fit' },
+            size: { width: 120, height: 10 },
+            fitContent: {width: true, height: true},
             attrs: {
-                ...this.state.attrs,
+                ...newAttrs,
                 styling: {
-                    ...this.state.attrs.styling,
+                    ...newAttrs.styling,
                     // TODO: trough color
-                    troughColor: {
-                        label: "Trough Color",
+                    progressColor: {
+                        label: "Progress Color",
                         tool: Tools.COLOR_PICKER, 
-                        value: "#fff",
+                        value: "#029CFF",
                         onChange: (value) => {
                             // this.setWidgetInnerStyle("color", value)
-                            this.setAttrValue("styling.troughColor", value)
+                            this.setAttrValue("styling.progressColor", value)
                         }
                     }
                 },
@@ -100,7 +104,9 @@ class Slider extends CustomTkWidgetBase{
 
         config["from_"] = this.getAttrValue("scale.min")
         config["to"] = this.getAttrValue("scale.max")
-        config["resolution"] = this.getAttrValue("scale.step")
+        config["number_of_steps"] = this.getAttrValue("scale.step")
+
+        config["progress_color"] = `"${this.getAttrValue("styling.progressColor")}"`
 
         if (this.getAttrValue("orientation")){
             config["orientation"] = this.getAttrValue("orientation")

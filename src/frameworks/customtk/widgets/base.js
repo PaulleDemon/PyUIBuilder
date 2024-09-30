@@ -573,7 +573,10 @@ export class CustomTkWidgetBase extends CustomTkBase{
 
         const config = {
             fg_color: `"${this.getAttrValue("styling.backgroundColor")}"`,
-            text_color: `"${this.getAttrValue("styling.foregroundColor")}"`,
+        }
+
+        if (this.getAttrValue("styling.foregroundColor")){
+            config["text_color"] = `"${this.getAttrValue("styling.foregroundColor")}"`
         }
 
         if (this.getAttrValue("styling.borderRadius")){

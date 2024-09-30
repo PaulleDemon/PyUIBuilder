@@ -130,8 +130,6 @@ async function generateCustomTkCode(projectName, widgetList=[], widgetRefs=[], a
 
     message.info("starting zipping files, download will start in a few seconds")
 
-    return
-
     const createFileList = [
         {
             fileData: code.join(""),

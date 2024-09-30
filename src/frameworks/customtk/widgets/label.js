@@ -79,7 +79,7 @@ class Label extends CustomTkWidgetBase{
         const {border_color, border_width, ...config} = this.getConfigCode()
         const image = this.getAttrValue("imageUpload")
 
-        console.log("Object: ", config)
+        // console.log("Object: ", config)
 
         let labelInitialization = `${variableName} = ctk.CTkLabel(master=${parent}, text="${labelText}")`
 
