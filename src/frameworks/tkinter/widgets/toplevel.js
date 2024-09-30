@@ -42,7 +42,7 @@ class TopLevel extends Widget{
         const backgroundColor = this.getAttrValue("styling.backgroundColor")
 
         return [
-                `${variableName} = tk.TopLevel(root=${parent})`,
+                `${variableName} = tk.Toplevel(master=${parent})`,
                 `${variableName}.config(bg="${backgroundColor}")`,
                 `${variableName}.title("${this.getAttrValue("title")}")`
             ]

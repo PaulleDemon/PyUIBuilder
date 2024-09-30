@@ -13,3 +13,12 @@ export const JUSTIFY = [
     "CENTER",
     "RIGHT"
 ]
+
+
+export const ANCHOR = [
+    "n",
+    "s",
+    "e",
+    "w",
+    "center"
+]

@@ -19,7 +19,7 @@ export class TkinterBase extends Widget {
     }
 
     getLayoutCode(){
-        const {layout: parentLayout, direction, gap} = this.getParentLayout()
+        const {layout: parentLayout, direction, gap, align="start"} = this.getParentLayout()
 
         const absolutePositioning = this.getAttrValue("positioning")  
 
@@ -32,21 +32,37 @@ export class TkinterBase extends Widget {
                 y: this.state.pos.y,
             }
 
-            if (!this.state.fitContent.width){
-                config["width"] = this.state.size.width
-            }
-            if (!this.state.fitContent.height){
-                config["height"] = this.state.size.height
-            }
+            config["width"] = this.state.size.width
+            config["height"] = this.state.size.height
+
+            // if (!this.state.fitContent.width){
+            //     config["width"] = this.state.size.width
+            // }
+            // if (!this.state.fitContent.height){
+            //     config["height"] = this.state.size.height
+            // }
 
             const configStr = convertObjectToKeyValueString(config)
 
             layoutManager = `place(${configStr})`
 
-        }if (parentLayout === Layouts.FLEX){
+        }else if (parentLayout === Layouts.FLEX){
 
             const config = {
                 side: direction === "row" ? "tk.LEFT" : "tk.TOP",
+            }
+
+            if (gap > 0){
+                config["padx"] = gap
+                config["pady"] = gap
+            }
+
+            if (align === "start"){
+                config["anchor"] = "'nw'"
+            }else if (align === "center"){
+                config["anchor"] = "'center'"
+            }else if (align === "end"){
+                config["anchor"] = "'se'"
             }
 
             const fillX = this.getAttrValue("flexManager.fillX")
@@ -73,8 +89,8 @@ export class TkinterBase extends Widget {
 
         }else if (parentLayout === Layouts.GRID){
             const row = this.getAttrValue("gridManager.row")
-            const col = this.getAttrValue("gridManager.col")
-            layoutManager = `grid(row=${row}, col=${col})`
+            const col = this.getAttrValue("gridManager.column")
+            layoutManager = `grid(row=${row}, column=${col})`
         }
 
         return layoutManager

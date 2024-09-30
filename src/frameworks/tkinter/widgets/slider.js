@@ -7,7 +7,7 @@ import {TkinterBase, TkinterWidgetBase} from "./base"
 class Slider extends TkinterWidgetBase{
 
     static widgetType = "scale"
-
+    // FIXME: You provided a `value` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use 
     constructor(props) {
         super(props)
 
@@ -98,7 +98,7 @@ class Slider extends TkinterWidgetBase{
         
         const config = this.getConfigCode()
 
-        config["_from"] = this.getAttrValue("scale.min")
+        config["from_"] = this.getAttrValue("scale.min")
         config["to"] = this.getAttrValue("scale.max")
         config["resolution"] = this.getAttrValue("scale.step")
 
@@ -106,12 +106,12 @@ class Slider extends TkinterWidgetBase{
             config["orientation"] = this.getAttrValue("orientation")
         }
 
-        const defaultValue = this.getAttrValue("defaultValue")
+        const defaultValue = this.getAttrValue("scale.default")
 
         return [
-                `${variableName}_var = tk.DoubleVar(${defaultValue})`,
+                `${variableName}_var = tk.DoubleVar(value=${defaultValue})`,
                 `${variableName} = tk.Scale(master=${parent}, variable=${variableName}_var)`,
-                `${variableName}.config(${config})`,
+                `${variableName}.config(${convertObjectToKeyValueString(config)})`,
                 `${variableName}.${this.getLayoutCode()}`
             ]
     }

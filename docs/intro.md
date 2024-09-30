@@ -2,7 +2,7 @@
 
 <div class="alert alert-note">
   <div class="alert-title">NOTE ⚠️</div>
-  Work in progress. This page will be updated from time to time. This contains the basic documentation for PYUIBuilder
+  This page is still under work in progress. This page will be updated from time to time. This contains the basic documentation for PYUIBuilder
 </div>
 
 ## UI Basics

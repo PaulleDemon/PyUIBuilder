@@ -57,9 +57,15 @@ class OptionMenu extends TkinterWidgetBase{
         const defaultValue = this.getAttrValue("defaultValue")
         const options = JSON.stringify(this.getAttrValue("widgetOptions").inputs)
 
+        const code = [
+            `${variableName}_options = ${options}`,
+            `${variableName}_var = tk.StringVar(value="${defaultValue || options.at(1) || ""}")`,
+            `${variableName} = tk.OptionMenu(${parent}, ${variableName}_var, *${variableName}_options)`
+        ]
+
+
         return [
-                `${variableName}_options = ${options}`,
-                `${variableName} = tk.OptionMenu(master=${parent}, ${defaultValue}, *${variableName}_options)`,
+                ...code,
                 `${variableName}.config(${config})`,
                 `${variableName}.${this.getLayoutCode()}`
             ]

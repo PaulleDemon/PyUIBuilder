@@ -130,6 +130,8 @@ async function generateTkinterCode(projectName, widgetList=[], widgetRefs=[], as
 
     message.info("starting zipping files, download will start in a few seconds")
 
+    return
+
     const createFileList = [
         {
             fileData: code.join(""),
@@ -138,7 +140,6 @@ async function generateTkinterCode(projectName, widgetList=[], widgetRefs=[], as
         }
     ]
 
-    console.log("requirements: ", requirements)
 
     if (requirements.length > 0){
         createFileList.push({
