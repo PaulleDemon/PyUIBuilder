@@ -11,13 +11,19 @@ import UploadsContainer from './sidebar/uploadsContainer'
 import WidgetsContainer from './sidebar/widgetsContainer'
 
 import { DragProvider } from './components/draggable/draggableContext'
-import TkinterWidgets from './frameworks/tkinter/sidebarWidgets'
 import PluginsContainer from './sidebar/pluginsContainer'
-import TkinterPluginWidgets from './frameworks/tkinter/sidebarPlugins'
-import FrameWorks from './constants/frameworks'
-import generateTkinterCode from './frameworks/tkinter/engine/code'
+
 import { FileUploadProvider, useFileUploadContext } from './contexts/fileUploadContext'
 import TemplatesContainer from './sidebar/templatesContainer'
+import FrameWorks from './constants/frameworks'
+
+import CustomTkWidgets from './frameworks/customtk/sidebarWidgets'
+import CustomTkPluginWidgets from './frameworks/customtk/sidebarPlugins'
+import generateCustomTkCode from './frameworks/customtk/engine/code'
+
+import TkinterWidgets from './frameworks/tkinter/sidebarWidgets'
+import TkinterPluginWidgets from './frameworks/tkinter/sidebarPlugins'
+import generateTkinterCode from './frameworks/tkinter/engine/code'
 
 
 function App() {
@@ -33,6 +39,7 @@ function App() {
     // const [uploadedAssets, setUploadedAssets] = useState([]) //  a global storage for assets, since redux can't store files(serialize files)
 
 	const [sidebarWidgets, setSidebarWidgets] = useState(TkinterWidgets || [])
+	const [sidebarPlugins, setSidebarPlugins] = useState(TkinterPluginWidgets || [])
 
 	const {uploadedAssets} = useFileUploadContext()
 
@@ -48,7 +55,7 @@ function App() {
 		{
 			name: "Plugins",
 			icon: <ProductFilled />,
-			content: <PluginsContainer sidebarContent={TkinterPluginWidgets}/>
+			content: <PluginsContainer sidebarContent={sidebarPlugins}/>
 		},
 		{
 			name: "Uploads",
@@ -135,7 +142,6 @@ function App() {
 	// }
 
 	const handleWidgetAddedToCanvas = (widgets) => {
-		console.log("canvas ref: ", canvasRef)
 		setCanvasWidgets(widgets)
 	}
 
@@ -144,15 +150,28 @@ function App() {
 		if (UIFramework === FrameWorks.TKINTER){
 			generateTkinterCode(projectName, canvasRef.current.getWidgets() || [], canvasRef.current.widgetRefs || [], uploadedAssets)
 		}
+		else if (UIFramework === FrameWorks.CUSTOMTK){
+			generateCustomTkCode(projectName, canvasRef.current.getWidgets() || [], canvasRef.current.widgetRefs || [], uploadedAssets)
+
+		}
 	}
 
 	const handleFrameworkChange = (framework) => {
 
 		if (framework === UIFramework) return
 
+		// canvasRef?.current?.closeToolBar()
+		canvasRef?.current?.clearSelections()
 		canvasRef?.current?.clearCanvas()
-		
 		setUIFramework(framework)
+		
+		if (framework === FrameWorks.TKINTER){
+			setSidebarPlugins(TkinterPluginWidgets)
+			setSidebarWidgets(TkinterWidgets)
+		}else if (framework === FrameWorks.CUSTOMTK){
+			setSidebarPlugins(CustomTkPluginWidgets)
+			setSidebarWidgets(CustomTkWidgets)
+		}
 
 	}
 

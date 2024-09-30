@@ -89,13 +89,13 @@ export class Text extends TkinterWidgetBase{
             size: { width: 120, height: 80 },
             attrs: {
                 ...this.state.attrs,
-                placeHolder: {
-                    label: "PlaceHolder",
-                    tool: Tools.INPUT, // the tool to display, can be either HTML ELement or a constant string
-                    toolProps: {placeholder: "text", maxLength: 100}, 
-                    value: "placeholder text",
-                    onChange: (value) => this.setAttrValue("placeHolder", value)
-                }
+                // placeHolder: {
+                //     label: "PlaceHolder",
+                //     tool: Tools.INPUT, // the tool to display, can be either HTML ELement or a constant string
+                //     toolProps: {placeholder: "text", maxLength: 100}, 
+                //     value: "placeholder text",
+                //     onChange: (value) => this.setAttrValue("placeHolder", value)
+                // }
 
             }
         }
@@ -114,7 +114,7 @@ export class Text extends TkinterWidgetBase{
         const config = convertObjectToKeyValueString(this.getConfigCode())
 
         return [
-                `${variableName} = tk.Text(master=${parent}, text="${placeHolderText}")`,
+                `${variableName} = tk.Text(master=${parent})`,
                 `${variableName}.config(${config})`,
                 `${variableName}.${this.getLayoutCode()}`
             ]

@@ -2,7 +2,7 @@
 
 <div class="alert alert-note">
   <div class="alert-title">NOTE ⚠️</div>
-  Work in progress. This page will be updated from time to time. This contains the basic documentation for PYUIBuilder
+  This page is still under work in progress. This page will be updated from time to time. This contains the basic documentation for PYUIBuilder
 </div>
 
 ## UI Basics
@@ -65,6 +65,11 @@ You can either delete the widget by selecting the widget and pressing the `del` 
 or right-click -> delete
 
 ![deleted widget](./assets/delete.gif)
+
+
+### Resizing widgets
+You can resize the widgets by dragging the widgets. If the fit-width/fit-height is set to true, make sure to uncheck it before resizing.
+
 
 ### Variable names
 

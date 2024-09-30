@@ -165,6 +165,20 @@ const CanvasToolBar = memo(({ isOpen, widgetType, attrs = {} }) => {
                         onChange={(value) => handleChange({ ...val.value, direction: value }, val.onChange)}
                     />
                 </div>
+                <div className="tw-flex tw-flex-col tw-gap-1">
+                    <span className="tw-text-sm">Align items</span>
+                    <Select
+                        options={[
+                            { value: "start", label: "Start" },
+                            { value: "center", label: "Center" },
+                            { value: "end", label: "End" },
+                        ]}
+                        showSearch
+                        value={val.value?.align || "start"}
+                        placeholder={`${val.label}`}
+                        onChange={(value) => handleChange({ ...val.value, align: value }, val.onChange)}
+                    />
+                </div>
                 <div className="tw-flex tw-flex-col">
                     <span className="tw-text-sm">Gap</span>
                     <InputNumber

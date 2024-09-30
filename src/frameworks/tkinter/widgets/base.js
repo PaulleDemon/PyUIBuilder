@@ -19,7 +19,7 @@ export class TkinterBase extends Widget {
     }
 
     getLayoutCode(){
-        const {layout: parentLayout, direction, gap} = this.getParentLayout()
+        const {layout: parentLayout, direction, gap, align="start"} = this.getParentLayout()
 
         const absolutePositioning = this.getAttrValue("positioning")  
 
@@ -32,21 +32,37 @@ export class TkinterBase extends Widget {
                 y: this.state.pos.y,
             }
 
-            if (!this.state.fitContent.width){
-                config["width"] = this.state.size.width
-            }
-            if (!this.state.fitContent.height){
-                config["height"] = this.state.size.height
-            }
+            config["width"] = this.state.size.width
+            config["height"] = this.state.size.height
+
+            // if (!this.state.fitContent.width){
+            //     config["width"] = this.state.size.width
+            // }
+            // if (!this.state.fitContent.height){
+            //     config["height"] = this.state.size.height
+            // }
 
             const configStr = convertObjectToKeyValueString(config)
 
             layoutManager = `place(${configStr})`
 
-        }if (parentLayout === Layouts.FLEX){
+        }else if (parentLayout === Layouts.FLEX){
 
             const config = {
                 side: direction === "row" ? "tk.LEFT" : "tk.TOP",
+            }
+
+            if (gap > 0){
+                config["padx"] = gap
+                config["pady"] = gap
+            }
+
+            if (align === "start"){
+                config["anchor"] = "'nw'"
+            }else if (align === "center"){
+                config["anchor"] = "'center'"
+            }else if (align === "end"){
+                config["anchor"] = "'se'"
             }
 
             const fillX = this.getAttrValue("flexManager.fillX")
@@ -73,8 +89,8 @@ export class TkinterBase extends Widget {
 
         }else if (parentLayout === Layouts.GRID){
             const row = this.getAttrValue("gridManager.row")
-            const col = this.getAttrValue("gridManager.col")
-            layoutManager = `grid(row=${row}, col=${col})`
+            const col = this.getAttrValue("gridManager.column")
+            layoutManager = `grid(row=${row}, column=${col})`
         }
 
         return layoutManager
@@ -544,33 +560,41 @@ export class TkinterWidgetBase extends TkinterBase{
 
     getConfigCode(){
 
-        const code = {
+        const config = {
             bg: `"${this.getAttrValue("styling.backgroundColor")}"`,
             fg: `"${this.getAttrValue("styling.foregroundColor")}"`,
         }
 
         if (this.getAttrValue("styling.borderWidth"))
-            code["bd"] = this.getAttrValue("styling.borderWidth")
+            config["bd"] = this.getAttrValue("styling.borderWidth")
 
         if (this.getAttrValue("styling.relief"))
-            code["relief"] = `"${this.getAttrValue("styling.relief")}"`
+            config["relief"] = `"${this.getAttrValue("styling.relief")}"`
 
         if (this.getAttrValue("font.fontFamily") || this.getAttrValue("font.fontSize")){
-            code["font"] = `("${this.getAttrValue("font.fontFamily")}", ${this.getAttrValue("font.fontSize") || 12}, )`
+            config["font"] = `("${this.getAttrValue("font.fontFamily")}", ${this.getAttrValue("font.fontSize") || 12}, )`
         }
 
         if (this.getAttrValue("cursor"))
-            code["cursor"] = `"${this.getAttrValue("cursor")}"`
+            config["cursor"] = `"${this.getAttrValue("cursor")}"`
 
         if (this.getAttrValue("padding.padX")){
-            code["padx"] = this.getAttrValue("padding.padX")
+            config["padx"] = this.getAttrValue("padding.padX")
         }
 
         if (this.getAttrValue("padding.padY")){
-            code["pady"] = this.getAttrValue("padding.padY")
+            config["pady"] = this.getAttrValue("padding.padY")
         }
 
-        return code
+        // FIXME: add width and height, the scales may not be correct as the width and height are based on characters in pack and grid not pixels
+        // if (!this.state.fitContent.width){
+        //     config["width"] = this.state.size.width
+        // }
+        // if (!this.state.fitContent.height){
+        //     config["height"] = this.state.size.height
+        // }
+
+        return config
     }
 
 }

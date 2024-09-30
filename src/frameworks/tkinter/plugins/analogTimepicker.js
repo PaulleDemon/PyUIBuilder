@@ -84,7 +84,7 @@ class AnalogTimePicker extends TkinterBase{
                     handleColor: {
                         label: "Handle Color",
                         tool: Tools.COLOR_PICKER, // the tool to display, can be either HTML ELement or a constant string
-                        value: "#000000c0",
+                        value: "#000000",
                         onChange: (value) => {
                             this.setAttrValue("styling.handleColor", value)
                         }
@@ -178,7 +178,7 @@ class AnalogTimePicker extends TkinterBase{
         const handleColor = this.getAttrValue("styling.handleColor")
 
         const code = [
-            `${variableName} = AnalogPicker(master=${parent}, type=${mode===12 ? "constants.HOURS12" : "constants.HOURS24"})`,
+            `${variableName} = AnalogPicker(parent=${parent}, type=${mode===12 ? "constants.HOURS12" : "constants.HOURS24"})`,
         ]
 
         if (theme){
@@ -198,7 +198,7 @@ class AnalogTimePicker extends TkinterBase{
                 "canvas_bg": `"${bgColor}"`,
                 "textcolor": `"${numColor}"`,
                 "bg": `"${clockColor}"`,
-                "handlecolor": `"${handleColor}"`,
+                "handcolor": `"${handleColor}"`,
                 "headcolor": `"${handleColor}"`
             }
 

@@ -570,7 +570,7 @@ class Widget extends React.Component {
     }
 
     setLayout(value) {
-        const { layout, direction, grid = { rows: 1, cols: 1 }, gap = 10 } = value
+        const { layout, direction, grid = { rows: 1, cols: 1 }, gap = 10, align } = value
 
         // console.log("layout value: ", value)
         // FIXME: In grid layout the layout doesn't adapt to the size of the child if resized
@@ -584,6 +584,16 @@ class Widget extends React.Component {
             gridTemplateRows: "repeat(auto-fill, minmax(100px, 1fr))",  
             // gridAutoRows: 'minmax(100px, auto)',  // Rows with minimum height of 100px, and grow to fit content
             // gridAutoCols: 'minmax(100px, auto)',  // Cols with minimum height of 100px, and grow to fit content
+        }
+
+        if (align === "start"){
+            widgetStyle["alignItems"] = "flex-start"
+        }else if (align === "center"){
+            widgetStyle["alignItems"] = "center"
+        }else if (align === "end"){
+            widgetStyle["alignItems"] = "flex-end"
+        }else{
+            widgetStyle["alignItems"] = "unset"
         }
 
         this.updateState({

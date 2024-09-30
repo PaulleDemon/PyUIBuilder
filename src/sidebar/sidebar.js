@@ -1,6 +1,6 @@
 import { useEffect, useRef, useMemo, useState } from "react";
 
-import { CloseCircleFilled, CrownFilled, GithubFilled, ShareAltOutlined } from "@ant-design/icons";
+import { BookOutlined, CloseCircleFilled, CrownFilled, GithubFilled, ShareAltOutlined } from "@ant-design/icons";
 
 import KO_FI from "../assets/logo/ko-fi.png"
 import Premium from "./utils/premium";
@@ -94,7 +94,13 @@ function Sidebar({tabs}){
                     <Share className="tw-cursor-pointer tw-text-xl">
                         <ShareAltOutlined />
                     </Share>
-                    <a href="https://github.com/PaulleDemon/PyUIBuilder" className="tw-text-2xl tw-cursor-pointer tw-text-black">
+                    <a className="tw-cursor-pointer tw-text-xl tw-text-gray-700" 
+                            href="https://pyuibuilder-docs.pages.dev/"
+                            target="_blank" rel="noopener noreferrer">
+                        <i className="bi bi-book-half"></i>
+                    </a>
+                    <a href="https://github.com/PaulleDemon/PyUIBuilder" target="_blank"
+                        rel="noopener noreferrer" className="tw-text-2xl tw-cursor-pointer tw-text-black">
                         <GithubFilled />
                     </a>
                     <a href="https://ko-fi.com/artpaul" className="tw-cursor-pointer ">

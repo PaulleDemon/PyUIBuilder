@@ -29,73 +29,73 @@ const TkinterWidgets = [
     {
         name: "Main window",
         img: MainWindowImage,
-        link: "https://github.com", 
+        link: "https://github.com/PaulleDemon/PyUIBuilder", 
         widgetClass: MainWindow
     },
     {
         name: "Top Level",
         img: TopLevelImage,
-        link: "https://github.com", 
+        link: "https://github.com/PaulleDemon/PyUIBuilder", 
         widgetClass: TopLevel
     },
     {
         name: "Frame",
         img: FrameImage,
-        link: "https://github.com",
+        link: "https://github.com/PaulleDemon/PyUIBuilder",
         widgetClass: Frame
     },
     {
         name: "Label",
         img: LabelImage,
-        link: "https://github.com",
+        link: "https://github.com/PaulleDemon/PyUIBuilder",
         widgetClass: Label
     },
     {
         name: "Button",
         img: ButtonImage,
-        link: "https://github.com",
+        link: "https://github.com/PaulleDemon/PyUIBuilder",
         widgetClass: Button
     },
     {
         name: "Entry",
         img: InputImage,
-        link: "https://github.com",
+        link: "https://github.com/PaulleDemon/PyUIBuilder",
         widgetClass: Input
     },
     {
         name: "Text",
         img: TextAreaImage,
-        link: "https://github.com",
+        link: "https://github.com/PaulleDemon/PyUIBuilder",
         widgetClass: Text
     },
     {
         name: "CheckBox",
         img: CheckButtonImage,
-        link: "https://github.com",
+        link: "https://github.com/PaulleDemon/PyUIBuilder",
         widgetClass: CheckBox
     },
     {
         name: "Radio button",
         img: RadioButtonImage,
-        link: "https://github.com",
+        link: "https://github.com/PaulleDemon/PyUIBuilder",
         widgetClass: RadioButton
     },
     {
         name: "Scale",
         img: SliderImage,
-        link: "https://github.com",
+        link: "https://github.com/PaulleDemon/PyUIBuilder",
         widgetClass: Slider
     },
     {
         name: "Option Menu",
         img: DropDownImage,
-        link: "https://github.com",
+        link: "https://github.com/PaulleDemon/PyUIBuilder",
         widgetClass: OptionMenu
     },
     {
         name: "Spinbox",
         img: SpinBoxImage,
-        link: "https://github.com",
+        link: "https://github.com/PaulleDemon/PyUIBuilder",
         widgetClass: SpinBox
     },
 

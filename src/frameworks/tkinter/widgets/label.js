@@ -81,7 +81,7 @@ class Label extends TkinterWidgetBase{
             code.push(`${variableName}_img = Image.open(${getPythonAssetPath(image.name, "image")})`)
             code.push(`${variableName}_img = ImageTk.PhotoImage(${variableName}_img)`)
             // code.push("\n")
-            labelInitialization = `${variableName} = tk.Label(master=${parent}, image="${variableName}_img", text="${labelText}")`
+            labelInitialization = `${variableName} = tk.Label(master=${parent}, image=${variableName}_img, text="${labelText}", compound=tk.TOP)`
         }
 
         // code.push("\n")

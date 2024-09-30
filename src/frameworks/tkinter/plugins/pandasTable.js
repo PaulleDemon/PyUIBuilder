@@ -157,7 +157,10 @@ class PandasTable extends TkinterBase{
         const enableEdit = this.getAttrValue("enableEdit")
 
         const code = [
-            `${variableName} = Table(master=${parent})`,
+            `${variableName}_table_frame = tk.Frame(master=${parent})`,
+            `${variableName}_table_frame.${this.getLayoutCode()}`,
+
+            `${variableName} = Table(parent=${variableName}_table_frame)`,
             `${variableName}.editable = ${enableEdit ? "True" : "False"}`,
         ]
 
@@ -179,7 +182,6 @@ class PandasTable extends TkinterBase{
         return [
                 ...code,
                 `${variableName}.show()`,
-                `${variableName}.${this.getLayoutCode()}`
             ]
     }
 
