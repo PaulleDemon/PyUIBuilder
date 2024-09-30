@@ -8,9 +8,11 @@ import { JUSTIFY, RELIEF } from "../constants/styling"
 
 
 
-export class TkinterBase extends Widget {
+export class CustomTkBase extends Widget {
 
     static requiredImports = ['import tkinter as tk']
+
+    static requirements = ['customtkinter']
 
     constructor(props) {
         super(props)
@@ -419,7 +421,7 @@ export class TkinterBase extends Widget {
 
 
 // base for widgets that have common base properties such as bg, fg, cursor etc
-export class TkinterWidgetBase extends TkinterBase{
+export class CustomTkWidgetBase extends CustomTkBase{
 
     constructor(props) {
         super(props)
@@ -453,16 +455,16 @@ export class TkinterWidgetBase extends TkinterBase{
                             this.setAttrValue("styling.borderWidth", value)
                         }
                     },
-                    relief: {
-                        label: "Relief",
-                        tool: Tools.SELECT_DROPDOWN,
-                        options: RELIEF.map((val) => ({value: val, label: val})),
-                        value: "",
+                    borderRadius: {
+                        label: "Border radius",
+                        tool: Tools.NUMBER_INPUT,
+                        toolProps: {min: 0, max: 140},
+                        value: 0,
                         onChange: (value) => {
-                            // this.setWidgetInnerStyle("fontFamily", Tkinter_To_GFonts[value])
-                            this.setAttrValue("styling.relief", value)
+                            this.setWidgetInnerStyle("borderRadius", `${value}px`)
+                            this.setAttrValue("styling.borderRadius", value)
                         }
-                    },
+                    }
                     // justify: {
                     //     label: "Justify",
                     //     tool: Tools.SELECT_DROPDOWN,
@@ -561,15 +563,12 @@ export class TkinterWidgetBase extends TkinterBase{
     getConfigCode(){
 
         const config = {
-            bg: `"${this.getAttrValue("styling.backgroundColor")}"`,
-            fg: `"${this.getAttrValue("styling.foregroundColor")}"`,
+            fg_color: `"${this.getAttrValue("styling.backgroundColor")}"`,
+            text_color: `"${this.getAttrValue("styling.foregroundColor")}"`,
         }
 
         if (this.getAttrValue("styling.borderWidth"))
-            config["bd"] = this.getAttrValue("styling.borderWidth")
-
-        if (this.getAttrValue("styling.relief"))
-            config["relief"] = `"${this.getAttrValue("styling.relief")}"`
+            config["border_width"] = this.getAttrValue("styling.borderWidth")
 
         if (this.getAttrValue("font.fontFamily") || this.getAttrValue("font.fontSize")){
             config["font"] = `("${this.getAttrValue("font.fontFamily")}", ${this.getAttrValue("font.fontSize") || 12}, )`
@@ -587,12 +586,14 @@ export class TkinterWidgetBase extends TkinterBase{
         }
 
         // FIXME: add width and height, the scales may not be correct as the width and height are based on characters in pack and grid not pixels
+
         // if (!this.state.fitContent.width){
         //     config["width"] = this.state.size.width
         // }
         // if (!this.state.fitContent.height){
         //     config["height"] = this.state.size.height
         // }
+
 
         return config
     }
