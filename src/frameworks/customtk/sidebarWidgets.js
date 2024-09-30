@@ -29,67 +29,67 @@ const CustomTkWidgets = [
     {
         name: "Main window",
         img: MainWindowImage,
-        link: "https://github.com", 
+        link: "https://customtkinter.tomschimansky.com/documentation/windows", 
         widgetClass: MainWindow
     },
     {
         name: "Top Level",
         img: TopLevelImage,
-        link: "https://github.com", 
+        link: "https://customtkinter.tomschimansky.com/documentation/windows", 
         widgetClass: TopLevel
     },
     {
         name: "Frame",
         img: FrameImage,
-        link: "https://github.com",
+        link: "https://customtkinter.tomschimansky.com/documentation/widgets/frame",
         widgetClass: Frame
     },
     {
         name: "Label",
         img: LabelImage,
-        link: "https://github.com",
+        link: "https://customtkinter.tomschimansky.com/documentation/widgets/label",
         widgetClass: Label
     },
     {
         name: "Button",
         img: ButtonImage,
-        link: "https://github.com",
+        link: "https://customtkinter.tomschimansky.com/documentation/widgets/button",
         widgetClass: Button
     },
     {
         name: "Entry",
         img: InputImage,
-        link: "https://github.com",
+        link: "https://customtkinter.tomschimansky.com/documentation/widgets/entry",
         widgetClass: Input
     },
     {
         name: "Text",
         img: TextAreaImage,
-        link: "https://github.com",
+        link: "https://customtkinter.tomschimansky.com/documentation/widgets/textbox",
         widgetClass: Text
     },
     {
         name: "CheckBox",
         img: CheckButtonImage,
-        link: "https://github.com",
+        link: "https://customtkinter.tomschimansky.com/documentation/widgets/checkbox",
         widgetClass: CheckBox
     },
     {
         name: "Radio button",
         img: RadioButtonImage,
-        link: "https://github.com",
+        link: "https://customtkinter.tomschimansky.com/documentation/widgets/radiobutton",
         widgetClass: RadioButton
     },
     {
-        name: "Scale",
+        name: "Slider",
         img: SliderImage,
-        link: "https://github.com",
+        link: "https://customtkinter.tomschimansky.com/documentation/widgets/slider",
         widgetClass: Slider
     },
     {
         name: "Option Menu",
         img: DropDownImage,
-        link: "https://github.com",
+        link: "https://customtkinter.tomschimansky.com/documentation/widgets/optionmenu",
         widgetClass: OptionMenu
     },
     // {

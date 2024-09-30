@@ -4,7 +4,8 @@ import Draggable from "./utils/draggableDnd"
 import { GithubOutlined, GitlabOutlined, LinkOutlined,
             AudioOutlined, FileTextOutlined,
             DeleteFilled,
-            DeleteOutlined} from "@ant-design/icons"
+            DeleteOutlined,
+            GlobalOutlined} from "@ant-design/icons"
 import DraggableWrapper from "./draggable/draggable"
 import { Button } from "antd"
 
@@ -20,7 +21,7 @@ export function SidebarWidgetCard({ name, img, url, license, widgetClass, innerR
             }else if(host === "gitlab.com"){
                 return <GitlabOutlined />
             }else{
-                return <LinkOutlined />
+                return <GlobalOutlined />
             }
         }
 
