@@ -1,10 +1,10 @@
 import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
 import { convertObjectToKeyValueString, removeKeyFromObject } from "../../../utils/common"
-import {TkinterBase, TkinterWidgetBase} from "./base"
+import { CustomTkWidgetBase } from "./base"
 
 
-class Slider extends TkinterWidgetBase{
+class Slider extends CustomTkWidgetBase{
 
     static widgetType = "scale"
     // FIXME: You provided a `value` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use 
@@ -109,9 +109,9 @@ class Slider extends TkinterWidgetBase{
         const defaultValue = this.getAttrValue("scale.default")
 
         return [
-                `${variableName}_var = tk.DoubleVar(value=${defaultValue})`,
-                `${variableName} = tk.Scale(master=${parent}, variable=${variableName}_var)`,
-                `${variableName}.config(${convertObjectToKeyValueString(config)})`,
+                `${variableName}_var = ctk.DoubleVar(value=${defaultValue})`,
+                `${variableName} = ctk.CTkSlider(master=${parent}, variable=${variableName}_var)`,
+                `${variableName}.configure(${convertObjectToKeyValueString(config)})`,
                 `${variableName}.${this.getLayoutCode()}`
             ]
     }

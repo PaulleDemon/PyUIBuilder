@@ -1,9 +1,9 @@
 import Tools from "../../../canvas/constants/tools"
 import { convertObjectToKeyValueString } from "../../../utils/common"
-import { TkinterWidgetBase } from "./base"
+import { CustomTkWidgetBase } from "./base"
 
 
-export class Input extends TkinterWidgetBase{
+export class Input extends CustomTkWidgetBase{
 
     static widgetType = "entry"
     
@@ -40,8 +40,8 @@ export class Input extends TkinterWidgetBase{
         const config = convertObjectToKeyValueString(this.getConfigCode())
 
         return [
-                `${variableName} = tk.Entry(master=${parent}, text="${placeHolderText}")`,
-                `${variableName}.config(${config})`,
+                `${variableName} = ctk.CTkEntry(master=${parent}, text="${placeHolderText}")`,
+                `${variableName}.configure(${config})`,
                 `${variableName}.${this.getLayoutCode()}`
             ]
     }
@@ -77,7 +77,7 @@ export class Input extends TkinterWidgetBase{
 }
 
 
-export class Text extends TkinterWidgetBase{
+export class Text extends CustomTkWidgetBase{
 
     static widgetType = "Text"
 
@@ -114,8 +114,8 @@ export class Text extends TkinterWidgetBase{
         const config = convertObjectToKeyValueString(this.getConfigCode())
 
         return [
-                `${variableName} = tk.Text(master=${parent})`,
-                `${variableName}.config(${config})`,
+                `${variableName} = ctk.CTkTextbox(master=${parent})`,
+                `${variableName}.configure(${config})`,
                 `${variableName}.${this.getLayoutCode()}`
             ]
     }

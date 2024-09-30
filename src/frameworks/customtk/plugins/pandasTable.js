@@ -9,7 +9,7 @@ import { removeKeyFromObject } from "../../../utils/common"
 
 import MapImage from "./assets/map.png"
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons"
-import { TkinterBase } from "../widgets/base"
+import { CustomTkBase } from "../widgets/base"
 import Tools from "../../../canvas/constants/tools"
 import { getPythonAssetPath } from "../../utils/pythonFilePath"
 
@@ -67,12 +67,12 @@ const ResizableTable = ({minRows=5, minCols=5}) => {
 }
 
 
-class PandasTable extends TkinterBase{
+class PandasTable extends CustomTkBase{
 
     static widgetType = "pandas_table"
 
     static requiredImports = [
-        ...TkinterBase.requiredImports, 
+        ...CustomTkBase.requiredImports, 
         "import os",
         "from pandastable import Table",
     ]
@@ -157,7 +157,7 @@ class PandasTable extends TkinterBase{
         const enableEdit = this.getAttrValue("enableEdit")
 
         const code = [
-            `${variableName}_table_frame = tk.Frame(master=${parent})`,
+            `${variableName}_table_frame = ctk.CTkFrame(master=${parent})`,
             `${variableName}_table_frame.${this.getLayoutCode()}`,
 
             `${variableName} = Table(parent=${variableName}_table_frame)`,

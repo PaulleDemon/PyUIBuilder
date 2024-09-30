@@ -44,8 +44,8 @@ class MainWindow extends CustomTkBase{
         const backgroundColor = this.getAttrValue("styling.backgroundColor")
 
         return [
-                `${variableName} = tk.Tk()`,
-                `${variableName}.config(bg="${backgroundColor}")`,
+                `${variableName} = ctk.CTk()`,
+                `${variableName}.configure(bg="${backgroundColor}")`,
                 `${variableName}.title("${this.getAttrValue("title")}")`
             ]
     }

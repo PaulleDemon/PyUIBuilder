@@ -7,7 +7,7 @@ import TopLevel from "../widgets/toplevel"
 
 // FIXME: if the toplevel comes first, before the MainWindow in widgetlist the root may become null
 // Recursive function to generate the code list, imports, requirements, and track mainVariable
-function generateTkinterCodeList(widgetList = [], widgetRefs = [], parentVariable = null, mainVariable = "", usedVariableNames = new Set()) {
+function generateCustomTkCodeList(widgetList = [], widgetRefs = [], parentVariable = null, mainVariable = "", usedVariableNames = new Set()) {
     let variableMapping = new Map() // Map widget to variable { widgetId: variableName }
     let imports = new Set([])
     let requirements = new Set([])
@@ -63,7 +63,7 @@ function generateTkinterCodeList(widgetList = [], widgetRefs = [], parentVariabl
         // Recursively handle child widgets
         if (widget.children && widget.children.length > 0) {
             // Pass down the unique names for children to prevent duplication
-            const childResult = generateTkinterCodeList(widget.children, widgetRefs, varName, mainVariable, usedVariableNames)
+            const childResult = generateCustomTkCodeList(widget.children, widgetRefs, varName, mainVariable, usedVariableNames)
 
             // Merge child imports, requirements, and code
             imports = new Set([...imports, ...childResult.imports])
@@ -83,9 +83,9 @@ function generateTkinterCodeList(widgetList = [], widgetRefs = [], parentVariabl
 }
 
 
-async function generateTkinterCode(projectName, widgetList=[], widgetRefs=[], assetFiles){
+async function generateCustomTkCode(projectName, widgetList=[], widgetRefs=[], assetFiles){
 
-    console.log("widgetList and refs", projectName, widgetList, widgetRefs, assetFiles)
+    // console.log("widgetList and refs", projectName, widgetList, widgetRefs, assetFiles)
 
     let mainWindowCount = 0
 
@@ -111,7 +111,7 @@ async function generateTkinterCode(projectName, widgetList=[], widgetRefs=[], as
 
     // widget - {id, widgetType: widgetComponentType, children: [], parent: "", initialData: {}}
     
-    const generatedObject = generateTkinterCodeList(filteredWidgetList, widgetRefs, "", "")
+    const generatedObject = generateCustomTkCodeList(filteredWidgetList, widgetRefs, "", "")
 
     const {code: codeLines, imports, requirements, mainVariable} = generatedObject
 
@@ -130,6 +130,7 @@ async function generateTkinterCode(projectName, widgetList=[], widgetRefs=[], as
 
     message.info("starting zipping files, download will start in a few seconds")
 
+    return
 
     const createFileList = [
         {
@@ -188,4 +189,4 @@ async function generateTkinterCode(projectName, widgetList=[], widgetRefs=[], as
 }
 
 
-export default generateTkinterCode
+export default generateCustomTkCode

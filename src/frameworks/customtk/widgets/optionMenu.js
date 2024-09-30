@@ -1,10 +1,10 @@
 import Tools from "../../../canvas/constants/tools"
 import {  DownOutlined } from "@ant-design/icons"
-import { TkinterWidgetBase} from "./base"
+import { CustomTkWidgetBase} from "./base"
 import { convertObjectToKeyValueString } from "../../../utils/common"
 
 
-class OptionMenu extends TkinterWidgetBase{
+class OptionMenu extends CustomTkWidgetBase{
 
     static widgetType = "option_menu"
 
@@ -59,14 +59,14 @@ class OptionMenu extends TkinterWidgetBase{
 
         const code = [
             `${variableName}_options = ${options}`,
-            `${variableName}_var = tk.StringVar(value="${defaultValue || options.at(1) || ""}")`,
-            `${variableName} = tk.OptionMenu(${parent}, ${variableName}_var, *${variableName}_options)`
+            `${variableName}_var = ctk.StringVar(value="${defaultValue || options.at(1) || ""}")`,
+            `${variableName} = ctk.CTkOptionMenu(${parent}, ${variableName}_var, *${variableName}_options)`
         ]
 
 
         return [
                 ...code,
-                `${variableName}.config(${config})`,
+                `${variableName}.configure(${config})`,
                 `${variableName}.${this.getLayoutCode()}`
             ]
     }

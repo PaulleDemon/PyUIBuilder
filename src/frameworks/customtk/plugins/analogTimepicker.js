@@ -5,7 +5,7 @@ import { timePicker } from 'analogue-time-picker'
 import Widget from "../../../canvas/widgets/base"
 import Tools from "../../../canvas/constants/tools"
 import { convertObjectToKeyValueString, removeKeyFromObject } from "../../../utils/common"
-import { TkinterBase } from "../widgets/base"
+import { CustomTkBase } from "../widgets/base"
 
 import "./styles/timepickerStyle.css"
 
@@ -17,12 +17,12 @@ const Themes = {
     NONE: ""
 }
 
-class AnalogTimePicker extends TkinterBase{
+class AnalogTimePicker extends CustomTkBase{
 
     static widgetType = "analog_timepicker"
 
     static requiredImports = [
-                                ...TkinterBase.requiredImports, 
+                                ...CustomTkBase.requiredImports, 
                                 'from tktimepicker import AnalogPicker, AnalogThemes, constants'
                             ]
     

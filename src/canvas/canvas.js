@@ -112,6 +112,8 @@ class Canvas extends React.Component {
 
         this.createWidget = this.createWidget.bind(this)
 
+        this.closeToolBar = this.closeToolBar.bind(this)
+
         // this.updateCanvasDimensions = this.updateCanvasDimensions.bind(this) 
     }
 
@@ -151,6 +153,13 @@ class Canvas extends React.Component {
     applyTransform() {
         const { currentTranslate, zoom } = this.state
         this.canvasRef.current.style.transform = `translate(${currentTranslate.x}px, ${currentTranslate.y}px) scale(${zoom})`
+    }
+
+    closeToolBar(){
+        this.setState({
+            toolbarAttrs: null,
+            toolbarOpen: false
+        })
     }
 
     /**

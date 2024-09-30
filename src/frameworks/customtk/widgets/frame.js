@@ -1,8 +1,8 @@
 import Widget from "../../../canvas/widgets/base"
-import {TkinterBase} from "./base"
+import { CustomTkBase } from "./base"
 
 
-class Frame extends TkinterBase{
+class Frame extends CustomTkBase{
 
     static widgetType = "frame"
 
@@ -31,8 +31,8 @@ class Frame extends TkinterBase{
         const bg = this.getAttrValue("styling.backgroundColor")
 
         return [
-                `${variableName} = tk.Frame(master=${parent})`,
-                `${variableName}.config(bg="${bg}")`,
+                `${variableName} = ctk.CTkFrame(master=${parent})`,
+                `${variableName}.configure(bg="${bg}")`,
                 `${variableName}.${this.getLayoutCode()}`
             ]
     }

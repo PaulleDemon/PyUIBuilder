@@ -1,10 +1,10 @@
 import Tools from "../../../canvas/constants/tools"
-import { convertObjectToKeyValueString } from "../../../utils/common"
+import { convertObjectToKeyValueString, removeKeyFromObject } from "../../../utils/common"
 import { getPythonAssetPath } from "../../utils/pythonFilePath"
-import { TkinterWidgetBase } from "./base"
+import { CustomTkWidgetBase } from "./base"
 
 
-class Label extends TkinterWidgetBase{
+class Label extends CustomTkWidgetBase{
 
     static widgetType = "label"
 
@@ -12,13 +12,17 @@ class Label extends TkinterWidgetBase{
     constructor(props) {
         super(props)
 
+        // border color and width is not available for label in customtkinter
+        let newAttrs = removeKeyFromObject("styling.borderColor", this.state.attrs)
+        newAttrs = removeKeyFromObject("styling.borderWidth", newAttrs)
+
 
         this.state = {
             ...this.state,
             widgetName: "Label",
             size: { width: 80, height: 40 },
             attrs: {
-                ...this.state.attrs,
+                ...newAttrs,
                 labelWidget: {
                     label: "Text",
                     tool: Tools.INPUT, 
@@ -43,6 +47,7 @@ class Label extends TkinterWidgetBase{
         
         
         this.setAttrValue("styling.backgroundColor", "#E4E2E2")
+          
         // this.setWidgetName("label") // Don't do this this causes issues while loading data
 
     }
@@ -70,10 +75,13 @@ class Label extends TkinterWidgetBase{
 
 
         const labelText = this.getAttrValue("labelWidget")
-        const config = convertObjectToKeyValueString(this.getConfigCode())
+        // Border color and border width are not implemented for label
+        const {border_color, border_width, ...config} = this.getConfigCode()
         const image = this.getAttrValue("imageUpload")
 
-        let labelInitialization = `${variableName} = tk.Label(master=${parent}, text="${labelText}")`
+        console.log("Object: ", config)
+
+        let labelInitialization = `${variableName} = ctk.CTkLabel(master=${parent}, text="${labelText}")`
 
         const code = []
 
@@ -81,14 +89,14 @@ class Label extends TkinterWidgetBase{
             code.push(`${variableName}_img = Image.open(${getPythonAssetPath(image.name, "image")})`)
             code.push(`${variableName}_img = ImageTk.PhotoImage(${variableName}_img)`)
             // code.push("\n")
-            labelInitialization = `${variableName} = tk.Label(master=${parent}, image=${variableName}_img, text="${labelText}", compound=tk.TOP)`
+            labelInitialization = `${variableName} = ctk.CTkLabel(master=${parent}, image=${variableName}_img, text="${labelText}", compound=ctk.TOP)`
         }
 
         // code.push("\n")
         code.push(labelInitialization)
         return [
                 ...code,
-                `${variableName}.config(${config})`,
+                `${variableName}.configure(${convertObjectToKeyValueString(config)})`,
                 `${variableName}.${this.getLayoutCode()}`
             ]
     }

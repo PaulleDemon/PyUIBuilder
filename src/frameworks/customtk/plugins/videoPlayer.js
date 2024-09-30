@@ -5,16 +5,16 @@ import { removeKeyFromObject } from "../../../utils/common"
 
 import VideoImage from "./assets/video.jpg"
 import { PlayCircleFilled } from "@ant-design/icons"
-import { TkinterBase } from "../widgets/base"
+import { CustomTkBase } from "../widgets/base"
 import { getPythonAssetPath } from "../../utils/pythonFilePath"
 
 
-class VideoPlayer extends TkinterBase{
+class VideoPlayer extends CustomTkBase{
 
     static widgetType = "video_player"
 
     static requiredImports = [
-        ...TkinterBase.requiredImports, 
+        ...CustomTkBase.requiredImports, 
         "import os",
         "from tkVideoPlayer import TkinterVideo"
     ]

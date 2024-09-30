@@ -7,15 +7,15 @@ import { removeKeyFromObject } from "../../../utils/common"
 
 import MapImage from "./assets/map.png"
 import { MinusOutlined, PlayCircleFilled, PlusOutlined } from "@ant-design/icons"
-import { TkinterBase } from "../widgets/base"
+import { CustomTkBase } from "../widgets/base"
 
 
-class MapView extends TkinterBase{
+class MapView extends CustomTkBase{
 
     static widgetType = "map_view"
 
     static requiredImports = [
-        ...TkinterBase.requiredImports, 
+        ...CustomTkBase.requiredImports, 
         "import tkintermapview"
     ]
 

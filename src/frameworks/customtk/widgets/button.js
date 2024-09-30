@@ -1,9 +1,9 @@
 import Tools from "../../../canvas/constants/tools"
 import { convertObjectToKeyValueString } from "../../../utils/common"
-import { TkinterWidgetBase } from "./base"
+import { CustomTkWidgetBase } from "./base"
 
 
-class Button extends TkinterWidgetBase{
+class Button extends CustomTkWidgetBase{
 
     static widgetType = "button"
 
@@ -41,7 +41,7 @@ class Button extends TkinterWidgetBase{
         const config = convertObjectToKeyValueString(this.getConfigCode())
 
         return [
-                `${variableName} = tk.Button(master=${parent}, text="${labelText}")`,
+                `${variableName} = ctk.CTkButton(master=${parent}, text="${labelText}")`,
                 `${variableName}.config(${config})`,
                 `${variableName}.${this.getLayoutCode()}`
             ]

@@ -10,7 +10,7 @@ import { JUSTIFY, RELIEF } from "../constants/styling"
 
 export class CustomTkBase extends Widget {
 
-    static requiredImports = ['import tkinter as tk']
+    static requiredImports = ['import customtkinter as ctk']
 
     static requirements = ['customtkinter']
 
@@ -51,7 +51,7 @@ export class CustomTkBase extends Widget {
         }else if (parentLayout === Layouts.FLEX){
 
             const config = {
-                side: direction === "row" ? "tk.LEFT" : "tk.TOP",
+                side: direction === "row" ? "ctk.LEFT" : "ctk.TOP",
             }
 
             if (gap > 0){
@@ -445,6 +445,15 @@ export class CustomTkWidgetBase extends CustomTkBase{
                             this.setAttrValue("styling.foregroundColor", value)
                         }
                     },
+                    borderColor: {
+                        label: "Border Color",
+                        tool: Tools.COLOR_PICKER, 
+                        value: "#000",
+                        onChange: (value) => {
+                            this.setWidgetInnerStyle("borderColor", value)
+                            this.setAttrValue("styling.borderColor", value)
+                        }
+                    },
                     borderWidth: {
                         label: "Border thickness",
                         tool: Tools.NUMBER_INPUT, 
@@ -464,7 +473,7 @@ export class CustomTkWidgetBase extends CustomTkBase{
                             this.setWidgetInnerStyle("borderRadius", `${value}px`)
                             this.setAttrValue("styling.borderRadius", value)
                         }
-                    }
+                    },
                     // justify: {
                     //     label: "Justify",
                     //     tool: Tools.SELECT_DROPDOWN,
@@ -567,6 +576,15 @@ export class CustomTkWidgetBase extends CustomTkBase{
             text_color: `"${this.getAttrValue("styling.foregroundColor")}"`,
         }
 
+        if (this.getAttrValue("styling.borderRadius")){
+            config["corner_radius"] = this.getAttrValue("styling.borderRadius")
+        }
+
+        if (this.getAttrValue("styling.borderColor")){
+            config["border_color"] = `"${this.getAttrValue("styling.borderColor")}"`
+        }
+
+
         if (this.getAttrValue("styling.borderWidth"))
             config["border_width"] = this.getAttrValue("styling.borderWidth")
 
@@ -587,12 +605,12 @@ export class CustomTkWidgetBase extends CustomTkBase{
 
         // FIXME: add width and height, the scales may not be correct as the width and height are based on characters in pack and grid not pixels
 
-        // if (!this.state.fitContent.width){
-        //     config["width"] = this.state.size.width
-        // }
-        // if (!this.state.fitContent.height){
-        //     config["height"] = this.state.size.height
-        // }
+        if (!this.state.fitContent.width){
+            config["width"] = this.state.size.width
+        }
+        if (!this.state.fitContent.height){
+            config["height"] = this.state.size.height
+        }
 
 
         return config

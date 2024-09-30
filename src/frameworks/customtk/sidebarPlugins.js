@@ -9,9 +9,8 @@ import VideoPlayer from "./plugins/videoPlayer"
 import MapView from "./plugins/mapview"
 import PandasTable from "./plugins/pandasTable"
 
-// TODO: add license for 3rd party plugins
 
-const TkinterPluginWidgets = [
+const CustomTkPluginWidgets = [
     {
         name: "Analog TimePicker",
         img: ClockImage,
@@ -56,4 +55,4 @@ const TkinterPluginWidgets = [
 ]
 
 
-export default TkinterPluginWidgets
+export default CustomTkPluginWidgets

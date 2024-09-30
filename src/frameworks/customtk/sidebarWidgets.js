@@ -11,7 +11,7 @@ import { CheckBox, RadioButton } from "./widgets/ checkButton"
 import { Input, Text } from "./widgets/input"
 import SpinBox from "./widgets/spinBox"
 
-import MainWindowImage from "./assets/widgets/main/mainwindow.png"
+import MainWindowImage from "./assets/widgets/main/mainwindow2.png"
 import TopLevelImage from "./assets/widgets/main/Toplevel.png"
 import FrameImage from "./assets/widgets/main/frame2.png"
 import LabelImage from "./assets/widgets/main/label.png"
@@ -25,7 +25,7 @@ import RadioButtonImage from "./assets/widgets/main/radio.png"
 import SpinBoxImage from "./assets/widgets/main/spinbox.png"
 
 
-const TkinterWidgets = [
+const CustomTkWidgets = [
     {
         name: "Main window",
         img: MainWindowImage,
@@ -92,17 +92,17 @@ const TkinterWidgets = [
         link: "https://github.com",
         widgetClass: OptionMenu
     },
-    {
-        name: "Spinbox",
-        img: SpinBoxImage,
-        link: "https://github.com",
-        widgetClass: SpinBox
-    },
+    // {
+    //     name: "Spinbox",
+    //     img: SpinBoxImage,
+    //     link: "https://github.com",
+    //     widgetClass: SpinBox
+    // },
 
 ]
 
 
-export default TkinterWidgets
+export default CustomTkWidgets
 
 
 /**

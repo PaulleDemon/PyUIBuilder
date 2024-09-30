@@ -2,10 +2,10 @@
 import Tools from "../../../canvas/constants/tools"
 import { convertObjectToKeyValueString, removeKeyFromObject } from "../../../utils/common"
 import { CheckSquareFilled } from "@ant-design/icons"
-import { TkinterWidgetBase } from "./base"
+import { CustomTkWidgetBase } from "./base"
 
 
-export class CheckBox extends TkinterWidgetBase{
+export class CheckBox extends CustomTkWidgetBase{
 
     static widgetType = "check_button"
     constructor(props) {
@@ -65,8 +65,8 @@ export class CheckBox extends TkinterWidgetBase{
         const config = convertObjectToKeyValueString(this.getConfigCode())
 
         const code = [
-                `${variableName} = tk.Checkbutton(master=${parent}, text="${labelText}")`,
-                `${variableName}.config(${config})`,
+                `${variableName} = ctk.CTkCheckBox(master=${parent}, text="${labelText}")`,
+                `${variableName}.configure(${config})`,
             ]
         
         if (this.getAttrValue("defaultChecked")){
@@ -120,7 +120,7 @@ export class CheckBox extends TkinterWidgetBase{
 }
 
 
-export class RadioButton extends TkinterWidgetBase{
+export class RadioButton extends CustomTkWidgetBase{
     // FIXME: the radio buttons are not visible because of the default heigh provided
 
     static widgetType = "radio_button"
@@ -162,7 +162,7 @@ export class RadioButton extends TkinterWidgetBase{
 
         
         const code = [
-            `${variableName}_var = tk.IntVar()`,
+            `${variableName}_var = ctk.IntVar()`,
         ]
         const radios = this.getAttrValue("radios")
         
@@ -170,8 +170,8 @@ export class RadioButton extends TkinterWidgetBase{
 
             const radioBtnVariable = `${variableName}_${idx}`
             code.push(`\n`)
-            code.push(`${radioBtnVariable} = tk.Radiobutton(master=${parent}, variable=${variableName}_var, text="${radio_text}")`)
-            code.push(`${radioBtnVariable}.config(${config}, value=${idx})`)
+            code.push(`${radioBtnVariable} = ctk.CTkRadioButton(master=${parent}, variable=${variableName}_var, text="${radio_text}")`)
+            code.push(`${radioBtnVariable}.configure(${config}, value=${idx})`)
             code.push(`${radioBtnVariable}.${this.getLayoutCode()}`)
         })
 
