@@ -31,7 +31,7 @@ class VideoPlayer extends TkinterBase{
 
         this.state = {
             ...this.state,
-            size: { width: 'fit', height: 'fit' },
+            size: { width: 350, height: 200 },
             widgetName: "Video player",
             attrs: {
                 ...newAttrs,

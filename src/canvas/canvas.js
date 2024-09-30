@@ -381,7 +381,7 @@ class Canvas extends React.Component {
         for (let [key, widget] of Object.entries(this.widgetRefs)) {
             // since the mouseUp event is not triggered inside the widget once its outside, 
             // we'll need a global mouse up event to re-enable drag
-            widget.current.enableDrag()
+            widget.current?.enableDrag()
         }
     }
 
@@ -918,6 +918,7 @@ class Canvas extends React.Component {
 
         this.setState({
             toolbarAttrs: null,
+            toolbarOpen: false,
             selectedWidget: null
         })
 
@@ -926,7 +927,7 @@ class Canvas extends React.Component {
         for (let widgetId of widgetIds) {
             this.removeWidget(widgetId)
         }
-
+        
     }
 
     /**
