@@ -18,7 +18,6 @@ function Premium({ children, className = "" }) {
         setPremiumModalOpen(false)
     }
 
-    // FIXME: the pricing section is not responsive
     return (
         <div onClick={onClick} className={`${className}`}>
             {children}
@@ -179,7 +178,7 @@ function Premium({ children, className = "" }) {
                             </ul>
 
                             <a
-                                href=""
+                                href="https://ko-fi.com/s/4a3dffb3b9"
                                 target="_blank"
                                 rel="noreferrer noopener"
                                 className="tw-mt-8 !tw-bg-purple-500 !tw-text-white tw-gap-2 tw-text-lg tw-rounded-md !tw-font-semibold tw-w-full tw-flex tw-place-content-center tw-p-2 tw-mx-2"
@@ -258,7 +257,7 @@ function Premium({ children, className = "" }) {
                             </ul>
 
                             <a
-                                href=""
+                                href="https://ko-fi.com/s/560a3b6b05"
                                 target="_blank"
                                 rel="noreferrer noopener"
                                 className="tw-mt-8 !tw-bg-purple-500 !tw-text-white tw-gap-2 tw-text-lg tw-rounded-md !tw-font-semibold tw-w-full tw-flex tw-place-content-center tw-p-2 tw-mx-2"
