@@ -34,6 +34,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "install": "npm install",
     "start": "react-scripts start",
     "build": "GENERATE_SOURCEMAP=false react-scripts build",
     "build:local": "GENERATE_SOURCEMAP=false env-cmd -e production react-scripts build",
@@ -63,6 +64,7 @@
   },
   "devDependencies": {
     "ajv": "^7.2.4",
-    "docsify-cli": "^4.4.4"
+    "docsify-cli": "^4.4.4",
+    "typescript": "^4.9.5"
   }
 }
