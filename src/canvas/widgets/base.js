@@ -436,19 +436,19 @@ class Widget extends React.Component {
      * @param {any} value 
      */
     setAttrValue(path, value) {
-
         const keys = path.split('.')
         const lastKey = keys.pop()
 
+        
         // Traverse the state and update the nested value immutably
         let newAttrs = { ...this.state.attrs }
         let nestedObject = newAttrs
-
+        
         keys.forEach(key => {
             nestedObject[key] = { ...nestedObject[key] } // Ensure immutability
             nestedObject = nestedObject[key]
         })
-
+        
         nestedObject[lastKey].value = value
 
         this.updateState({ attrs: newAttrs })

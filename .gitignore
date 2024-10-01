@@ -5,6 +5,9 @@
 /.pnp
 .pnp.js
 
+.env-cmdrc.json
+build
+
 python-tests/
 
 # testing

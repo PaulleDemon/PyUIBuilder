@@ -34,8 +34,8 @@ class MainWindow extends CustomTkBase{
     }
 
     componentDidMount(){
-        super.componentDidMount()
         this.setAttrValue("styling.backgroundColor", "#23272D")
+        super.componentDidMount()
         // this.setWidgetName("main") // Don't do this as this will cause conflicts while loading names
     }
 

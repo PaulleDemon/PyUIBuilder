@@ -33,8 +33,8 @@ class TopLevel extends Widget{
     }
 
     componentDidMount(){
-        super.componentDidMount()
         this.setAttrValue("styling.backgroundColor", "#23272D")
+        super.componentDidMount()
     }
 
     generateCode(variableName, parent){

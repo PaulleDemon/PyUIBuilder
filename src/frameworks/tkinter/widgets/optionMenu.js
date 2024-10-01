@@ -44,10 +44,10 @@ class OptionMenu extends TkinterWidgetBase{
         }
 
     }
-
+   
     componentDidMount(){
         super.componentDidMount()
-        this.setWidgetInnerStyle("backgroundColor", "#fff")
+        this.setWidgetInnerStyle("backgroundColor", "#E4E2E2")
     }
 
     generateCode(variableName, parent){

@@ -1,4 +1,8 @@
-import { useRef, useState } from 'react'
+/**
+ * Author: Paul
+ * Github: PaulleDemon
+ */
+import { useEffect, useRef, useState } from 'react'
 
 import { LayoutFilled, ProductFilled, CloudUploadOutlined, DatabaseFilled } from "@ant-design/icons"
 // import { DndContext, useSensors, useSensor, PointerSensor, closestCorners, DragOverlay, rectIntersection } from '@dnd-kit/core'
@@ -24,6 +28,9 @@ import generateCustomTkCode from './frameworks/customtk/engine/code'
 import TkinterWidgets from './frameworks/tkinter/sidebarWidgets'
 import TkinterPluginWidgets from './frameworks/tkinter/sidebarPlugins'
 import generateTkinterCode from './frameworks/tkinter/engine/code'
+
+import TkMainWindow from './frameworks/tkinter/widgets/mainWindow' 
+import CTkMainWindow from './frameworks/customtk/widgets/mainWindow' 
 
 
 function App() {
@@ -68,6 +75,18 @@ function App() {
 			content: <TemplatesContainer />
 		}
 	]
+
+
+	useEffect(() => {
+		if (UIFramework === FrameWorks.TKINTER){
+			canvasRef?.current?.createWidget(TkMainWindow)
+
+		}else if (UIFramework === FrameWorks.CUSTOMTK){
+			canvasRef?.current?.createWidget(CTkMainWindow)
+		}
+
+
+	}, [UIFramework])
 
 	// const handleDragStart = (event) => {
 	// 	console.log("Drag start: ", event)
@@ -168,6 +187,8 @@ function App() {
 		if (framework === FrameWorks.TKINTER){
 			setSidebarPlugins(TkinterPluginWidgets)
 			setSidebarWidgets(TkinterWidgets)
+
+
 		}else if (framework === FrameWorks.CUSTOMTK){
 			setSidebarPlugins(CustomTkPluginWidgets)
 			setSidebarWidgets(CustomTkWidgets)

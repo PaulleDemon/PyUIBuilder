@@ -33,10 +33,18 @@ class MainWindow extends TkinterBase{
 
     }
 
+    // componentDidMount(){
+
+    //     super.componentDidMount()
+
+    //     //this.setAttrValue("styling", { backgroundColor: "#E4E2E2" }) refactor to something like this?
+    //     this.setAttrValue("styling.backgroundColor", "#E4E2E2")
+    //     console.log("mounted: ", this.state)
+    // }
+
     componentDidMount(){
-        super.componentDidMount()
         this.setAttrValue("styling.backgroundColor", "#E4E2E2")
-        // this.setWidgetName("main") // Don't do this as this will cause conflicts while loading names
+        super.componentDidMount()
     }
 
     generateCode(variableName, parent){
@@ -80,7 +88,7 @@ class MainWindow extends TkinterBase{
                     </div>
                 </div>
                 <div className="tw-p-2 tw-w-full tw-relative tw-h-full tw-overflow-hidden tw-content-start" 
-                        style={this.state.widgetInnerStyling}>
+                        style={this.getInnerRenderStyling()}>
                     {this.props.children}
                 </div>
             </div>

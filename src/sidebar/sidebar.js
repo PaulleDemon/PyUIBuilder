@@ -1,3 +1,7 @@
+/**
+ * Author: Paul
+ * Github: PaulleDemon
+ */
 import { useEffect, useRef, useMemo, useState } from "react";
 
 import { BookOutlined, CloseCircleFilled, CrownFilled, GithubFilled, ShareAltOutlined } from "@ant-design/icons";
@@ -125,9 +129,9 @@ function Sidebar({tabs}){
             </div>
 
         </div>
-    );
+    )
 
 }
 
 
-export default Sidebar;
+export default Sidebar
