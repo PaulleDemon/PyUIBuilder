@@ -34,7 +34,6 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "install": "npm install",
     "start": "react-scripts start",
     "build": "GENERATE_SOURCEMAP=false react-scripts build",
     "build:local": "GENERATE_SOURCEMAP=false env-cmd -e production react-scripts build",
