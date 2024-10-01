@@ -6,7 +6,7 @@
 
 - Simple and powerful
 - Do more with plugins
-- Framework independent, Generate code in multiple frameworks
+- Works for multiple frameworks
 
 [GitHub](https://github.com/PaulleDemon/PyUIBuilder)
 [Get Started](#pyuibuilder-documentation)

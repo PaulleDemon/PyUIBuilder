@@ -68,7 +68,7 @@ or right-click -> delete
 
 
 ### Resizing widgets
-You can resize the widgets by dragging the widgets. If the fit-width/fit-height is set to true, make sure to uncheck it before resizing.
+You can resize the widgets by dragging the widget corners. If the fit-width/fit-height is set to true, make sure to uncheck it before resizing.
 
 
 ### Variable names
@@ -115,6 +115,8 @@ There are 3 main layouts. The layouts are set by the parents. Once a layout is s
 every child widget will use the same layout for positioning. The ony exception is if 
 you have enabled absolute positioning from the child widgets toolbar.
 
+By default all layouts are set to Flex
+
 ![layouts](./assets/layouts.png)
 
 Depending on the layout selected your child widgets will be provided with 
@@ -156,10 +158,10 @@ Plugins are third party UI libraries. You can drag and drop the plugins just lik
 
 
 ## Exporting code
-Once you are happy with the UI, you can click on export code from the header.
+Once you are happy with the UI, you can click on export code from the header and code will be downloaded to your local machine.
 
 ## Requirements.txt
-The requirements.txt files are auto generated, before running the code ensure you have installed the dependencies.
+The requirements.txt files are auto generated, before running the code ensure you have installed the dependencies by using `pip install -r requirements.txt`
 
 ## Saving the file
 

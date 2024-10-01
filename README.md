@@ -19,7 +19,7 @@
 <p><img src="./repo-assets/logo/PyUi.png" alt="font tester logo" width="100" height="100"></p>
 
 
-Build Python GUI's with the ease of Canva
+Build Python GUI's with the ease of Canva.
 
 
 ## Table of contents
@@ -34,7 +34,7 @@ Build Python GUI's with the ease of Canva
 - [Tested on](#tested-on)
 - [FAQ](#faq)
 - [License Information](#license-information)
-    - [Webbased Editor](#webbased-editor)
+    - [Web based Editor](#webbased-editor)
     - [Electron App - Hobbyist License](#electron-app---hobbyist-license)
     - [Electron App - Commercial License](#electron-app---commercial-license)
 - [Some of my other open-source](#some-of-my-other-open-source)
@@ -44,6 +44,11 @@ Build Python GUI's with the ease of Canva
 
 ## Docs - Getting started
 Read the docs on the [Docs page](https://pyuibuilder-docs.pages.dev/)
+
+## 3 Easy steps.
+1. Select a UI library/framework.
+2. Drag and drop widgets.
+3. Generate and download the code.
 
 
 ## Features
