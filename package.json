@@ -32,7 +32,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "GENERATE_SOURCEMAP=false env-cmd -e production react-scripts build",
+    "build": "GENERATE_SOURCEMAP=false react-scripts build",
+    "build:local": "GENERATE_SOURCEMAP=false env-cmd -e production react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "start:tailwind": "cross-env NODE_ENV=development tailwindcss --postcss -i ./landingpages/tailwind/tailwind.css -o ./landingpages/tailwind/tailwind-runtime.css -w",
