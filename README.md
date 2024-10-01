@@ -21,6 +21,12 @@
 
 Build Python GUI's with the ease of Canva.
 
+
+
+https://github.com/user-attachments/assets/ac91aa98-843d-4578-b646-88e66bc113de
+
+<sub>**Don't like background music? fell free to mute it**</sub>
+
 ## Try PyUIBuilder
 Try [PyUIBuilder](https://pyuibuilder.pages.dev/)
 
