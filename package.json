@@ -2,6 +2,9 @@
   "name": "pyuibuilder",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "@ant-design/icons": "^5.4.0",
     "@dnd-kit/core": "^6.1.0",
