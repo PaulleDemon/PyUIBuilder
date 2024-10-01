@@ -72,14 +72,14 @@ main.title("Main Window")
 timepicker = AnalogPicker(parent=main, type=constants.HOURS12)
 timepicker_theme = AnalogThemes(timepicker)
 timepicker_theme.setNavyBlue()
-timepicker.place(x=80.66945161331148, y=145.9470669173186, width=250, height=350)
+timepicker.place(x=80, y=145, width=250, height=350)
 
 map_viewer = tkintermapview.TkinterMapView(master=main)
 map_viewer.place(x=423, y=181, width=400, height=250)
 
 label = tk.Label(master=main, text="Sample text")
 label.config(bg="#E4E2E2", fg="#000")
-label.place(x=83.81659218916774, y=69.66640453620676, width=130, height=46)
+label.place(x=83, y=69, width=130, height=46)
 
 button = tk.Button(master=main, text="Click me")
 button.config(bg="#65ff4a", fg="#0b0909")
