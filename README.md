@@ -19,7 +19,7 @@
 <p><img src="./repo-assets/logo/PyUi.png" alt="font tester logo" width="100" height="100"></p>
 
 
-Build Python GUI's with the ease of Canva.
+Build Python GUI's like Canva.
 
 
 
