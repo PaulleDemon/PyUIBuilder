@@ -20,6 +20,9 @@ import { message } from "antd"
 // FIXME: the drag drop indicator is not going invisible if the drop happens on the child
 
 // FIXME: once the width and height is set to fit-content, it can no longer be resized
+
+// FIXME: if the label, buttons are dropped directly on canvas, the background colors don't apply
+
 const ATTRS_KEYS = ['value', 'label', 'tool', 'onChange', 'options', 'toolProps'] // these are attrs keywords, don't use these keywords as keys while defining the attrs property or serializing
 
 
