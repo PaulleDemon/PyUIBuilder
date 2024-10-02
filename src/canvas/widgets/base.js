@@ -1036,19 +1036,6 @@ class Widget extends React.Component {
             this.elementRef.current.style.pointerEvents = "auto"
     }
 
-    /**
-     * Note: you must implement this method in subclass, if you want children make sure to pass
-     * {this.props.children}, to modify the style add this.state.widgetInnerStyling
-    */
-    renderContent() {
-        // throw new NotImplementedError("render method has to be implemented")
-        return (
-            <div className="tw-w-full tw-h-full tw-p-2 tw-content-start tw-rounded-md tw-overflow-hidden" style={this.state.widgetInnerStyling}>
-                {this.props.children}
-            </div>
-        )
-    }
-
     getInnerRenderStyling(){
         const {width, height, minWidth, minHeight} = this.getRenderSize()
 
@@ -1084,6 +1071,19 @@ class Widget extends React.Component {
         
         return {width, height, minWidth, minHeight}
 
+    }
+
+    /**
+     * Note: you must implement this method in subclass, if you want children make sure to pass
+     * {this.props.children}, to modify the style add this.state.widgetInnerStyling
+    */
+    renderContent() {
+        // throw new NotImplementedError("render method has to be implemented")
+        return (
+            <div className="tw-w-full tw-h-full tw-p-2 tw-content-start tw-rounded-md tw-overflow-hidden" style={this.state.widgetInnerStyling}>
+                {this.props.children}
+            </div>
+        )
     }
 
     /**
