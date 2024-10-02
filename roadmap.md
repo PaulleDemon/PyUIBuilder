@@ -18,7 +18,7 @@ Any feature that has 👑 beside it, is meant only for [premium users](./README.
 
 ### 1.5.0
 - [ ] Add canvas support tools (lines, rect etc) (try fabricjs)
-- [ ] Initial version for Electron App 👑
+- [ ] Initial version for Electron App exe 👑
 - [ ] Save files locally 👑
 - [ ] Load UI files 👑
 - [ ] Light/Dark theme 👑
