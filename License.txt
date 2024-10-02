@@ -10,7 +10,7 @@ License in short
 
 License was planned to be kept under AGPL or less restrictive license, but since its difficult for me to continue providing free and open-source software without proper funding. It's under this license.
 
-Once there enough money to fund my upcoming FOSS projects, The license will be brought back to AGPL or much lesser restrictive licese. The fastest way to make this happen is by purchasing a one-time licese or fund me.
+Once there enough money to fund my upcoming FOSS projects, The license will be brought back to AGPL or much lesser restrictive license. The fastest way to make this happen is by purchasing a one-time licese or fund me.
 
 Read the full license below.
 --------------------
