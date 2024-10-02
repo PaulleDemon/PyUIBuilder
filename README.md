@@ -1,4 +1,4 @@
-# PyUIBuilder - The only Python GUI builder you'll ever need
+# PyUIBuilder - The Webflow of Python GUIs
 
 
 <p align="center">
@@ -105,10 +105,12 @@ Tkinter is OS dependent, output may vary based on OS.
 While there are a lot of features, here are few you need to know.
 
 * Framework agnostic - Can outputs code in multiple frameworks.
-* Easy to use.
 * Pre-built UI widgets
 * Plugins to extend 3rd party UI libraries
-* Generates Code.
+* Supports layout managers, such as flex, grid and absolute positioning [read docs](https://pyuibuilder-docs.pages.dev/)
+* Generates python Code.
+* Support to upload local assets.
+* Generates requirements.txt file when needed
 
 ## Supported Frameworks/Libraries
 

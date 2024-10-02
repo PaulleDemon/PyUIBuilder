@@ -1,6 +1,7 @@
 ## Road map for PyUIBuilder
 
-Any feature that has 👑 beside it, is meant only for [premium users](./readme.md#license)
+To fund and support the development some features are available only for Premium users.
+Any feature that has 👑 beside it, is meant only for [premium users](./README.md#license---fund-the-development)
 
 ### 1.0.0
 - [x] Create the initial version for UI builder
