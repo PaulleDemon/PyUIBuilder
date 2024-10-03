@@ -1,0 +1,734 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>PyUIBuilder - A  Drag and Drop builder for python GUIs</title>
+        <meta name="description" content="A Drag and Drop builder for Python GUIs, including Tkinter, Custom Tkinter and more" />
+        <link
+            rel="shortcut icon"
+            href="./assets/logo/icon48.png"
+            type="image/x-icon"
+        />
+
+        <!-- Open Graph / Facebook -->
+        <meta property="og:title" content="PyUIBuilder - A Drag and Drop builder for python GUIs" />
+        <meta property="og:description" content="A Drag and Drop builder for Python GUIs, including Tkinter, Custom Tkinter and more" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://github.com/PaulleDemon/font-tester-chrome" />
+        <!--Replace with the current website url-->
+        <meta property="og:image" content="" />
+
+        <link rel="stylesheet" href="../tailwind/tailwind-runtime.css" />
+        <!-- <link rel="stylesheet" href="./css/tailwind-build.css"> -->
+        <link rel="stylesheet" href="css/index.css" />
+
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"
+            integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        />
+
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-');
+        </script>
+    </head>
+    <body
+        class="tw-flex tw-min-h-[100vh] tw-flex-col tw-bg-white tw-text-black"
+    >
+        <header
+            class="tw-max-w-lg:tw-px-4 tw-max-w-lg:tw-mr-auto tw-absolute tw-top-0 tw-z-20 tw-flex tw-h-[60px] tw-w-full tw-bg-opacity-0 tw-px-[5%] lg:tw-justify-around"
+        >
+            <a class="tw-h-[50px] tw-w-[50px] tw-p-[4px]" href="">
+                <img
+                    src="./assets/logo/logo.png"
+                    alt="logo"
+                    class="tw-object tw-h-full tw-w-full"
+                />
+            </a>
+            <div
+                class="collapsible-header animated-collapse max-lg:tw-shadow-md"
+                id="collapsed-header-items"
+            >
+                <div
+                    class="tw-flex tw-h-full tw-w-max tw-gap-5 tw-text-base max-lg:tw-mt-[30px] max-lg:tw-flex-col max-lg:tw-place-items-end max-lg:tw-gap-5 lg:tw-mx-auto lg:tw-place-items-center"
+                >
+                    <a class="header-links" href=""> About </a>
+                    <a class="header-links" href="#pricing"> Pricing </a>
+                    <a class="header-links" href="#features"> Features </a>
+                    <a class="header-links" href="https://github.com/PaulleDemon/font-tester-chrome"> Github </a>
+                </div>
+                <div
+                    class="tw-mx-4 tw-flex tw-place-items-center tw-gap-[20px] tw-text-base max-md:tw-w-full max-md:tw-flex-col max-md:tw-place-content-center"
+                >
+                    <a
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href="https://chromewebstore.google.com/detail/font-tester/deachoodakeofjlfikfkohihnpcgiaim"
+                        aria-label="signup"
+                        class="tw-rounded-md tw-border-[1px] tw-border-black tw-bg-transparent tw-px-3 tw-py-2 tw-text-black tw-transition-colors tw-duration-[0.3s] hover:tw-bg-black hover:tw-text-white"
+                    >
+                        <span>Download</span>
+                        <i class="bi bi-download"></i>
+                    </a>
+                </div>
+            </div>
+            <button
+                class="bi bi-list tw-absolute tw-right-3 tw-top-3 tw-z-50 tw-text-3xl tw-text-black lg:tw-hidden"
+                onclick="toggleHeader()"
+                aria-label="menu"
+                id="collapse-btn"
+            ></button>
+        </header>
+
+        <section
+            class="hero-section tw-relative tw-flex tw-min-h-[60vh] tw-w-full tw-max-w-[100vw] tw-flex-col tw-overflow-hidden max-md:tw-mt-[50px]"
+            id="hero-section"
+        >   
+
+            <!-- video container -->
+            <div class="tw-fixed tw-bg-[#000000af] dark:tw-bg-[#80808085] tw-top-0 tw-left-1/2 tw--translate-x-1/2 tw-z-20 tw-transition-opacity
+                tw-duration-300 tw-scale-0 tw-opacity-0 tw-p-2
+                tw-w-full tw-h-full tw-flex tw-place-content-center tw-place-items-center" id="video-container-bg">
+
+                <div class="tw-max-w-[80vw] max-lg:tw-max-w-full max-lg:tw-w-full tw-scale-0 tw-transition-transform tw-duration-500 tw-p-6 tw-rounded-xl  max-lg:tw-px-2 tw-w-full tw-gap-2 tw-shadow-md 
+                            tw-h-[90vh] max-lg:tw-h-auto max-lg:tw-min-h-[400px] tw-bg-white dark:tw-bg-[#16171A] tw-max-h-full
+                            " id="video-container">
+                    <div class="tw-w-full tw-flex">
+                        <button type="button" onclick="closeVideo()" class="tw-ml-auto tw-text-xl" title="close">
+                            <i class="bi bi-x-circle-fill"></i>
+                        </button>
+                    </div>
+                    <div class="tw-flex tw-w-full  tw-rounded-xl tw-px-[5%] max-md:tw-px-2 tw-min-h-[300px] tw-max-h-[90%] tw-h-full">
+
+                        <div class="tw-relative tw-bg-black tw-min-w-full tw-min-h-full tw-overflow-clip tw-rounded-md">
+                            <!-- add your youtube video link here -->
+                            <iframe class="tw-absolute tw-top-[50%] tw--translate-y-[50%] tw-left-[50%] tw--translate-x-[50%] tw-w-full tw-h-full" src="https://www.youtube.com/embed/aXq0A6iJoKU?si=dF3UZT2eTRDU8u7a&amp;controls=1&rel=1&showinfo=0&autoplay=0&loop=1&mute=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                        </div>
+        
+                    </div>
+                </div>  
+            </div>
+
+            <div
+                class="tw-flex tw-h-full max-lg:tw-mt-10 max-lg:tw-min-h-[60vh] tw-min-h-[70vh] tw-w-full tw-flex-col tw-place-content-center tw-gap-6 tw-p-[5%] max-xl:tw-place-items-center max-lg:tw-p-4"
+            >
+                <div
+                    class="tw-flex tw-flex-col tw-place-content-center tw-items-center"
+                >
+                    <div
+                        class="reveal-up tw-text-center tw-text-6xl tw-font-semibold tw-uppercase tw-leading-[80px] max-lg:tw-text-4xl max-md:tw-leading-snug"
+                    >
+                        <span class=""> Build Python UI's using <span class="tw-px-3 t"></span>
+                           </span>
+                        <br />
+                        <span class="tw-bg-[#ffe27a] tw-px-3"> Drag and Drop editor </span>
+                    </div>
+                    
+                </div>
+
+                <div class="tw-flex tw-flex-col tw-w-full tw-place-items-center tw-place-content-center">
+                    <div
+                        class="reveal-up tw-mt-3 tw-max-w-[450px] tw-p-2 tw-text-center tw-text-gray-700 max-lg:tw-max-w-full"
+                    >
+                        Tired of writing code to build you python GUIs, well now you can easily 
+                    </div>
+
+                    <div
+                        class="reveal-up tw-mt-10 tw-flex tw-place-items-center tw-gap-4"
+                    >
+                        <a
+                            class="btn tw-bg-[#7e22ce85] tw-shadow-lg tw-shadow-primary tw-transition-transform tw-duration-[0.3s] hover:tw-scale-x-[1.03]"
+                            href="#pricing"
+                        >
+                            Start for free
+                        </a>
+                        <button
+                            class="btn tw-flex tw-gap-2 !tw-border-solid !tw-border-[1px] !tw-border-black !tw-text-black !tw-bg-transparent tw-transition-colors tw-duration-[0.3s] hover:!tw-bg-white hover:!tw-text-black"
+                            onclick="openVideo()"
+                            
+                        >
+                            <i class="bi bi-play-circle-fill"></i>
+                            <span>Watch video</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+        </section>
+
+
+        <section
+            class="tw-relative tw-flex tw-w-full tw-min-h-[50vh] tw-max-w-[100vw] tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-hidden tw-p-8"
+        >
+            
+            <div class="reveal-up tw-flex tw-border-[1px] max-lg:tw-w-full tw-border-black tw-rounded-md tw-p-2 tw-max-w-[850px] tw-w-[1000px] tw-min-h-[550px] max-lg:tw-min-w-[320px] max-lg:tw-min-h-[250px] max-lg:tw-h-auto">
+
+                <div class="tw-relative tw-bg-black tw-min-w-full tw-min-h-full tw-overflow-clip tw-rounded-md">
+                    <iframe class="tw-absolute tw-top-[50%] tw--translate-y-[50%] tw-left-[50%] tw--translate-x-[50%] tw-w-full tw-h-full" src="https://www.youtube.com/embed/aXq0A6iJoKU?si=dF3UZT2eTRDU8u7a?si=QOMSCki8Jl30_CkW&amp;controls=1&rel=0&showinfo=0&autoplay=1&loop=1&mute=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                    <!-- <img class="tw-object-contain tw-w-full tw-h-full" 
+                        alt="font tester gif" src="./assets/images/home/fonttester.gif" > -->
+                </div>
+
+            </div>
+        </section>
+
+        <section
+            id="features"
+            class="tw-relative tw-mt-10 tw-flex tw-min-h-[100vh] tw-p-1 tw-w-full tw-max-w-[100vw] tw-flex-col tw-place-items-center lg:tw-p-6"
+        >
+
+            <h2 class="rowdies-family tw-text-5xl tw-leading-relaxed tw-font-semibold max-md:tw-text-3xl tw-text-center">
+                Add personality to your <br class="lg:tw-hidden"> website
+                <br class="max-lg:tw-hidden">
+                with fonts
+            </h2>
+            
+            <div
+                class="reveal-up tw-mt-[5%] tw-flex tw-h-full tw-w-full tw-place-content-center tw-gap-8 tw-p-4 max-lg:tw-max-w-full max-lg:tw-flex-col"
+            >
+                <div
+                    class="tw-flex tw-flex-col tw-gap-[200px] tw-h-full tw-max-w-[50%] max-lg:tw-max-w-full tw-px-[10%] max-lg:tw-px-4 max-lg:tw-gap-16 max-lg:tw-w-full lg:tw-top-[20%]"
+                >   
+                    <div class="tw-flex tw-gap-6">
+                        <div class="tw-w-[80px] tw-h-[80px] tw-min-w-[80px] 
+                                    tw-min-h-[80px] tw-text-5xl
+                                    max-lg:tw-min-h-[60px] max-lg:tw-min-w-[60px] max-lg:tw-h-[60px] max-lg:tw-w-[60px]">
+                            <!-- <img src="./assets/images/icons/unlock.png" alt="unlock" class="tw-object-contain tw-w-full tw-h-full"> -->
+                            <i class="bi bi-fonts"></i>
+                        </div>
+                        <h3
+                            class="tw-text-4xl chivo-family max-lg:tw-text-2xl max-lg:tw-font-normal"
+                        >
+                            Pick and test 1000+ google fonts
+                        </h3>
+                    </div>
+
+                    <div class="tw-flex tw-gap-6">
+                        <div class="tw-w-[80px] tw-h-[80px] tw-text-5xl tw-min-w-[80px] tw-min-h-[80px] max-lg:tw-min-h-[60px] max-lg:tw-min-w-[60px] max-lg:tw-h-[60px] max-lg:tw-w-[60px]">
+                            <!-- <img src="./assets/images/icons/lighting.png" alt="unlock" class="tw-object-contain tw-w-full tw-h-full"> -->
+                            <i class="bi bi-layout-text-window-reverse"></i>
+                        </div>
+                        <h3
+                            class="tw-text-4xl bellota-family max-lg:tw-text-2xl max-lg:tw-font-normal"
+                        >
+                            Test on any website or landing page
+                        </h3>
+                    </div>
+
+                    <div class="tw-flex tw-gap-6">
+                        <div class="tw-w-[80px] tw-text-5xl tw-h-[80px] tw-min-w-[80px] tw-min-h-[80px] max-lg:tw-min-h-[60px] max-lg:tw-min-w-[60px] max-lg:tw-h-[60px] max-lg:tw-w-[60px]">
+                            <!-- <img src="./assets/images/icons/credit-card.png" alt="unlock" class="tw-object-contain tw-w-full tw-h-full"> -->
+                            <i class="bi bi-highlighter"></i>
+                        </div>
+                        <h3
+                            class="tw-text-4xl battambang-family max-lg:tw-text-2xl max-lg:tw-font-normal"
+                        >
+                            Easily change specific text fonts with the highlighter feature
+                        </h3>
+                    </div>
+
+                    <div class="tw-flex tw-gap-6">
+                        <div class="tw-w-[80px] tw-text-5xl tw-h-[80px] tw-min-w-[80px] tw-min-h-[80px] max-lg:tw-min-h-[60px] max-lg:tw-min-w-[60px] max-lg:tw-h-[60px] max-lg:tw-w-[60px]">
+                            <!-- <img src="./assets/images/icons/music.png" alt="unlock" class="tw-object-contain tw-w-full tw-h-full"> -->
+                            <i class="bi bi-distribute-vertical"></i>
+                        </div>
+                        <h3
+                            class="tw-text-4xl archivo-black-family max-lg:tw-text-2xl max-lg:tw-font-normal"
+                        >
+                            Set font weight and line height
+                        </h3>
+                    </div>
+
+                    <div class="tw-flex tw-gap-6">
+                        <div class="tw-w-[80px] tw-text-5xl tw-h-[80px] tw-min-w-[80px] tw-min-h-[80px] max-lg:tw-min-h-[60px] max-lg:tw-min-w-[60px] max-lg:tw-h-[60px] max-lg:tw-w-[60px]">
+                            <!-- <img src="./assets/images/icons/unlock.png" alt="unlock" class="tw-object-contain tw-w-full tw-h-full"> -->
+                            <i class="bi bi-type-italic"></i>
+                        </div>
+                        <h3
+                            class="tw-text-4xl didact-gothic-family max-lg:tw-text-2xl max-lg:tw-font-normal"
+                        >
+                            set Italics, underline and more
+                        </h3>
+                    </div>
+
+                    <div class="tw-flex tw-gap-6">
+                        <div class="tw-w-[80px] tw-text-5xl tw-h-[80px] tw-min-w-[80px] tw-min-h-[80px] max-lg:tw-min-h-[60px] max-lg:tw-min-w-[60px] max-lg:tw-h-[60px] max-lg:tw-w-[60px]">
+                            <!-- <img src="./assets/images/icons/lighting.png" alt="unlock" class="tw-object-contain tw-w-full tw-h-full"> -->
+                            <i class="bi bi-clipboard2-check"></i>
+                        </div>
+                        <h3
+                            class="tw-text-4xl max-lg:tw-text-2xl max-lg:tw-font-normal"
+                        >
+                            Easily copy the code for the fonts
+                        </h3>
+                    </div>
+
+                </div>
+
+                <div
+                    class="tw-relative tw-flex tw-max-w-[30%] max-lg:tw-max-w-full tw-flex-col tw-place-items-start tw-gap-4  tw-p-2 max-lg:tw-place-items-center max-lg:tw-place-content-center max-lg:tw-w-full"
+                >
+                    <div
+                        class="tw-top-20 lg:tw-sticky tw-shadow-md tw-max-h-[800px] tw-h-fit tw-max-w-[850px] max-lg:tw-max-h-fit max-lg:tw-max-w-[320px] tw-overflow-hidden tw-rounded-lg"
+                    >
+                        <!-- <img
+                            src="./assets/images/home/font-selector.png"
+                            alt="phone"
+                            class="tw-h-full tw-w-full tw-object-contain"
+                        /> -->
+                        <div id="font-selector-widget"></div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+      
+
+        <section className="tw-mt-1 tw-flex tw-w-full tw-flex-col tw-place-items-center tw-p-[2%] max-lg:tw-p-2" id="pricing">
+            <h3 className="tw-text-2xl tw-font-medium max-md:tw-text-2xl">Choose your plan</h3>
+            <div className="tw-mt-10 tw-flex tw-place-content-center tw-gap-8 max-lg:tw-flex-col">
+                <div className="tw-flex tw-w-[380px] tw-border-[1px] tw-border-gray-500 tw-border-solid tw-flex-col tw-place-items-center tw-gap-2 tw-rounded-lg tw-p-8 tw-shadow-xl max-lg:tw-w-[340px]">
+                    <h3>
+                        <span className="tw-text-5xl tw-font-semibold">$0</span>
+                    </h3>
+                    <p className="tw-mt-3 tw-text-base tw-text-center tw-text-gray-600">
+                        Free to use forever, but for added features and to support open-source development, consider buying a lifetime license.
+                    </p>
+                    <hr />
+                    <ul className="tw-mt-4 tw-flex tw-flex-col tw-gap-3 tw-text-xl tw-text-gray-600">
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-check-circle-fill tw-text-green-600 tw-text-base"></i>
+                            <span>Access to web-based editor</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-check-circle-fill tw-text-green-600 tw-text-base"></i>
+                            <span>Commercial use</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-x-circle-fill tw-text-red-600 tw-text-base"></i>
+                            <span>Downloadable UI builder exe for local development</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-x-circle-fill tw-text-red-600 tw-text-base"></i>
+                            <span>Support for PySlide/PyQt</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-x-circle-fill tw-text-red-600 tw-text-base"></i>
+                            <span>Preview live</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-x-circle-fill tw-text-red-600 tw-text-base"></i>
+                            <span>Save and load files</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-x-circle-fill tw-text-red-600 tw-text-base"></i>
+                            <span>Load plugins locally</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-x-circle-fill tw-text-red-600 tw-text-base"></i>
+                            <span>Load local UI templates</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-x-circle-fill tw-text-red-600 tw-text-base"></i>
+                            <span>Dark theme</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-x-circle-fill tw-text-red-600 tw-text-base"></i>
+                            <span>Priority support</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-x-circle-fill tw-text-red-600 tw-text-base"></i>
+                            <span>Early access to new features</span>
+                        </li>
+                        
+                    </ul>
+                </div>
+
+                <div className="tw-flex tw-w-[380px] tw-flex-col tw-place-items-center tw-gap-2 tw-rounded-lg tw-border-2 tw-border-solid
+                                 tw-border-blue-500 tw-p-8 tw-shadow-xl max-lg:tw-w-[340px]">
+                    <div className="tw-text-white tw-p-1 tw-px-3 tw-bg-blue-500 tw-rounded-full">
+                        Limited time offer
+                    </div>
+                    <div className="tw-text-white tw-font-medium tw-p-1 tw-px-3 tw-bg-green-700 tw-rounded-full">
+                        Hobby
+                    </div>
+                    <h3>
+                        <span className="tw-text-5xl tw-font-semibold">
+                            <s className="tw-font-medium tw-text-4xl">$129</s>
+                            <span>$29</span>
+                        </span>
+                        <span className="tw-text-2xl tw-text-gray-600">Forever</span>
+                    </h3>
+                    <p className="tw-mt-3 tw-text-center tw-text-gray-600">
+                        Support open-source development 🚀. Plus, get added benefits.
+                    </p>
+                    <hr />
+                    <ul className="tw-mt-4 tw-flex tw-flex-col tw-gap-3 tw-text-xl tw-text-gray-600">
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-check-circle-fill tw-text-green-600 tw-text-base"></i>
+                            <span>Access to web-based editor</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-check-circle-fill tw-text-green-600 tw-text-base"></i>
+                            <span>Downloadable UI builder exe for local development</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-check-circle-fill tw-text-green-600 tw-text-base"></i>
+                            <span>Preview live</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-check-circle-fill tw-text-green-600 tw-text-base"></i>
+                            <span>Save and load files</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-check-circle-fill tw-text-green-600 tw-text-base"></i>
+                            <span>Load plugins locally</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-x-circle-fill tw-text-green-600 tw-text-base"></i>
+                            <span>Load local UI templates</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-check-circle-fill tw-text-green-600 tw-text-base"></i>
+                            <span>Dark theme</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-check-circle-fill tw-text-green-600 tw-text-base"></i>
+                            <span>Priority support</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-check-circle-fill tw-text-green-600 tw-text-base"></i>
+                            <span>Early access to new features</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-x-circle-fill tw-text-red-600 tw-text-base"></i>
+                            <span>Support for PySlide/PyQt</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-x-circle-fill tw-text-red-600 tw-text-base"></i>
+                            <span>Commercial use</span>
+                        </li>
+                        
+                    </ul>
+
+                    <a
+                        href="https://ko-fi.com/s/4a3dffb3b9"
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className="tw-mt-8 !tw-bg-purple-500 !tw-text-white tw-gap-2 tw-text-lg tw-rounded-md !tw-font-semibold tw-w-full tw-flex tw-place-content-center tw-p-2 tw-mx-2"
+                    >
+                        <span>Buy License</span>
+                        <CrownFilled />
+                    </a>
+                </div>
+
+                {/* Paid Plan */}
+                <div className="tw-flex tw-w-[380px] tw-flex-col tw-place-items-center tw-gap-2 tw-rounded-lg tw-border-3 tw-border-solid
+                                 tw-border-green-600 tw-p-8 tw-shadow-xl max-lg:tw-w-[340px]">
+                    <div className="tw-text-white tw-p-1 tw-px-3 tw-bg-blue-500 tw-rounded-full">
+                        Limited time offer
+                    </div>
+                    <div className="tw-text-white tw-font-medium tw-p-1 tw-px-3 tw-bg-green-700 tw-rounded-full">
+                        Commercial
+                    </div>
+                    <h3>
+                        <span className="tw-text-5xl tw-font-semibold">
+                            <s className="tw-font-medium tw-text-4xl">$180</s>
+                            <span>$49</span>
+                        </span>
+                        <span className="tw-text-2xl tw-text-gray-600">Forever</span>
+                    </h3>
+                    <p className="tw-mt-3 tw-text-center tw-text-gray-600">
+                        Support open-source development 🚀. Plus, get added benefits.
+                    </p>
+                    <hr />
+                    <ul className="tw-mt-4 tw-flex tw-flex-col tw-gap-3 tw-text-xl tw-text-gray-600">
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-check-circle-fill tw-text-green-600 tw-text-base"></i>
+                            <span>Access to web-based editor</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-check-circle-fill tw-text-green-600 tw-text-base"></i>
+                            <span>Downloadable UI builder exe for local development</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-check-circle-fill tw-text-green-600 tw-text-base"></i>
+                            <span>Preview live</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-check-circle-fill tw-text-green-600 tw-text-base"></i>
+                            <span>Save and load files</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-check-circle-fill tw-text-green-600 tw-text-base"></i>
+                            <span>Load plugins locally</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-x-circle-fill tw-text-green-600 tw-text-base"></i>
+                            <span>Load local UI templates</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-check-circle-fill tw-text-green-600 tw-text-base"></i>
+                            <span>Dark theme</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-check-circle-fill tw-text-green-600 tw-text-base"></i>
+                            <span>Priority support</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-check-circle-fill tw-text-green-600 tw-text-base"></i>
+                            <span>Early access to new features</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-check-circle-fill tw-text-green-600 tw-text-base"></i>
+                            <span>Support for PySlide/PyQt</span>
+                        </li>
+                        <li className="tw-flex tw-place-items-center tw-gap-2">
+                            <i className="bi bi-check-circle-fill tw-text-green-600 tw-text-base"></i>
+                            <span>Commercial use</span>
+                        </li>
+                        
+                    </ul>
+
+                    <a
+                        href="https://ko-fi.com/s/560a3b6b05"
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className="tw-mt-8 !tw-bg-purple-500 !tw-text-white tw-gap-2 tw-text-lg tw-rounded-md !tw-font-semibold tw-w-full tw-flex tw-place-content-center tw-p-2 tw-mx-2"
+                    >
+                        <span>Buy License</span>
+                        <CrownFilled />
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section
+            class="tw-flex tw-w-full tw-flex-col tw-place-content-center tw-place-items-center tw-gap-[10%] tw-p-[5%] tw-px-[10%]"
+        >
+            <h3
+                class="tw-text-4xl tw-font-medium tw-text-gray-800 max-md:tw-text-2xl"
+            >
+                Faq
+            </h3>
+            <div
+                class="tw-mt-5 tw-flex tw-min-h-[300px] tw-w-full tw-max-w-[850px] tw-flex-col tw-gap-4"
+            >
+                <div
+                    class="faq tw-w-full"
+                >
+                    <div
+                        class="faq-accordion tw-flex tw-w-full tw-select-none tw-text-xl max-md:tw-text-lg"
+                    >
+                        <span>Is the source code available?</span>
+                        <i class="bi bi-plus tw-ml-auto tw-font-semibold"></i>
+                    </div>
+                    <div class="content">
+                        Yes, this is an open-source project, you can visit the 
+                        source code on 
+                        <a  target="_blank"
+                            rel="noopener noreferrer"
+                            href="https://github.com/PaulleDemon/font-tester-chrome" 
+                            class="tw-underline">Github</a>
+                    </div>
+                </div>
+
+                <div
+                    class="faq tw-w-full"
+                >
+                    <div
+                        class="faq-accordion tw-flex tw-w-full tw-select-none tw-text-xl max-md:tw-text-lg"
+                    >
+                        <span>Can I try the extension for free?</span>
+                        <i class="bi bi-plus tw-ml-auto tw-font-semibold"></i>
+                    </div>
+                    <div class="content">
+                        Yes, the chrome extension is free to use forever, however to support 
+                        open-source development, some features are only available to premium users.
+                    </div>
+                </div>
+
+                <div
+                    class="faq tw-w-full"
+                >
+                    <div
+                        class="faq-accordion tw-flex tw-w-full tw-select-none tw-text-xl max-md:tw-text-lg"
+                    >
+                        <span>Is Safari, Edge and Firefox addons available?</span>
+                        <i class="bi bi-plus tw-ml-auto tw-font-semibold"></i>
+                    </div>
+                    <div class="content">
+                        The Safari, Edge and firefox addons will be available for premium users when released.
+                        If you purchase a license, you'll be notified when its released.
+                    </div>
+                </div>
+
+                <div
+                    class="faq tw-w-full"
+                >
+                    <div
+                        class="faq-accordion tw-flex tw-w-full tw-select-none tw-text-xl max-md:tw-text-lg"
+                    >
+                        <span>Where can I find the upcoming features?</span>
+                        <i class="bi bi-plus tw-ml-auto tw-font-semibold"></i>
+                    </div>
+                    <div class="content">
+                        You can find the upcoming features on the
+                        <a
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href="https://github.com/PaulleDemon/font-tester-chrome/blob/main/roadmap.md"
+                            class="tw-underline"
+                            >Roadmap</a
+                        >
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+       
+
+        <footer
+            class="tw-mt-auto tw-flex tw-w-full tw-place-content-around tw-gap-3 tw-p-[5%] tw-px-[10%] tw-text-black max-md:tw-flex-col"
+        >
+            <div
+                class="tw-flex tw-h-full tw-w-[250px] tw-flex-col tw-place-items-center tw-gap-6 max-md:tw-w-full"
+            >
+                <img
+                    src="./assets/logo/logo.svg"
+                    alt="logo"
+                    srcset=""
+                    class="tw-max-w-[120px]"
+                />
+              
+                <div class="tw-mt-3 tw-text-lg tw-font-semibold">Follow</div>
+                <div class="tw-flex tw-gap-4 tw-text-2xl">
+                    <a href="https://www.youtube.com/@paultalkstech" 
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        aria-label="Youtube">
+                        <i class="bi bi-youtube"></i>
+                    </a>
+                    <a
+                        href="https://twitter.com/@pauls_freeman"
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        aria-label="Twitter"
+                    >
+                        <i class="bi bi-twitter"></i>
+                    </a>
+                    <a
+                        href="https://github.com/PaulleDemon"
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        class="tw-h-[40px] tw-w-[40px]"
+                        aria-label="Github"
+                    >
+                        <i class="bi bi-github"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="tw-flex tw-h-full tw-w-[250px] tw-flex-col tw-gap-4">
+                <!-- <h2 class="tw-text-3xl max-md:tw-text-xl">Company</h2> -->
+                <div class="tw-flex tw-flex-col tw-gap-3 max-md:tw-text-sm">
+                    <a href="#features" class="footer-link">Features</a>
+                    <a href="#pricing" class="footer-link">Pricing</a>
+                    <a href="https://github.com/PaulleDemon/font-tester-chrome/blob/main/roadmap.md" class="footer-link">Roadmap</a>
+                </div>
+            </div>
+
+            <div class="tw-flex tw-h-full tw-w-[250px] tw-flex-col tw-gap-4">
+                <div class="tw-flex tw-flex-col tw-gap-3 max-md:tw-text-sm">
+                    <a href="" class="footer-link">About</a>
+                    <a href="#faq" class="footer-link">FAQ</a>
+                    <a href="https://github.com/PaulleDemon/font-tester-chrome" class="footer-link">Github</a>
+                    <a href="https://github.com/PaulleDemon/font-tester-chrome" class="footer-link">Report issue</a>
+                </div>
+            </div>
+        </footer>
+    </body>
+
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/gsap.min.js"
+        integrity="sha512-B1lby8cGcAUU3GR+Fd809/ZxgHbfwJMp0jLTVfHiArTuUt++VqSlJpaJvhNtRf3NERaxDNmmxkdx2o+aHd4bvw=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+    ></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/ScrollTrigger.min.js"
+        integrity="sha512-AY2+JxnBETJ0wcXnLPCcZJIJx0eimyhz3OJ55k2Jx4RtYC+XdIi2VtJQ+tP3BaTst4otlGG1TtPJ9fKrAUnRdQ=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+    ></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/11.0.5/swiper-bundle.min.js" integrity="sha512-Ysw1DcK1P+uYLqprEAzNQJP+J4hTx4t/3X2nbVwszao8wD+9afLjBQYjz7Uk4ADP+Er++mJoScI42ueGtQOzEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/11.0.5/swiper-bundle.min.css" integrity="sha512-rd0qOHVMOcez6pLWPVFIv7EfSdGKLt+eafXh4RO/12Fgr41hDQxfGvoi1Vy55QIVcQEujUE1LQrATCLl2Fs+ag==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <script src="./widget/content.js"></script>
+
+    <script src="./scripts/utils.js"></script>
+    <script src="./index.js"></script>
+
+    <style>
+        .swiper-pagination-bullet {
+            width: 10px;
+            height: 10px;
+            text-align: center;
+            /* font-size: 12px; */
+            opacity: 1;
+            background: #dad8d8fa;
+            left: auto;
+        }
+        .swiper-pagination-bullet:hover {
+            color: #000;
+            opacity: 1;
+            background: #ede0e0bd;
+        }
+
+        .swiper-pagination-bullet-active {
+            background: #000000 !important;
+        }
+
+        .swiper {
+            padding: 10px !important;
+        }
+    </style>
+
+    <script>
+        const swiper = new Swiper('.swiper', {
+            // Optional parameters
+            direction: 'horizontal',
+            loop: true,
+            centeredSlides: true,
+
+            // If we need pagination
+            pagination: {
+                el: '.pagination-container',
+                clickable: true,
+                renderBullet: function (index, className) {
+                    return `<span class="${className}"></span>`
+                },
+            },
+            // Navigation arrows
+            navigation: {
+                nextEl: '.testmonial-next',
+                prevEl: '.testmonial-prev',
+            },
+        })
+    </script>
+    <script src="https://gumroad.com/js/gumroad.js"></script>
+
+</html>

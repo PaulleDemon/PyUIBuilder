@@ -3,9 +3,9 @@ module.exports = {
 	prefix: 'tw-',
 	important: false,
 	content: [
-		"landingpages/landingpage/**/*.{html, jsx, js}",
-		"landingpages/landingpage/**/*.js",
-		"landingpages/landingpage/**/*.html",
+		"landing-page/**/*.{html, jsx, js}",
+		"landing-page/**/*.js",
+		"landing-page/**/*.html",
 	],
 	darkMode: 'class',
 	theme: {
