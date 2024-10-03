@@ -64,7 +64,7 @@ gsap.to(".reveal-up", {
     y: "100%",
 })
 
-const slideShowContainer = document.querySelector("#slideshow")
+// const slideShowContainer = document.querySelector("#slideshow")
 
 gsap.fromTo(".slide-in", {
     y: "100%"
@@ -150,6 +150,6 @@ sections.forEach((sec) => {
 
 
 
-const reviewContainer = document.querySelector(".review-container")
-const reviewSlideShow = new SlideShow(reviewContainer, true, 10000)
+// const reviewContainer = document.querySelector(".review-container")
+// const reviewSlideShow = new SlideShow(reviewContainer, true, 10000)
 
