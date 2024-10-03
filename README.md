@@ -1,5 +1,5 @@
-# PyUIBuilder - The Webflow of Python GUIs
-
+# PyUIBuilder - Build python GUIs like Webflow
+<sub>Not affiliated to Webflow</sub>
 
 <p align="center">
     <a href="https://twitter.com/share?url=https://github.com/PaulleDemon/PyUIBuilder&text=Check out PyUIBuilder tool">
@@ -19,7 +19,7 @@
 <p><img src="./repo-assets/logo/PyUi.png" alt="font tester logo" width="100" height="100"></p>
 
 
-Build Python GUI's like Canva.
+Build Python GUI's with ease of Drag and drop builders.
 
 
 

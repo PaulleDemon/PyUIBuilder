@@ -2,7 +2,7 @@
 
 # PyUIBuilder Docs
 
-> A Free and open-source Python GUI builder tool.
+> A Free Python GUI builder tool, like Webflow, but for python GUIs
 
 - Simple and powerful
 - Do more with plugins
