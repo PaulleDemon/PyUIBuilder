@@ -226,14 +226,14 @@ header > .collapsible-header{
         padding-top: 5%;
         padding-bottom: 5%;
         place-items: end;
-        background-color: #040404;
-        color: #ffffff;
+        background-color: #eaeaea;
+        color: #1b1a1a;
         overflow-y: auto;
         box-shadow: 3px 0px 3px 2px #9f9f9f;
     }
 
     .header-links{
-        color: rgb(255, 255, 255);
+        color: #3a3838;
     }
     
 }

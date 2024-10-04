@@ -3,7 +3,7 @@
 
     --bg-color: #fff;
 
-    --btn-color: #141313;/* button color*/
+    --btn-color: #0F1727;/* button color*/
     --btn-bg: #f1efef;/* button bg color*/
 
     --primary-text-color: #000;
@@ -19,8 +19,8 @@ html {
 
 
 .gradient-text{
-    background: rgb(215,215,215);
-    background: linear-gradient(90deg, rgba(215,215,215,1) 18%, rgba(136,136,136,1) 71%);
+    background: rgb(93, 92, 92);
+    background: linear-gradient(90deg, rgb(110, 109, 109) 18%, rgba(136,136,136,1) 71%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -30,7 +30,7 @@ html {
 header{
     /* background-color: #fff;
     color: #000; */
-    color: #c0c0c0;
+    color: #434242;
 }
 
 
@@ -60,7 +60,7 @@ header > .collapsible-header{
 
 
 .header-links:hover {
-    color: #fff;
+    color: #000;
     /* background-color: var(--header-link-hover); */
 }
 
@@ -240,14 +240,15 @@ header > .collapsible-header{
 /* Style for the collapsible content such as faq commonly known as: accordion */
 
 .faq{
-    background-color: #000000;
-    color: #fff8f8;
-    border: 1px solid #f5f3f3;
+    background-color: #fefefe;
+    color: #292828;
+    border: 1px solid #0F1727;
+    border-radius: 0px;
 }
 
 .faq-accordion {
     background-color: inherit;
-    color: #eeeaea;
+    color: #222222;
     cursor: pointer;
     padding: 15px 18px;
     width: 100%;
@@ -259,7 +260,7 @@ header > .collapsible-header{
 
 .faq .content {
     padding: 0px 18px;
-    color: #e6e5e5;
+    color: #222222;
     height: max-content;
     overflow: hidden;
     background-color: transparent;

@@ -42,7 +42,7 @@
         </script>
     </head>
     <body
-        class="tw-flex tw-min-h-[100vh] tw-flex-col tw-bg-black tw-text-white"
+        class="tw-flex tw-min-h-[100vh] tw-flex-col tw-bg-white tw-text-black"
     >
         <header
             class="tw-max-w-lg:tw-px-4 tw-max-w-lg:tw-mr-auto tw-absolute tw-top-0 tw-z-20 tw-flex tw-h-[60px] tw-w-full tw-bg-opacity-0 tw-px-[5%] lg:tw-justify-around"
@@ -59,7 +59,9 @@
                 id="collapsed-header-items"
             >
                 <div
-                    class="tw-flex tw-h-full tw-w-max tw-gap-5 tw-text-base max-lg:tw-mt-[30px] max-lg:tw-flex-col max-lg:tw-place-items-end max-lg:tw-gap-5 lg:tw-mx-auto lg:tw-place-items-center"
+                    class="tw-flex tw-h-full tw-w-max tw-gap-5 tw-text-base
+                            max-lg:tw-mt-[30px] max-lg:tw-flex-col max-lg:tw-place-items-end 
+                            max-lg:tw-gap-5 lg:tw-mx-auto lg:tw-place-items-center"
                 >
                     <a class="header-links" href=""> About </a>
                     <a class="header-links" href="#pricing"> Pricing </a>
@@ -70,14 +72,16 @@
                     class="tw-mx-4 tw-flex tw-place-items-center tw-gap-[20px] tw-text-base max-md:tw-w-full max-md:tw-flex-col max-md:tw-place-content-center"
                 >
                     <a
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        href="https://pyuibuilder.pages.dev"
-                        aria-label="signup"
-                        class="tw-rounded-md tw-border-[1px] tw-border-white tw-bg-transparent tw-px-3 tw-py-2 tw-text-white tw-transition-colors tw-duration-[0.3s] hover:tw-bg-white hover:tw-text-black"
+                        href="#pricing"
+                        aria-label="start"
+                        class="tw-rounded-md tw-border-[1px] tw-border-black 
+                                tw-bg-[#0F1727] tw-px-3 tw-py-2 tw-text-white 
+                                tw-duration-[0.3s]
+                                tw-transition-all hover:tw-translate-x-2
+                                "
                     >
-                        <span>Try free</span>
-                        <i class="bi bi-arrow-up-right"></i>
+                        <span>Start free</span>
+                        <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
             </div>
@@ -90,7 +94,8 @@
         </header>
 
         <section
-            class="hero-section tw-relative tw-flex tw-min-h-[60vh] tw-w-full tw-max-w-[100vw] tw-flex-col tw-overflow-hidden max-md:tw-mt-[50px]"
+            class="hero-section tw-relative tw-flex tw-min-h-[80vh] tw-w-full tw-max-w-[100vw] tw-flex-col 
+                    tw-overflow-hidden max-md:tw-mt-[50px] tw-place-content-center tw-place-items-center"
             id="hero-section"
         >   
 
@@ -111,7 +116,7 @@
 
                         <div class="tw-relative tw-bg-black tw-min-w-full tw-min-h-full tw-overflow-clip tw-rounded-md">
                             <!-- add your youtube video link here -->
-                            <iframe class="tw-absolute tw-top-[50%] tw--translate-y-[50%] tw-left-[50%] tw--translate-x-[50%] tw-w-full tw-h-full" src="https://www.youtube.com/embed/aXq0A6iJoKU?si=dF3UZT2eTRDU8u7a&amp;controls=1&rel=1&showinfo=0&autoplay=0&loop=1&mute=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                            <iframe class="tw-absolute tw-top-[50%] tw--translate-y-[50%] tw-left-[50%] tw--translate-x-[50%] tw-w-full tw-h-full" src="https://www.youtube.com/embed/CjwkUoGDX2g?si=gGG8Bs0Qc_J8ZF3a&amp;controls=1&rel=1&showinfo=0&autoplay=0&loop=1&mute=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                         </div>
         
                     </div>
@@ -119,14 +124,14 @@
             </div>
 
             <div
-                class="tw-flex tw-h-full max-lg:tw-mt-10 max-lg:tw-min-h-[60vh] tw-min-h-[70vh] tw-w-full tw-flex-col tw-place-content-center tw-gap-6 tw-p-[5%] max-xl:tw-place-items-center max-lg:tw-p-4"
+                class="tw-flex tw-h-full max-lg:tw-mt-10 max-lg:tw-min-h-[80vh] tw-min-h-[70vh] tw-w-full tw-flex-col tw-place-content-center tw-gap-6 tw-p-[5%] max-xl:tw-place-items-center max-lg:tw-p-4"
             >
                 <div
                     class="tw-flex tw-flex-col tw-place-content-center tw-items-center"
                 >
                     <div
                         class="reveal-up tw-text-center tw-text-6xl tw-font-semibold tw-uppercase tw-leading-[90px] 
-                                max-lg:tw-text-4xl gradient-text
+                                max-lg:tw-text-4xl tw-text-[#0F1727]
                                 max-md:tw-leading-snug"
                     >
                         <span class=""> Build Python UI's using <span class="tw-px-3 t"></span>
@@ -139,7 +144,7 @@
 
                 <div class="tw-flex tw-flex-col tw-w-full tw-place-items-center tw-place-content-center">
                     <div
-                        class="reveal-up tw-mt-3 tw-max-w-[450px] tw-p-2 tw-text-center tw-text-gray-200 max-lg:tw-max-w-full"
+                        class="reveal-up tw-mt-3 tw-max-w-[450px] tw-p-2 tw-text-center tw-text-gray-700 max-lg:tw-max-w-full"
                     >
                         Tired of writing code to build you python GUIs, well now you can easily 
                     </div>
@@ -148,13 +153,13 @@
                         class="reveal-up tw-mt-10 tw-flex tw-place-items-center tw-gap-4"
                     >
                         <a
-                            class="btn !tw-bg-[#7E22CE] !tw-text-white tw-shadow-lg tw-shadow-[#7E22CE] tw-transition-transform tw-duration-[0.3s] hover:tw-scale-x-[1.03]"
+                            class="btn !tw-bg-[#0F1727] !tw-text-white tw-shadow-lg tw-shadow-[#4d395e] tw-transition-transform tw-duration-[0.3s] hover:tw-scale-x-[1.03]"
                             href="#pricing"
                         >
                             Start for free
                         </a>
                         <button
-                            class="btn tw-flex tw-gap-2 !tw-border-solid !tw-border-[1px] !tw-border-white !tw-text-white !tw-bg-transparent tw-transition-colors tw-duration-[0.3s] hover:!tw-bg-white hover:!tw-text-black"
+                            class="btn tw-flex tw-gap-2 !tw-border-solid !tw-border-[1px] !tw-border-[#0F1727] !tw-text-[#0F1727] !tw-bg-transparent tw-transition-colors tw-duration-[0.3s] hover:!tw-bg-white hover:!tw-text-black"
                             onclick="openVideo()"
                             
                         >
@@ -176,23 +181,23 @@
             <div class="reveal-up tw-flex tw-border-[1px] max-lg:tw-w-full tw-border-black tw-rounded-md tw-p-2 tw-max-w-[850px] tw-w-[1000px] tw-min-h-[550px] max-lg:tw-min-w-[320px] max-lg:tw-min-h-[250px] max-lg:tw-h-auto">
 
                 <div class="tw-relative tw-bg-black tw-min-w-full tw-min-h-full tw-overflow-clip tw-rounded-md">
-                    <iframe class="tw-absolute tw-top-[50%] tw--translate-y-[50%] tw-left-[50%] tw--translate-x-[50%] tw-w-full tw-h-full" src="https://www.youtube.com/embed/aXq0A6iJoKU?si=dF3UZT2eTRDU8u7a?si=QOMSCki8Jl30_CkW&amp;controls=1&rel=0&showinfo=0&autoplay=1&loop=1&mute=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                    <!-- <img class="tw-object-contain tw-w-full tw-h-full" 
-                        alt="font tester gif" src="./assets/images/home/fonttester.gif" > -->
+                    <!-- <iframe class="tw-absolute tw-top-[50%] tw--translate-y-[50%] tw-left-[50%] tw--translate-x-[50%] tw-w-full tw-h-full" src="https://www.youtube.com/embed/aXq0A6iJoKU?si=dF3UZT2eTRDU8u7a?si=QOMSCki8Jl30_CkW&amp;controls=1&rel=0&showinfo=0&autoplay=1&loop=1&mute=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> -->
+                    <img class="tw-object-contain tw-w-full tw-h-full" 
+                        alt="font tester gif" src="./assets/images/home/promo.gif" >
                 </div>
 
             </div>
         </section>
 
         <section class="tw-mt-1 tw-flex tw-w-full tw-flex-col tw-place-items-center tw-p-[2%] max-lg:tw-p-2" id="pricing">
-            <h3 class="tw-text-2xl tw-font-medium max-md:tw-text-2xl">Choose your plan</h3>
+            <h3 class="tw-text-2xl tw-font-medium max-md:tw-text-2xl">Pre-order your License</h3>
             <div class="tw-mt-10 tw-flex tw-place-content-center tw-gap-8 max-lg:tw-flex-col">
                 <div class="tw-flex tw-w-[380px] tw-border-[1px] tw-border-gray-300 tw-border-solid tw-flex-col 
                                 tw-place-items-center tw-gap-2 tw-rounded-lg tw-p-8 tw-shadow-xl max-lg:tw-w-[340px]">
                     <h3>
                         <span class="tw-text-5xl tw-font-semibold">$0</span>
                     </h3>
-                    <p class="tw-mt-3 tw-text-base tw-text-center tw-text-gray-400">
+                    <p class="tw-mt-3 tw-text-base tw-text-center tw-text-gray-800">
                         Free to use forever, but for added features and to support open-source development, consider buying a lifetime license.
                     </p>
                     <hr />
@@ -243,10 +248,19 @@
                         </li>
                         
                     </ul>
+                    <a
+                        href="https://pyuibuilder.pages.dev/"
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        class=" !tw-bg-[#0F1727] tw-duration-[0.3s] hover:tw-transition-transform hover:tw-scale-[1.01] !tw-mt-auto !tw-text-white tw-gap-2 tw-text-lg tw-rounded-md tw-w-full tw-flex tw-place-content-center tw-p-2 tw-mx-2"
+                    >
+                        <span>Get Started</span>
+                        <!-- <CrownFilled /> -->
+                    </a>
                 </div>
 
                 <div class="tw-flex tw-w-[380px] tw-flex-col tw-place-items-center tw-gap-2 tw-rounded-lg tw-border-2 tw-border-solid
-                                 tw-border-blue-500 tw-p-8 tw-shadow-xl max-lg:tw-w-[340px]">
+                                  tw-p-8 tw-shadow-xl max-lg:tw-w-[340px]">
                     <div class="tw-text-white tw-p-1 tw-px-3 tw-bg-blue-500 tw-rounded-full">
                         Limited time offer
                     </div>
@@ -316,15 +330,15 @@
                         href="https://ko-fi.com/s/4a3dffb3b9"
                         target="_blank"
                         rel="noreferrer noopener"
-                        class="tw-mt-8 !tw-bg-purple-500 !tw-text-white tw-gap-2 tw-text-lg tw-rounded-md !tw-font-semibold tw-w-full tw-flex tw-place-content-center tw-p-2 tw-mx-2"
+                        class="tw-mt-8 tw-duration-[0.3s] hover:tw-transition-transform hover:tw-scale-[1.01] !tw-bg-[#0F1727] !tw-text-white tw-gap-2 tw-text-lg tw-rounded-md tw-w-full tw-flex tw-place-content-center tw-p-2 tw-mx-2"
                     >
                         <span>Buy License</span>
                         <!-- <CrownFilled /> -->
                     </a>
                 </div>
 
-                <div class="tw-flex tw-w-[380px] tw-flex-col tw-place-items-center tw-gap-2 tw-rounded-lg tw-border-3 tw-border-solid
-                                 tw-border-green-600 tw-p-8 tw-shadow-xl max-lg:tw-w-[340px]">
+                <div class="tw-flex tw-w-[380px] tw-flex-col tw-place-items-center tw-gap-2 tw-rounded-lg tw-border-[3px] tw-border-solid
+                                 !tw-border-green-600 tw-p-8 tw-shadow-xl max-lg:tw-w-[340px]">
                     <div class="tw-text-white tw-p-1 tw-px-3 tw-bg-blue-500 tw-rounded-full">
                         Limited time offer
                     </div>
@@ -394,10 +408,11 @@
                         href="https://ko-fi.com/s/560a3b6b05"
                         target="_blank"
                         rel="noreferrer noopener"
-                        class="tw-mt-8 !tw-bg-purple-500 !tw-text-white tw-gap-2 tw-text-lg tw-rounded-md !tw-font-semibold tw-w-full tw-flex tw-place-content-center tw-p-2 tw-mx-2"
+                        class="tw-mt-8 !tw-bg-[#0F1727] tw-duration-[0.3s] hover:tw-transition-transform hover:tw-scale-[1.02] !tw-text-white tw-gap-2 tw-text-lg tw-rounded-md
+                                     tw-w-full tw-flex tw-place-content-center tw-p-2 tw-mx-2"
                     >
                         <span>Buy License</span>
-                        <CrownFilled />
+                        <!-- <i class="bi bi-crown"></i> -->
                     </a>
                 </div>
             </div>
@@ -407,7 +422,7 @@
             class="tw-flex tw-w-full tw-flex-col tw-place-content-center tw-place-items-center tw-gap-[10%] tw-p-[5%] tw-px-[10%]"
         >
             <h3
-                class="tw-text-4xl tw-font-medium tw-text-gray-300 max-md:tw-text-2xl"
+                class="tw-text-4xl tw-font-medium tw-text-gray-800 max-md:tw-text-2xl"
             >
                 Faq
             </h3>
@@ -453,12 +468,12 @@
                     <div
                         class="faq-accordion tw-flex tw-w-full tw-select-none tw-text-xl max-md:tw-text-lg"
                     >
-                        <span>Is Safari, Edge and Firefox addons available?</span>
+                        <span>How can I save and load UI files?</span>
                         <i class="bi bi-plus tw-ml-auto tw-font-semibold"></i>
                     </div>
                     <div class="content">
-                        The Safari, Edge and firefox addons will be available for premium users when released.
-                        If you purchase a license, you'll be notified when its released.
+                        Saving and loading UI Files will be made available to premium users, when it becomes available. 
+                        If you hold a premium license you'll be notified of the release.
                     </div>
                 </div>
 
