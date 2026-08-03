@@ -37,6 +37,13 @@ https://github.com/user-attachments/assets/57addb9c-d018-4be9-894d-c7cbce5ff55f
 
 <sub>**Don't like background music? feel free to mute it**</sub>
 
+<br>
+
+---
+> [!IMPORTANT]
+> **Note**: The project is now being maintained in a private repo, and is being continuously updated
+> 
+---
 ## Try PyUIBuilder
 **Try it** [PyUIBuilder](https://pyuibuilder.com)
 
