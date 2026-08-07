@@ -7,140 +7,481 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="description" content="Documentation for PyUiBuilder">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-  <!-- <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/LIGMATV/docsify-theme-github/github.css"> -->
-  <!-- <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css"> -->
-  <!-- <link rel="stylesheet" href="//unpkg.com/docsify/themes/dark.css">  -->
-  <link 
+  <link
     rel="stylesheet"
     href="//cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/dist/style.min.css"
     title="docsify-darklight-theme"
     type="text/css"
   />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- Nicer type -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
-  <!-- <nav>
-    <a href="https://github.com/PaulleDemon/PyUIBuilder" target="_blank" rel="noopener noreferrer">
-      <i class="bi bi-github icon"></i>
-    </a>
-  </nav> -->
   <div id="app"></div>
- 
+
   <script>
     window.$docsify = {
       name: 'PyUIBuilder',
       repo: 'https://github.com/PaulleDemon/PyUIBuilder',
       coverpage: true,
-      // themeColor: '#3F51B5',
-      // mergeNavbar: true,
-      homepage: 'intro.md',  // You can set this to any file
-      // loadSidebar: true,  // Ensure _sidebar.md is loaded if you want to use it
-      // loadNavbar: true,
+      onlyCover: false,
+      homepage: 'readme.md',
+      loadSidebar: true,
+      subMaxLevel: 3,
       autoHeader: true,
+      skipLink: false,
+      auto2top: true,
       search: {
-        maxAge: 86400, // Expiration time, the default one day
+        maxAge: 86400,
         paths: 'auto',
         placeholder: 'Type to search',
-        noData: 'No Results!',
+        noData: 'No results!',
         depth: 6,
-      }
+      },
+      pagination: {
+        previousText: 'Previous',
+        nextText: 'Next',
+        crossChapter: true,
+        crossChapterText: true,
+      },
+      copyCode: {
+        buttonText: 'Copy',
+        errorText: 'Error',
+        successText: 'Copied',
+      },
+      zoomImage: {
+        selector: '.markdown-section img',
+      },
     }
   </script>
-  <!-- Docsify v4 -->
-  <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+
+  <!-- Docsify v4 core -->
+  <script src="//cdn.jsdelivr.net/npm/docsify@5"></script>
   <script src="//unpkg.com/docsify@4.13.1/lib/plugins/search.min.js"></script>
-  <script 
-    src="//cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/dist/index.min.js"
-    type="text/javascript">
-  </script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/dist/index.min.js" type="text/javascript"></script>
+
+  <!-- Polish plugins -->
+  <script src="//cdn.jsdelivr.net/npm/docsify-copy-code@2"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-pagination@2/dist/docsify-pagination.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-zoom-image@1.0.1/dist/zoom-image.min.js"></script>
+
   <style>
+    /* =========================================================
+       Design tokens
+       docsify-darklight-theme exposes --background / --textColor
+       at runtime for light/dark switching — we build on top of
+       those instead of hard-coding colors, so everything below
+       adapts automatically when the theme toggles.
+       ========================================================= */
+       /* =========================================================
+       Design tokens & Dynamic Theme Mapping
+       ========================================================= */
+        /* =========================================================
+       Design tokens & Dynamic Theme Mapping
+       Using the native browser light-dark() function to defeat
+       the plugin's inline style specificity.
+       ========================================================= */
+    :root {
+      /* Force browser engine to keep track of active scheme shifts */
+      color-scheme: light dark;
 
-    .markdown-section{
-      max-width: 1000px;
+      --pyui-radius: 12px;
+      --pyui-border: rgba(120, 120, 140, 0.18);
+
+      /* Docsify cover page theme properties */
+      --cover-bg-overlay: rgba(0, 0, 0, 0); 
+      --cover-color: #fff;
+
+      /* The light-dark() layout pairs: light-dark(LIGHT_VALUE, DARK_VALUE) */
+      --pyui-accent: light-dark(#6a3fd6, #9d7aff);
+      --pyui-accent-dark: light-dark(#4527a0, #bda3ff);
+      --pyui-accent-light: light-dark(#f1ecfd, #242038); 
+      
+      --code-bg-inline: light-dark(#f1ecfd, #242038);
+      --code-text-inline: light-dark(#4527a0, #e5c7ff);
+      
+      --code-bg-block: light-dark(#f8f9fa, #161420);
+      --code-text-block: light-dark(#24292e, #e2e1e9);
+      --code-border-block: light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.05));
+      
+      --link-color: light-dark(#6a3fd6, #9d7aff);
+      --table-row-even: light-dark(rgba(120, 120, 140, 0.045), rgba(255, 255, 255, 0.025));
+      --alert-bg: light-dark(rgba(106, 63, 214, 0.05), rgba(157, 122, 255, 0.06));
+      
+      --alert-note-color: light-dark(#6a3fd6, #bda3ff);
+      --alert-warn-color: light-dark(#d27c00, #ffb444);
+      --alert-danger-color: light-dark(#cf222e, #ff7b72);
+
+      /* 
+         CRITICAL OVERRIDES: Overwrites the plugin's hot-pink links 
+         and text color settings by targeting their exact inline names.
+      */
+      --accent: light-dark(#6a3fd6, #9d7aff) !important;
+      --sidebarSublink: light-dark(#24292e, #e2e1e9) !important;
     }
 
-    .icon{
-      font-size: 30px;
-    }
+    * { box-sizing: border-box; }
 
-    .cover.show {
-    }
-
-    .cover-main, .cover-main h1 span{
-      color: #000 !important;
-    }
-
-    img{
-      max-width: 850px;
-    }
-
-    body{
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       font-size: 16px;
+      -webkit-font-smoothing: antialiased;
     }
 
-    h1 {
-            font-size: 2em; /* H1 size */
-        }
-
-    h2 {
-        font-size: 1.75em; /* H2 size */
+    /* =========================================================
+      Cover page — Modernized & Perfect Centering
+      ========================================================= */
+    section.cover.show {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      text-align: center !important;
+      background: radial-gradient(circle at 50% 30%, #8755f5 0%, transparent 60%),
+                  linear-gradient(135deg, #512da8 0%, #291266 100%) !important;
     }
 
-    h3 {
-        font-size: 1.5em; /* H3 size */
+    section.cover::before {
+      display: none !important;
     }
 
+    /* a{
+      color: var(--link-color) !important;
+    } */
 
-    /* Common styling for all alerts */
-    .alert {
-      padding: 15px;
-      margin: 15px 0;
+    .cover-main {
+      max-width: 680px;
+      margin: 0 auto !important;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .cover-main img, 
+    .cover-main p:first-child img,
+    .cover-main > p:first-child {
+      max-width: 140px !important;
+      height: auto;
+      border-radius: 28px !important;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25), 
+                  0 0 0 1px rgba(255, 255, 255, 0.1);
+      margin-bottom: 1.5rem !important;
+    }
+
+    .cover-main h1 {
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      font-size: 3.5rem;
+      color: #fff !important;
+      margin: 0 0 0.4em 0 !important;
+    }
+
+    .cover-main h1 span {
+      color: #fff !important;
+    }
+
+    .cover-main p, .cover-main blockquote {
+      color: rgba(255, 255, 255, 0.85) !important;
+      font-size: 1.2rem;
+      font-weight: 400;
+      line-height: 1.6;
+      max-width: 580px;
+      margin: 0 auto 2em !important;
+      border: none !important;
+    }
+
+    .cover-main p:last-of-type {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      align-items: center;
+      margin-top: 0.5rem !important;
+    }
+
+    .cover-main p a {
+      display: inline-flex !important;
+      align-items: center;
+      justify-content: center;
+      min-width: 150px;
+      border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
+      color: #fff !important;
+      border-radius: 999px !important;
+      padding: 0.75em 1.8em !important;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none !important;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    .cover-main p a:first-of-type {
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .cover-main p a:first-of-type:hover {
+      background-color: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.7) !important;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .cover-main p a:last-of-type {
+      background-color: #fff !important;
+      color: #3b1fa4 !important;
+      border-color: #fff !important;
+    }
+
+    .cover-main p a:last-of-type:hover {
+      background-color: #f4f0ff !important;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(59, 31, 164, 0.3);
+    }
+
+    .github-corner svg {
+      fill: #fff !important;
+      color: #512da8 !important;
+    }
+
+    /* =========================================================
+       Content typography & Image Scaling
+       ========================================================= */
+    img {
+      max-width: 80%;
+      height: auto;
+      border-radius: 8px;
+      border: 1px solid var(--pyui-border);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+    }
+
+    /* Custom Image Hover Zoom Effect Injection */
+    img:hover {
+      transform: scale(1.015);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    }
+
+    .markdown-section h1 {
+      font-size: 2.1rem;
+      padding: 10px 0 0.5rem;
+      margin: 0 !important;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .markdown-section h2 {
+      font-size: 1.6rem;
+      padding: 2.4rem 0 0.7rem;
+      margin: 0 !important;
+      font-weight: 700;
+      border-bottom: 1px solid var(--pyui-border);
+    }
+
+    .markdown-section h3 {
+      font-size: 1.25rem;
+      padding: 1.8rem 0 0.5rem;
+      margin: 0 !important;
+      font-weight: 600;
+    }
+
+    .markdown-section p, .markdown-section li {
+      line-height: 1.7;
+    }
+
+    .markdown-section a {
+      color: var(--link-color) !important;
+      font-weight: 500;
+    }
+
+    .markdown-section a:hover {
+      opacity: 0.75;
+    }
+
+    .markdown-section strong {
+      font-weight: 650;
+    }
+
+    /* Inline code blocks styling */
+    .markdown-section code {
       border-radius: 4px;
-      background-color: #f2f2f239;
-      border-left: 4px solid;
+      padding: 2px 7px;
+      font-size: 0.85em;
+      background: var(--code-bg-inline) !important;
+      color: var(--code-text-inline) !important;
     }
-    
-    /* NOTE style (info) */
+
+    /* Fenced code block framing */
+    .markdown-section pre {
+      border-radius: var(--pyui-radius);
+      border: 1px solid var(--code-border-block) !important;
+      background-color: var(--code-bg-block) !important;
+      box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    .markdown-section pre code {
+      background: transparent !important;
+      color: var(--code-text-block) !important;
+    }
+
+    /* =========================================================
+       Tables
+       ========================================================= */
+    .markdown-section table {
+      display: table;
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: var(--pyui-radius);
+      overflow: hidden;
+      border: 1px solid var(--pyui-border);
+      margin: 1.2em 0;
+    }
+
+    .markdown-section table tr {
+      border-top: none;
+    }
+
+    .markdown-section table th {
+      background: var(--pyui-accent-light) !important;
+      color: var(--pyui-accent-dark) !important;
+      font-weight: 650;
+      text-align: left;
+      padding: 12px 16px;
+    }
+
+    .markdown-section table td {
+      padding: 12px 16px;
+      border-top: 1px solid var(--pyui-border);
+    }
+
+    .markdown-section table tr:nth-child(even) td {
+      background: var(--table-row-even) !important;
+    }
+
+    /* =========================================================
+       Blockquotes / notes
+       ========================================================= */
+    .markdown-section blockquote {
+      border-left: 4px solid var(--pyui-accent) !important;
+      background: var(--pyui-accent-light) !important;
+      color: inherit;
+      margin: 1.2em 0;
+      padding: 0.9em 1.2em;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .markdown-section blockquote p {
+      margin: 0;
+      opacity: 0.9;
+    }
+
+    /* =========================================================
+       Sidebar Navigation Settings
+       ========================================================= */
+    .sidebar {
+      border-right: 1px solid var(--pyui-border);
+    }
+
+    .sidebar > h1 {
+      border-bottom: 1px solid var(--pyui-border);
+      margin-bottom: 0.6em;
+      padding-bottom: 0.8em;
+    }
+
+    .sidebar-nav > ul > li > p {
+      font-weight: 700;
+      font-size: 0.75em;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      opacity: 0.55;
+      margin: 1.4em 0 0.3em;
+    }
+
+    .sidebar-nav li > a {
+      border-radius: 6px;
+      padding: 4px 10px;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .sidebar-nav li > a:hover {
+      background: var(--pyui-accent-light) !important;
+    }
+
+    .sidebar-nav li.active > a {
+      color: var(--pyui-accent) !important;
+      font-weight: 650;
+      background: var(--pyui-accent-light) !important;
+    }
+
+    /* =========================================================
+       Pagination
+       ========================================================= */
+    .pagination-item {
+      border: 1px solid var(--pyui-border) !important;
+      border-radius: var(--pyui-radius);
+      transition: border-color 0.15s ease, transform 0.15s ease;
+    }
+    .pagination-item:hover {
+      border-color: var(--pyui-accent) !important;
+      transform: translateY(-1px);
+    }
+    .pagination-item-label {
+      font-size: 0.78em;
+      opacity: 0.6;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .pagination-item-title {
+      color: var(--pyui-accent) !important;
+    } /* =========================================================Alert Blocks (Violet-Themed Realignment Fix)========================================================= */
+    .alert {
+      padding: 16px 20px;
+      margin: 20px 0;
+      border-radius: 6px;
+      background-color: var(--alert-bg) !important;
+      border-left: 4px solid var(--pyui-accent);
+      border-top: 1px solid var(--pyui-border);
+      border-right: 1px solid var(--pyui-border);
+      border-bottom: 1px solid var(--pyui-border);
+    }
     .alert-note {
-      border-color: #0366d6;
+      border-left-color: var(--alert-note-color) !important;
     }
     .alert-note .alert-title {
-      color: #0366d6;
+      color: var(--alert-note-color) !important;
     }
-    
-    /* WARNING style */
     .alert-warning {
-      border-color: #ffd33d;
+      border-left-color: var(--alert-warn-color) !important;
     }
     .alert-warning .alert-title {
-      color: #e36209;
+      color: var(--alert-warn-color) !important;
     }
-    
-    /* DANGER style */
     .alert-danger {
-      border-color: #d73a49;
+      border-left-color: var(--alert-danger-color) !important;
     }
     .alert-danger .alert-title {
-      color: #d73a49;
+      color: var(--alert-danger-color) !important;
     }
-    
-    /* Title for each alert type */
     .alert-title {
-      font-weight: bold;
-      margin-bottom: 10px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
     }
-    
-    /* Ensure the text color is readable */
     .alert p {
       margin: 0;
-      color: #24292e;
+      opacity: 0.9;
+      line-height: 1.5;
+    } /* =========================================================Copy-code button========================================================= */
+    .docsify-copy-code-button {
+      border-radius: 6px !important;
+      background: rgba(120, 120, 140, 0.12) !important;
     }
-  </style>
-
-  <style>
-
+    .docsify-copy-code-button:hover {
+      background: var(--pyui-accent) !important;
+      color: #fff !important;
+    } /* =========================================================Nav / search setup========================================================= */
     .app-nav {
-      /* position: fixed; */
       background-color: var(--background, transparent);
       width: 100%;
       margin: 0;
@@ -149,63 +490,62 @@
       color: var(--textColor, #fff);
       transition: 0.2s;
     }
-
     .app-nav li {
       padding: 0;
     }
-
     .app-nav p img:nth-child(1) {
       width: 24px;
       float: left;
     }
-
     .app-nav p:nth-child(2) {
       float: left;
       font-weight: 600;
       margin-left: 16px;
     }
-
     .app-nav li ul {
       color: #000000;
     }
-
     .app-nav .badge {
       min-width: 85px !important;
       max-width: 85px;
       float: right !important;
       margin-left: 10px;
     }
-
-    .search input, .search .clear-button {
+    .search {
+      border-bottom: 1px solid var(--pyui-border);
+      padding-bottom: 12px;
+    }
+    .search input {
+      border-radius: 8px !important;
+      border: 1px solid var(--pyui-border) !important;
+      background-color: var(--code-bg-block) !important;
+      color: var(--code-text-block) !important;
+    }
+    .search input,
+    .search .clear-button {
       margin-top: 15%;
     }
-
     section.cover img:first-child {
       margin-top: 4%;
     }
-
-    .markdown-section h1 {
-      font-size: 2rem;
-      padding: 40px 0 1rem;
-      margin: 0 !important;
-    }
-    .markdown-section h2 {
-      font-size: 1.75rem;
-      padding: 45px 0 0.8rem;
-      margin: 0 !important;
-    }
-    .markdown-section h3 {
-      font-size: 1.5rem;
-      padding: 40px 0 0.6rem;
-      margin: 0 !important;
-    }
-
     @media screen and (max-width: 770px) {
-      .search input, .search .clear-button {
+      .search input,
+      .search .clear-button {
         margin-top: 0%;
       }
+      .cover-main h1 {
+        font-size: 2.2rem;
+      }
+      .markdown-section {
+        padding: 20px 22px 50px;
+      }
     }
+
   </style>
+  <!-- Prism.js languages support plugins -->
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-python.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-json.min.js"></script>
 
 </body>
 </html>

@@ -1,0 +1,110 @@
+:root {
+  /* Docsify cover theme properties */
+  --cover-bg: #f8fafc;
+  --cover-bg-overlay: transparent;
+  --cover-color: #548cdb;
+  --cover-title-color: #111827;
+  --cover-title-font: 800 clamp(3rem, 7vw, 4.8rem) -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Backup override for older Docsify theme builds */
+.cover,
+.cover.show {
+  background: #f8fafc !important;
+  background-image: none !important;
+}
+
+.cover .mask {
+  background: transparent !important;
+  opacity: 0 !important;
+}
+
+.cover .cover-main {
+  color: #475569 !important;
+  max-width: 680px;
+  padding: 100px 24px 72px;
+  text-align: center;
+}
+
+.cover .cover-main > p:first-child {
+  margin: 0 0 22px;
+}
+
+.cover .cover-main > p:first-child img {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+  height: 72px;
+  padding: 7px;
+  width: 72px;
+}
+
+.cover h1 {
+  color: #111827 !important;
+  font-size: clamp(3rem, 7vw, 4.8rem) !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.06em;
+  line-height: 1 !important;
+  margin: 0 0 20px !important;
+}
+
+.cover h1::after {
+  color: #6d4aff;
+  content: "DOCUMENTATION";
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  margin-top: 16px;
+}
+
+.cover blockquote {
+  border: 0 !important;
+  color: #526074 !important;
+  font-size: 1.1rem;
+  line-height: 1.65;
+  margin: 0 auto 30px !important;
+  max-width: 600px;
+  padding: 0 !important;
+}
+
+.cover .cover-main > p:last-child {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 0;
+}
+
+.cover .cover-main > p:last-child a {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #d7dde7;
+  border-radius: 10px;
+  color: #334155 !important;
+  display: inline-flex;
+  font-size: 0.95rem;
+  font-weight: 700;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 20px;
+  text-decoration: none !important;
+  transition: 180ms ease;
+}
+
+.cover .cover-main > p:last-child a:first-child {
+  background: #6246d8;
+  border-color: #6246d8;
+  box-shadow: 0 8px 18px rgba(98, 70, 216, 0.22);
+  color: #ffffff !important;
+}
+
+.cover .cover-main > p:last-child a:hover {
+  border-color: #9b8ce5;
+  transform: translateY(-2px);
+}
+
+.cover .cover-main > p:last-child a:first-child:hover {
+  background: #5036c4;
+  border-color: #5036c4;
+}
