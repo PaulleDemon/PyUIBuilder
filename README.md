@@ -30,7 +30,11 @@ Build Python GUI's with ease of Drag and drop builders.
 
 
 
-https://github.com/user-attachments/assets/57addb9c-d018-4be9-894d-c7cbce5ff55f
+
+
+https://github.com/user-attachments/assets/0bfcf560-cf1d-4ffd-852c-6506fdd5fe66
+
+
 
 
 <!-- https://github.com/user-attachments/assets/ac91aa98-843d-4578-b646-88e66bc113de -->
@@ -47,6 +51,8 @@ https://github.com/user-attachments/assets/57addb9c-d018-4be9-894d-c7cbce5ff55f
 ## Try PyUIBuilder
 **Try it** [PyUIBuilder](https://pyuibuilder.com)
 
+**Try script to GUI converter** [Pyuibuilder - Python to GUI converter](https://pyuibuilder.com/script-to-gui)
+
 **About** [About PyUiBuilder](https://about.pyuibuilder.com)
 
 [PyuiBuilder - Python GUI Builder](https://pyuibuilder.com/python-gui-builder)
@@ -54,6 +60,21 @@ https://github.com/user-attachments/assets/57addb9c-d018-4be9-894d-c7cbce5ff55f
 **Roadmap:** You can check whats upcoming on [Roadmap](https://scrawny-droplet-e97.notion.site/PyUIBuilder-Roadmap-21e45dc1685b8092a47ed4c9f333233c)
 
 **What's new:** You can check what's new [here](https://scrawny-droplet-e97.notion.site/Pyuibuilder-What-s-new-25845dc1685b80a2a802e6f3943085f1)
+
+
+## Features
+
+While there are a lot of features, here are few you need to know.
+
+* Framework agnostic - Can outputs code in multiple frameworks.
+* Pre-built UI widgets
+* Plugins to extend 3rd party UI libraries
+* Supports layout managers, such as flex, grid and absolute positioning [read docs](https://docs.pyuibuilder.com/)
+* Generates python Code.
+* Support to upload local assets.
+* Generates requirements.txt file when needed
+* **Build Python exe [new]**
+* **Turn Python scripts to GUI [new]**
 
 **Funding development:**
 <br>
@@ -144,18 +165,6 @@ Tkinter is OS dependent, output may vary based on OS.
 2. Drag and drop widgets.
 3. Generate and download the code.
 
-
-## Features
-
-While there are a lot of features, here are few you need to know.
-
-* Framework agnostic - Can outputs code in multiple frameworks.
-* Pre-built UI widgets
-* Plugins to extend 3rd party UI libraries
-* Supports layout managers, such as flex, grid and absolute positioning [read docs](https://docs.pyuibuilder.com/)
-* Generates python Code.
-* Support to upload local assets.
-* Generates requirements.txt file when needed
 
 ## Supported Frameworks/Libraries
 
